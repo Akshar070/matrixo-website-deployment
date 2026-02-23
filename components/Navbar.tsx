@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { FaBars, FaTimes, FaMoon, FaSun, FaChevronDown, FaUser, FaSignOutAlt, FaIdBadge } from 'react-icons/fa'
@@ -309,11 +310,19 @@ export default function Navbar() {
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.3 }}
-                  className="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 
+                  className="inline-flex items-center gap-2 px-3 py-1.5 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 
                            rounded-full font-semibold hover:bg-gray-50 dark:hover:bg-white/[0.06] transition-all duration-200"
                 >
-                  <FaUser className="text-sm" />
-                  {profile?.fullName || user.displayName || user.email?.split('@')[0]}
+                  {profile?.profilePhoto ? (
+                    <div className="w-7 h-7 rounded-full overflow-hidden flex-shrink-0">
+                      <Image src={profile.profilePhoto} alt="" width={28} height={28} className="object-cover w-full h-full" />
+                    </div>
+                  ) : (
+                    <div className="w-7 h-7 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center flex-shrink-0">
+                      <span className="text-xs font-bold text-gray-600 dark:text-gray-300">{profile?.fullName?.charAt(0)?.toUpperCase() || 'U'}</span>
+                    </div>
+                  )}
+                  <span className="hidden sm:inline">{profile?.fullName || user.displayName || user.email?.split('@')[0]}</span>
                 </motion.button>
                 
                 <AnimatePresence>
@@ -329,7 +338,10 @@ export default function Navbar() {
                         <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">
                           {profile?.fullName || user.displayName || 'User'}
                         </p>
-                        <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                        {profile?.username && (
+                          <p className="text-xs text-gray-500 dark:text-gray-400 truncate">@{profile.username}</p>
+                        )}
+                        <p className="text-xs text-gray-400 truncate">
                           {user.email}
                         </p>
                       </div>
@@ -489,13 +501,24 @@ export default function Navbar() {
                 <div className="border-t border-gray-200 dark:border-gray-700 pt-3 mt-3 space-y-2">
                   {user ? (
                     <>
-                      <div className="px-4 py-3 bg-purple-50 dark:bg-purple-900/10 rounded-lg">
-                        <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">
-                          {profile?.fullName || user.displayName || 'User'}
-                        </p>
-                        <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                          {user.email}
-                        </p>
+                      <div className="px-4 py-3 bg-gray-50 dark:bg-white/[0.04] rounded-lg flex items-center gap-3">
+                        {profile?.profilePhoto ? (
+                          <div className="w-10 h-10 rounded-xl overflow-hidden flex-shrink-0">
+                            <Image src={profile.profilePhoto} alt="" width={40} height={40} className="object-cover w-full h-full" />
+                          </div>
+                        ) : (
+                          <div className="w-10 h-10 rounded-xl bg-gray-200 dark:bg-gray-700 flex items-center justify-center flex-shrink-0">
+                            <span className="text-sm font-bold text-gray-600 dark:text-gray-300">{profile?.fullName?.charAt(0)?.toUpperCase() || 'U'}</span>
+                          </div>
+                        )}
+                        <div className="min-w-0">
+                          <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">
+                            {profile?.fullName || user.displayName || 'User'}
+                          </p>
+                          {profile?.username && (
+                            <p className="text-xs text-gray-500 dark:text-gray-400 truncate">@{profile.username}</p>
+                          )}
+                        </div>
                       </div>
                       <Link
                         href="/profile"

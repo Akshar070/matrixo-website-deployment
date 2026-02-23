@@ -1,12 +1,15 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
-import { FaUser, FaIdCard, FaPhone, FaEnvelope, FaUniversity, FaGraduationCap, FaCodeBranch, FaArrowRight, FaSpinner } from 'react-icons/fa'
+import { FaUser, FaIdCard, FaPhone, FaEnvelope, FaUniversity, FaGraduationCap, FaCodeBranch, FaArrowRight, FaSpinner, FaAt, FaCheck, FaTimes, FaCamera } from 'react-icons/fa'
 import { useAuth } from '@/lib/AuthContext'
-import { useProfile } from '@/lib/ProfileContext'
+import { useProfile, DEFAULT_PRIVACY } from '@/lib/ProfileContext'
 import { toast } from 'sonner'
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
+import { storage } from '@/lib/firebaseConfig'
+import Image from 'next/image'
 
 const YEAR_OPTIONS = ['1st Year', '2nd Year', '3rd Year', '4th Year', 'Graduate']
 const BRANCH_OPTIONS = [
@@ -16,20 +19,26 @@ const BRANCH_OPTIONS = [
 
 export default function ProfileSetupPage() {
   const { user } = useAuth()
-  const { createProfile, profileExists } = useProfile()
+  const { createProfile, profileExists, checkUsernameAvailable } = useProfile()
   const router = useRouter()
 
   const [formData, setFormData] = useState({
     fullName: user?.displayName || '',
+    username: '',
     rollNumber: '',
     phone: '',
     college: '',
     year: '',
     branch: '',
     graduationYear: '',
+    bio: '',
   })
+  const [profilePhotoFile, setProfilePhotoFile] = useState<File | null>(null)
+  const [profilePhotoPreview, setProfilePhotoPreview] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
+  const [usernameStatus, setUsernameStatus] = useState<'idle' | 'checking' | 'available' | 'taken'>('idle')
+  const [step, setStep] = useState(1)
 
   // If profile already exists, redirect
   if (profileExists) {
@@ -42,10 +51,63 @@ export default function ProfileSetupPage() {
     return null
   }
 
-  const validate = (): boolean => {
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  useEffect(() => {
+    const username = formData.username.trim().toLowerCase()
+    if (!username || username.length < 3) {
+      setUsernameStatus('idle')
+      return
+    }
+    if (!/^[a-z0-9_]+$/.test(username)) {
+      setUsernameStatus('idle')
+      return
+    }
+
+    setUsernameStatus('checking')
+    const timer = setTimeout(async () => {
+      const available = await checkUsernameAvailable(username)
+      setUsernameStatus(available ? 'available' : 'taken')
+    }, 500)
+
+    return () => clearTimeout(timer)
+  }, [formData.username, checkUsernameAvailable])
+
+  const handlePhotoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    if (file.size > 2 * 1024 * 1024) {
+      toast.error('Photo must be less than 2MB')
+      return
+    }
+    if (!file.type.startsWith('image/')) {
+      toast.error('Please select an image file')
+      return
+    }
+    setProfilePhotoFile(file)
+    const reader = new FileReader()
+    reader.onloadend = () => setProfilePhotoPreview(reader.result as string)
+    reader.readAsDataURL(file)
+  }
+
+  const validateStep1 = (): boolean => {
     const newErrors: Record<string, string> = {}
+    const username = formData.username.trim().toLowerCase()
+
+    if (!username) newErrors.username = 'Username is required'
+    else if (username.length < 3) newErrors.username = 'Username must be at least 3 characters'
+    else if (!/^[a-z0-9_]+$/.test(username)) newErrors.username = 'Only lowercase letters, numbers, and underscores'
+    else if (usernameStatus === 'taken') newErrors.username = 'Username is already taken'
+    else if (usernameStatus === 'checking') newErrors.username = 'Please wait while we check availability'
 
     if (!formData.fullName.trim()) newErrors.fullName = 'Full name is required'
+
+    setErrors(newErrors)
+    return Object.keys(newErrors).length === 0
+  }
+
+  const validateStep2 = (): boolean => {
+    const newErrors: Record<string, string> = {}
+
     if (!formData.rollNumber.trim()) newErrors.rollNumber = 'Roll number is required'
     else if (formData.rollNumber.trim().length < 4) newErrors.rollNumber = 'Roll number is too short'
 
@@ -69,13 +131,29 @@ export default function ProfileSetupPage() {
     return Object.keys(newErrors).length === 0
   }
 
+  const handleNext = () => {
+    if (validateStep1()) {
+      setStep(2)
+      setErrors({})
+    }
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!validate()) return
+    if (!validateStep2()) return
 
     setLoading(true)
     try {
+      let profilePhotoUrl = ''
+
+      if (profilePhotoFile && user) {
+        const photoRef = ref(storage, `profile-photos/${user.uid}`)
+        await uploadBytes(photoRef, profilePhotoFile)
+        profilePhotoUrl = await getDownloadURL(photoRef)
+      }
+
       await createProfile({
+        username: formData.username.trim().toLowerCase(),
         fullName: formData.fullName.trim(),
         rollNumber: formData.rollNumber.trim().toUpperCase(),
         phone: formData.phone.trim(),
@@ -83,6 +161,9 @@ export default function ProfileSetupPage() {
         year: formData.year,
         branch: formData.branch,
         graduationYear: formData.year === 'Graduate' ? formData.graduationYear.trim() : '',
+        bio: formData.bio.trim(),
+        profilePhoto: profilePhotoUrl || undefined,
+        privacy: DEFAULT_PRIVACY,
       })
       toast.success('Profile created successfully!')
       router.push('/')
@@ -94,174 +175,252 @@ export default function ProfileSetupPage() {
     }
   }
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
     setFormData(prev => ({ ...prev, [name]: value }))
     if (errors[name]) setErrors(prev => ({ ...prev, [name]: '' }))
   }
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200 dark:from-gray-950 dark:via-gray-900 dark:to-black flex items-center justify-center px-4 py-24">
-      {/* Background Effects */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-0 -left-4 w-96 h-96 bg-purple-500/20 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-pulse" />
-        <div className="absolute top-0 -right-4 w-96 h-96 bg-cyan-500/20 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-pulse" style={{ animationDelay: '2s' }} />
-        <div className="absolute -bottom-8 left-20 w-96 h-96 bg-pink-500/20 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-pulse" style={{ animationDelay: '4s' }} />
-      </div>
+  const inputClass = (field: string) =>
+    `w-full py-3 px-4 bg-white/50 dark:bg-white/[0.04] border ${errors[field] ? 'border-red-500' : 'border-gray-200 dark:border-white/[0.08]'} rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-400 dark:focus:ring-white/20 focus:border-transparent transition-all text-gray-900 dark:text-white placeholder-gray-400`
 
+  return (
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex items-center justify-center px-4 py-24">
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
         className="relative z-10 w-full max-w-lg"
       >
-        <div className="bg-white/60 dark:bg-gray-900/60 backdrop-blur-xl border border-gray-300 dark:border-gray-800 rounded-3xl p-5 sm:p-8 shadow-2xl">
+        <div className="bg-white/70 dark:bg-white/[0.04] backdrop-blur-xl border border-gray-200 dark:border-white/[0.08] rounded-3xl p-5 sm:p-8 shadow-xl">
+          {/* Step Indicator */}
+          <div className="flex items-center justify-center gap-3 mb-6">
+            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${step >= 1 ? 'bg-gray-900 dark:bg-white text-white dark:text-gray-900' : 'bg-gray-200 dark:bg-gray-800 text-gray-500'}`}>1</div>
+            <div className={`w-12 h-0.5 ${step >= 2 ? 'bg-gray-900 dark:bg-white' : 'bg-gray-200 dark:bg-gray-800'}`} />
+            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${step >= 2 ? 'bg-gray-900 dark:bg-white text-white dark:text-gray-900' : 'bg-gray-200 dark:bg-gray-800 text-gray-500'}`}>2</div>
+          </div>
+
           {/* Header */}
           <div className="text-center mb-6 sm:mb-8">
-            <div className="inline-flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl mb-4">
-              <FaUser className="text-white text-xl sm:text-2xl" />
-            </div>
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">
-              Complete Your Profile
+              {step === 1 ? 'Create Your Identity' : 'Academic Details'}
             </h1>
-            <p className="text-gray-600 dark:text-gray-400">
-              Set up your profile to get started with matriXO
+            <p className="text-gray-500 dark:text-gray-400 text-sm">
+              {step === 1 ? 'Choose your username and set up your profile' : 'Tell us about your education'}
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-5">
-            {/* Full Name */}
-            <div>
-              <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                <FaUser className="text-purple-500 text-xs" /> Full Name
-              </label>
-              <input
-                type="text" name="fullName" value={formData.fullName} onChange={handleChange}
-                placeholder="Enter your full name"
-                className={`w-full py-3 px-4 bg-gray-100 dark:bg-gray-800/50 border ${errors.fullName ? 'border-red-500' : 'border-gray-300 dark:border-gray-700'} rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all text-gray-900 dark:text-white placeholder-gray-400`}
-              />
-              {errors.fullName && <p className="text-red-500 text-xs mt-1">{errors.fullName}</p>}
-            </div>
-
-            {/* Roll Number */}
-            <div>
-              <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                <FaIdCard className="text-purple-500 text-xs" /> Roll Number
-              </label>
-              <input
-                type="text" name="rollNumber" value={formData.rollNumber} onChange={handleChange}
-                placeholder="e.g. 22B81A0501"
-                className={`w-full py-3 px-4 bg-gray-100 dark:bg-gray-800/50 border ${errors.rollNumber ? 'border-red-500' : 'border-gray-300 dark:border-gray-700'} rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all text-gray-900 dark:text-white placeholder-gray-400 uppercase`}
-              />
-              {errors.rollNumber && <p className="text-red-500 text-xs mt-1">{errors.rollNumber}</p>}
-            </div>
-
-            {/* Phone */}
-            <div>
-              <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                <FaPhone className="text-purple-500 text-xs" /> Phone Number
-              </label>
-              <div className="flex">
-                <span className="inline-flex items-center px-3 bg-gray-200 dark:bg-gray-700 border border-r-0 border-gray-300 dark:border-gray-600 rounded-l-xl text-gray-600 dark:text-gray-300 text-sm">+91</span>
-                <input
-                  type="tel" name="phone" value={formData.phone} onChange={handleChange}
-                  placeholder="9876543210" maxLength={10}
-                  className={`w-full py-3 px-4 bg-gray-100 dark:bg-gray-800/50 border ${errors.phone ? 'border-red-500' : 'border-gray-300 dark:border-gray-700'} rounded-r-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all text-gray-900 dark:text-white placeholder-gray-400`}
-                />
-              </div>
-              {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
-            </div>
-
-            {/* Email (read-only) */}
-            <div>
-              <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                <FaEnvelope className="text-purple-500 text-xs" /> Email
-              </label>
-              <input
-                type="email" value={user?.email || ''} readOnly
-                className="w-full py-3 px-4 bg-gray-200 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl text-gray-500 dark:text-gray-400 cursor-not-allowed"
-              />
-              <p className="text-xs text-gray-400 mt-1">Email is linked to your account and cannot be changed</p>
-            </div>
-
-            {/* College */}
-            <div>
-              <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                <FaUniversity className="text-purple-500 text-xs" /> College Name
-              </label>
-              <input
-                type="text" name="college" value={formData.college} onChange={handleChange}
-                placeholder="e.g. KPRIT, Hyderabad"
-                className={`w-full py-3 px-4 bg-gray-100 dark:bg-gray-800/50 border ${errors.college ? 'border-red-500' : 'border-gray-300 dark:border-gray-700'} rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all text-gray-900 dark:text-white placeholder-gray-400`}
-              />
-              {errors.college && <p className="text-red-500 text-xs mt-1">{errors.college}</p>}
-            </div>
-
-            {/* Year & Branch row */}
-            <div className="grid grid-cols-2 gap-4">
-              {/* Year */}
-              <div>
-                <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                  <FaGraduationCap className="text-purple-500 text-xs" /> Year
+          {step === 1 ? (
+            <div className="space-y-5">
+              {/* Profile Photo */}
+              <div className="flex flex-col items-center mb-2">
+                <label htmlFor="photo-upload" className="cursor-pointer group">
+                  <div className="relative w-24 h-24 rounded-2xl overflow-hidden border-2 border-dashed border-gray-300 dark:border-white/[0.12] group-hover:border-gray-400 dark:group-hover:border-white/20 transition-colors">
+                    {profilePhotoPreview ? (
+                      <Image src={profilePhotoPreview} alt="Profile" fill className="object-cover" />
+                    ) : (
+                      <div className="w-full h-full flex flex-col items-center justify-center bg-gray-100 dark:bg-white/[0.04]">
+                        <FaCamera className="text-gray-400 text-lg mb-1" />
+                        <span className="text-[10px] text-gray-400">Add Photo</span>
+                      </div>
+                    )}
+                  </div>
                 </label>
-                <select
-                  name="year" value={formData.year} onChange={handleChange}
-                  className={`w-full py-3 px-4 bg-gray-100 dark:bg-gray-800/50 border ${errors.year ? 'border-red-500' : 'border-gray-300 dark:border-gray-700'} rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all text-gray-900 dark:text-white appearance-none`}
-                >
-                  <option value="">Select</option>
-                  {YEAR_OPTIONS.map(y => <option key={y} value={y}>{y}</option>)}
-                </select>
-                {errors.year && <p className="text-red-500 text-xs mt-1">{errors.year}</p>}
+                <input id="photo-upload" type="file" accept="image/*" onChange={handlePhotoSelect} className="hidden" />
+                <p className="text-xs text-gray-400 mt-2">Optional · Max 2MB</p>
               </div>
 
-              {/* Branch */}
+              {/* Username */}
               <div>
                 <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                  <FaCodeBranch className="text-purple-500 text-xs" /> Branch
+                  <FaAt className="text-gray-500 text-xs" /> Username
                 </label>
-                <select
-                  name="branch" value={formData.branch} onChange={handleChange}
-                  className={`w-full py-3 px-4 bg-gray-100 dark:bg-gray-800/50 border ${errors.branch ? 'border-red-500' : 'border-gray-300 dark:border-gray-700'} rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all text-gray-900 dark:text-white appearance-none`}
-                >
-                  <option value="">Select</option>
-                  {BRANCH_OPTIONS.map(b => <option key={b} value={b}>{b}</option>)}
-                </select>
-                {errors.branch && <p className="text-red-500 text-xs mt-1">{errors.branch}</p>}
+                <div className="relative">
+                  <input
+                    type="text" name="username" value={formData.username} onChange={handleChange}
+                    placeholder="choose_a_username"
+                    className={`${inputClass('username')} pr-10 lowercase`}
+                    autoComplete="off"
+                  />
+                  <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                    {usernameStatus === 'checking' && <FaSpinner className="animate-spin text-gray-400 text-sm" />}
+                    {usernameStatus === 'available' && <FaCheck className="text-green-500 text-sm" />}
+                    {usernameStatus === 'taken' && <FaTimes className="text-red-500 text-sm" />}
+                  </div>
+                </div>
+                {errors.username ? (
+                  <p className="text-red-500 text-xs mt-1">{errors.username}</p>
+                ) : usernameStatus === 'available' ? (
+                  <p className="text-green-500 text-xs mt-1">Username is available!</p>
+                ) : (
+                  <p className="text-xs text-gray-400 mt-1">Lowercase letters, numbers, underscores. Min 3 characters.</p>
+                )}
               </div>
-            </div>
-            {/* Graduation Year - Only show if Graduate is selected */}
-            {formData.year === 'Graduate' && (
+
+              {/* Full Name */}
               <div>
                 <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                  <FaGraduationCap className="text-purple-500 text-xs" /> Year of Graduation
+                  <FaUser className="text-gray-500 text-xs" /> Full Name
                 </label>
                 <input
-                  type="text"
-                  name="graduationYear"
-                  value={formData.graduationYear}
-                  onChange={handleChange}
-                  placeholder="e.g. 2023"
-                  maxLength={4}
-                  className={`w-full py-3 px-4 bg-gray-100 dark:bg-gray-800/50 border ${errors.graduationYear ? 'border-red-500' : 'border-gray-300 dark:border-gray-700'} rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all text-gray-900 dark:text-white placeholder-gray-400`}
+                  type="text" name="fullName" value={formData.fullName} onChange={handleChange}
+                  placeholder="Enter your full name"
+                  className={inputClass('fullName')}
                 />
-                {errors.graduationYear && <p className="text-red-500 text-xs mt-1">{errors.graduationYear}</p>}
+                {errors.fullName && <p className="text-red-500 text-xs mt-1">{errors.fullName}</p>}
               </div>
-            )}
-            {/* Submit */}
-            <button
-              type="submit" disabled={loading}
-              className="w-full py-3 px-5 bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-500 text-white rounded-xl font-bold text-lg hover:shadow-2xl hover:shadow-purple-500/50 transition-all transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 group mt-2"
-            >
-              {loading ? (
-                <FaSpinner className="animate-spin text-xl" />
-              ) : (
-                <>
-                  <span>Save Profile</span>
-                  <FaArrowRight className="group-hover:translate-x-1 transition-transform" />
-                </>
+
+              {/* Bio */}
+              <div>
+                <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                  <FaUser className="text-gray-500 text-xs" /> Bio <span className="text-gray-400 text-xs font-normal">(optional)</span>
+                </label>
+                <textarea
+                  name="bio" value={formData.bio} onChange={handleChange}
+                  placeholder="A short bio about yourself..."
+                  rows={2}
+                  maxLength={200}
+                  className={`${inputClass('bio')} resize-none`}
+                />
+                <p className="text-xs text-gray-400 mt-1 text-right">{formData.bio.length}/200</p>
+              </div>
+
+              {/* Email (read-only) */}
+              <div>
+                <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                  <FaEnvelope className="text-gray-500 text-xs" /> Email
+                </label>
+                <input
+                  type="email" value={user?.email || ''} readOnly
+                  className="w-full py-3 px-4 bg-gray-100 dark:bg-white/[0.02] border border-gray-200 dark:border-white/[0.06] rounded-xl text-gray-400 cursor-not-allowed"
+                />
+                <p className="text-xs text-gray-400 mt-1">Linked to your account</p>
+              </div>
+
+              <button
+                type="button"
+                onClick={handleNext}
+                className="w-full py-3 px-5 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-xl font-semibold hover:bg-gray-800 dark:hover:bg-gray-100 transition-all flex items-center justify-center gap-2 mt-2"
+              >
+                <span>Continue</span>
+                <FaArrowRight className="text-sm" />
+              </button>
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit} className="space-y-5">
+              {/* Roll Number */}
+              <div>
+                <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                  <FaIdCard className="text-gray-500 text-xs" /> Roll Number
+                </label>
+                <input
+                  type="text" name="rollNumber" value={formData.rollNumber} onChange={handleChange}
+                  placeholder="e.g. 22B81A0501"
+                  className={`${inputClass('rollNumber')} uppercase`}
+                />
+                {errors.rollNumber && <p className="text-red-500 text-xs mt-1">{errors.rollNumber}</p>}
+              </div>
+
+              {/* Phone */}
+              <div>
+                <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                  <FaPhone className="text-gray-500 text-xs" /> Phone Number
+                </label>
+                <div className="flex">
+                  <span className="inline-flex items-center px-3 bg-gray-100 dark:bg-white/[0.04] border border-r-0 border-gray-200 dark:border-white/[0.08] rounded-l-xl text-gray-500 text-sm">+91</span>
+                  <input
+                    type="tel" name="phone" value={formData.phone} onChange={handleChange}
+                    placeholder="9876543210" maxLength={10}
+                    className={`w-full py-3 px-4 bg-white/50 dark:bg-white/[0.04] border ${errors.phone ? 'border-red-500' : 'border-gray-200 dark:border-white/[0.08]'} rounded-r-xl focus:outline-none focus:ring-2 focus:ring-gray-400 dark:focus:ring-white/20 focus:border-transparent transition-all text-gray-900 dark:text-white placeholder-gray-400`}
+                  />
+                </div>
+                {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
+              </div>
+
+              {/* College */}
+              <div>
+                <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                  <FaUniversity className="text-gray-500 text-xs" /> College Name
+                </label>
+                <input
+                  type="text" name="college" value={formData.college} onChange={handleChange}
+                  placeholder="e.g. KPRIT, Hyderabad"
+                  className={inputClass('college')}
+                />
+                {errors.college && <p className="text-red-500 text-xs mt-1">{errors.college}</p>}
+              </div>
+
+              {/* Year & Branch */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                    <FaGraduationCap className="text-gray-500 text-xs" /> Year
+                  </label>
+                  <select
+                    name="year" value={formData.year} onChange={handleChange}
+                    className={`${inputClass('year')} appearance-none`}
+                  >
+                    <option value="">Select</option>
+                    {YEAR_OPTIONS.map(y => <option key={y} value={y}>{y}</option>)}
+                  </select>
+                  {errors.year && <p className="text-red-500 text-xs mt-1">{errors.year}</p>}
+                </div>
+
+                <div>
+                  <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                    <FaCodeBranch className="text-gray-500 text-xs" /> Branch
+                  </label>
+                  <select
+                    name="branch" value={formData.branch} onChange={handleChange}
+                    className={`${inputClass('branch')} appearance-none`}
+                  >
+                    <option value="">Select</option>
+                    {BRANCH_OPTIONS.map(b => <option key={b} value={b}>{b}</option>)}
+                  </select>
+                  {errors.branch && <p className="text-red-500 text-xs mt-1">{errors.branch}</p>}
+                </div>
+              </div>
+
+              {/* Graduation Year */}
+              {formData.year === 'Graduate' && (
+                <div>
+                  <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                    <FaGraduationCap className="text-gray-500 text-xs" /> Year of Graduation
+                  </label>
+                  <input
+                    type="text" name="graduationYear" value={formData.graduationYear} onChange={handleChange}
+                    placeholder="e.g. 2023" maxLength={4}
+                    className={inputClass('graduationYear')}
+                  />
+                  {errors.graduationYear && <p className="text-red-500 text-xs mt-1">{errors.graduationYear}</p>}
+                </div>
               )}
-            </button>
-          </form>
+
+              {/* Action Buttons */}
+              <div className="flex gap-3 mt-2">
+                <button
+                  type="button"
+                  onClick={() => { setStep(1); setErrors({}) }}
+                  className="flex-1 py-3 px-4 border border-gray-200 dark:border-white/[0.08] text-gray-700 dark:text-gray-300 rounded-xl font-semibold hover:bg-gray-50 dark:hover:bg-white/[0.04] transition-all"
+                >
+                  Back
+                </button>
+                <button
+                  type="submit" disabled={loading}
+                  className="flex-1 py-3 px-5 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-xl font-semibold hover:bg-gray-800 dark:hover:bg-gray-100 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                >
+                  {loading ? (
+                    <FaSpinner className="animate-spin text-xl" />
+                  ) : (
+                    <>
+                      <span>Create Profile</span>
+                      <FaArrowRight className="text-sm" />
+                    </>
+                  )}
+                </button>
+              </div>
+            </form>
+          )}
         </div>
       </motion.div>
     </div>

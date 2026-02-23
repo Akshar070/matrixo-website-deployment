@@ -3,10 +3,33 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react'
 import { useAuth } from '@/lib/AuthContext'
 import { db } from '@/lib/firebaseConfig'
-import { doc, getDoc, setDoc, updateDoc, serverTimestamp } from 'firebase/firestore'
+import { doc, getDoc, setDoc, updateDoc, serverTimestamp, collection, query, where, getDocs } from 'firebase/firestore'
+
+export interface PrivacySettings {
+  showEmail: boolean
+  showPhone: boolean
+  showCollege: boolean
+  showYear: boolean
+  showBranch: boolean
+  showRollNumber: boolean
+  showSkillDNA: boolean
+  profileVisibility: 'public' | 'private' | 'request'
+}
+
+export const DEFAULT_PRIVACY: PrivacySettings = {
+  showEmail: false,
+  showPhone: false,
+  showCollege: true,
+  showYear: true,
+  showBranch: true,
+  showRollNumber: false,
+  showSkillDNA: true,
+  profileVisibility: 'public',
+}
 
 export interface UserProfile {
   uid: string
+  username: string
   fullName: string
   rollNumber: string
   phone: string
@@ -15,6 +38,12 @@ export interface UserProfile {
   year: string
   branch: string
   graduationYear?: string
+  profilePhoto?: string
+  bio?: string
+  linkedin?: string
+  github?: string
+  portfolio?: string
+  privacy: PrivacySettings
   createdAt?: any
   updatedAt?: any
 }
@@ -25,7 +54,9 @@ interface ProfileContextType {
   profileExists: boolean
   fetchProfile: () => Promise<void>
   createProfile: (data: Omit<UserProfile, 'uid' | 'email' | 'createdAt' | 'updatedAt'>) => Promise<void>
-  updateProfile: (data: Partial<Pick<UserProfile, 'fullName' | 'phone' | 'college' | 'year' | 'branch' | 'graduationYear'>>) => Promise<void>
+  updateProfile: (data: Partial<Omit<UserProfile, 'uid' | 'email' | 'createdAt' | 'updatedAt' | 'username' | 'rollNumber'>>) => Promise<void>
+  checkUsernameAvailable: (username: string) => Promise<boolean>
+  getProfileByUsername: (username: string) => Promise<UserProfile | null>
 }
 
 const ProfileContext = createContext<ProfileContextType | undefined>(undefined)
@@ -81,10 +112,17 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
   const createProfile = async (data: Omit<UserProfile, 'uid' | 'email' | 'createdAt' | 'updatedAt'>) => {
     if (!user) throw new Error('User not authenticated')
 
+    // Verify username is still available
+    const usernameAvailable = await checkUsernameAvailable(data.username)
+    if (!usernameAvailable) {
+      throw new Error('Username is already taken')
+    }
+
     const profileData: UserProfile = {
       ...data,
       uid: user.uid,
       email: user.email || '',
+      privacy: data.privacy || DEFAULT_PRIVACY,
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
     }
@@ -98,11 +136,16 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
     }
 
     await setDoc(docRef, profileData)
+
+    // Also store username mapping for quick lookups
+    const usernameRef = doc(db, 'Usernames', data.username.toLowerCase())
+    await setDoc(usernameRef, { uid: user.uid, username: data.username.toLowerCase() })
+
     setProfile({ ...profileData, createdAt: new Date(), updatedAt: new Date() })
     setProfileExists(true)
   }
 
-  const updateProfileData = async (data: Partial<Pick<UserProfile, 'fullName' | 'phone' | 'college' | 'year' | 'branch' | 'graduationYear'>>) => {
+  const updateProfileData = async (data: Partial<Omit<UserProfile, 'uid' | 'email' | 'createdAt' | 'updatedAt' | 'username' | 'rollNumber'>>) => {
     if (!user) throw new Error('User not authenticated')
     if (!profileExists) throw new Error('Profile does not exist')
 
@@ -115,6 +158,33 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
     setProfile(prev => prev ? { ...prev, ...data, updatedAt: new Date() } : null)
   }
 
+  const checkUsernameAvailable = async (username: string): Promise<boolean> => {
+    if (!username || username.length < 3) return false
+    const usernameRef = doc(db, 'Usernames', username.toLowerCase())
+    const snap = await getDoc(usernameRef)
+    if (!snap.exists()) return true
+    // If current user owns it, it's "available" to them
+    if (user && snap.data()?.uid === user.uid) return true
+    return false
+  }
+
+  const getProfileByUsername = async (username: string): Promise<UserProfile | null> => {
+    try {
+      const usernameRef = doc(db, 'Usernames', username.toLowerCase())
+      const usernameSnap = await getDoc(usernameRef)
+      if (!usernameSnap.exists()) return null
+      
+      const uid = usernameSnap.data().uid
+      const profileRef = doc(db, 'UserProfiles', uid)
+      const profileSnap = await getDoc(profileRef)
+      if (!profileSnap.exists()) return null
+      
+      return profileSnap.data() as UserProfile
+    } catch {
+      return null
+    }
+  }
+
   const value: ProfileContextType = {
     profile,
     loading,
@@ -122,6 +192,8 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
     fetchProfile,
     createProfile,
     updateProfile: updateProfileData,
+    checkUsernameAvailable,
+    getProfileByUsername,
   }
 
   return (

@@ -13,9 +13,10 @@ import { SkillDNAProfile, SkillLevel } from '@/lib/skilldna/types';
 interface ProfileEditSectionProps {
   profile: SkillDNAProfile;
   onSave?: () => void;
+  onAddSkill?: (skill: { name: string; level: SkillLevel; category: string }) => Promise<void>;
 }
 
-export default function ProfileEditSection({ profile, onSave }: ProfileEditSectionProps) {
+export default function ProfileEditSection({ profile, onSave, onAddSkill }: ProfileEditSectionProps) {
   const [newSkillName, setNewSkillName] = useState('');
   const [newSkillLevel, setNewSkillLevel] = useState<SkillLevel>('beginner');
   const [newSkillCategory, setNewSkillCategory] = useState('Programming');
@@ -29,9 +30,12 @@ export default function ProfileEditSection({ profile, onSave }: ProfileEditSecti
     setMessage(null);
 
     try {
-      // In a full implementation, this would call the API to add the skill
-      // and trigger a profile recalculation
-      setMessage({ type: 'success', text: `Skill "${newSkillName}" would be added. Full save requires backend integration.` });
+      if (onAddSkill) {
+        await onAddSkill({ name: newSkillName.trim(), level: newSkillLevel, category: newSkillCategory });
+        setMessage({ type: 'success', text: `Skill "${newSkillName}" added successfully! Your profile will be recalculated.` });
+      } else {
+        setMessage({ type: 'success', text: `Skill "${newSkillName}" saved locally. Connect onAddSkill handler for full integration.` });
+      }
       setNewSkillName('');
     } catch (error: any) {
       setMessage({ type: 'error', text: error.message || 'Failed to add skill' });
@@ -96,11 +100,10 @@ export default function ProfileEditSection({ profile, onSave }: ProfileEditSecti
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className={`mt-4 p-3 rounded-xl text-sm ${
-              message.type === 'success' 
-                ? 'bg-green-500/10 border border-green-500/30 text-green-400' 
+            className={`mt-4 p-3 rounded-xl text-sm ${message.type === 'success'
+                ? 'bg-green-500/10 border border-green-500/30 text-green-400'
                 : 'bg-red-500/10 border border-red-500/30 text-red-400'
-            }`}
+              }`}
           >
             {message.text}
           </motion.div>

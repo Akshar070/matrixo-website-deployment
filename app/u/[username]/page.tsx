@@ -2,18 +2,19 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { useParams } from 'next/navigation'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import {
   FaUniversity, FaGraduationCap, FaCodeBranch, FaEnvelope,
   FaPhone, FaIdCard, FaLinkedin, FaGithub, FaGlobe, FaLock, FaArrowLeft,
   FaDna, FaBrain, FaRocket, FaBullseye, FaFire, FaTrophy,
   FaStar, FaArrowUp, FaBriefcase, FaLightbulb, FaChartLine,
   FaCheckCircle, FaClock, FaSignal, FaBook, FaCode,
-  FaExclamationTriangle, FaExclamationCircle, FaInfoCircle,
-  FaHistory, FaMapSigns, FaUserGraduate, FaAward, FaLanguage
+  FaHistory, FaMapSigns, FaUserGraduate, FaAward, FaLanguage,
+  FaEyeSlash, FaShieldAlt
 } from 'react-icons/fa'
 import { doc, getDoc } from 'firebase/firestore'
 import { db } from '@/lib/firebaseConfig'
+import { useAuth } from '@/lib/AuthContext'
 import { UserProfile, PrivacySettings, DEFAULT_PRIVACY } from '@/lib/ProfileContext'
 import { SkillDNAProfile, SkillDNAUserDocument, OnboardingData, CareerGoal } from '@/lib/skilldna/types'
 import { getScoreGrade, getScoreColor, getScoreGradient } from '@/lib/skilldna/scoring'
@@ -22,8 +23,8 @@ import Link from 'next/link'
 import Image from 'next/image'
 
 // ============================================================
-// Full LinkedIn-Style Public Profile Page
-// Shows user info + SkillDNA genome + achievements + goals
+// Full LinkedIn-Style Public Profile Page — Liquid Glass UI
+// Owner sees everything, public view respects privacy
 // ============================================================
 
 interface FullProfileData {
@@ -31,6 +32,38 @@ interface FullProfileData {
   skillDNAProfile: SkillDNAProfile | null
   onboardingData: OnboardingData | null
   careerGoals: CareerGoal | null
+  ownerUid: string
+}
+
+// Liquid glass card style — adaptive light/dark
+const glassCard = (isDark: boolean): React.CSSProperties => ({
+  background: isDark ? 'rgba(255,255,255,0.04)' : 'rgba(255,255,255,0.55)',
+  backdropFilter: 'blur(40px) saturate(180%)',
+  WebkitBackdropFilter: 'blur(40px) saturate(180%)',
+  border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'}`,
+  boxShadow: isDark
+    ? '0 16px 48px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.06)'
+    : '0 16px 48px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.9)',
+})
+
+const glassCardSubtle = (isDark: boolean): React.CSSProperties => ({
+  background: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(255,255,255,0.45)',
+  backdropFilter: 'blur(24px) saturate(160%)',
+  WebkitBackdropFilter: 'blur(24px) saturate(160%)',
+  border: `1px solid ${isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)'}`,
+  boxShadow: isDark
+    ? '0 8px 32px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.04)'
+    : '0 8px 32px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.8)',
+})
+
+// Animation presets
+const fadeUp = {
+  initial: { opacity: 0, y: 20 },
+  animate: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] } },
+}
+
+const staggerContainer = {
+  animate: { transition: { staggerChildren: 0.08 } }
 }
 
 export default function PublicProfilePage() {
@@ -38,48 +71,60 @@ export default function PublicProfilePage() {
   const username = params.username as string
   const profileRef = useRef<HTMLDivElement>(null)
 
+  // Auth for owner detection
+  let currentUser: any = null
+  try {
+    const authContext = useAuth()
+    currentUser = authContext.user
+  } catch {
+    // Not inside AuthProvider — public visitor
+  }
+
   const [data, setData] = useState<FullProfileData | null>(null)
   const [loading, setLoading] = useState(true)
   const [notFound, setNotFound] = useState(false)
+  const [isDark, setIsDark] = useState(true)
+
+  // Detect light/dark mode
+  useEffect(() => {
+    const check = () => setIsDark(document.documentElement.classList.contains('dark'))
+    check()
+    const obs = new MutationObserver(check)
+    obs.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] })
+    return () => obs.disconnect()
+  }, [])
 
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        // Step 1: Look up username -> uid
         const usernameRef = doc(db, 'Usernames', username.toLowerCase())
         const usernameSnap = await getDoc(usernameRef)
 
         if (!usernameSnap.exists()) {
-          setNotFound(true)
-          setLoading(false)
-          return
+          setNotFound(true); setLoading(false); return
         }
 
         const uid = usernameSnap.data().uid
-
-        // Step 2: Fetch UserProfile
         const profileDocRef = doc(db, 'UserProfiles', uid)
         const profileSnap = await getDoc(profileDocRef)
 
         if (!profileSnap.exists()) {
-          setNotFound(true)
-          setLoading(false)
-          return
+          setNotFound(true); setLoading(false); return
         }
 
         const userProfile = profileSnap.data() as UserProfile
 
-        if (userProfile.privacy?.profileVisibility === 'private') {
-          setNotFound(true)
-          setLoading(false)
-          return
+        // Only block if private AND not the owner
+        const isOwner = currentUser?.uid === uid
+        if (userProfile.privacy?.profileVisibility === 'private' && !isOwner) {
+          setNotFound(true); setLoading(false); return
         }
 
-        // Step 3: Fetch SkillDNA data (if privacy allows)
+        // Fetch SkillDNA data
         let skillDNAProfile: SkillDNAProfile | null = null
         let onboardingData: OnboardingData | null = null
         let careerGoals: CareerGoal | null = null
-        const showSkillDNA = userProfile.privacy?.showSkillDNA !== false
+        const showSkillDNA = isOwner || userProfile.privacy?.showSkillDNA !== false
 
         if (showSkillDNA) {
           try {
@@ -91,12 +136,10 @@ export default function PublicProfilePage() {
               onboardingData = skillDNAData.onboardingData || null
               careerGoals = skillDNAData.profile?.goals || null
             }
-          } catch {
-            // SkillDNA data not available, continue without it
-          }
+          } catch { /* SkillDNA not available */ }
         }
 
-        setData({ userProfile, skillDNAProfile, onboardingData, careerGoals })
+        setData({ userProfile, skillDNAProfile, onboardingData, careerGoals, ownerUid: uid })
       } catch (error) {
         console.error('Error fetching profile:', error)
         setNotFound(true)
@@ -106,16 +149,18 @@ export default function PublicProfilePage() {
     }
 
     if (username) fetchProfile()
-  }, [username])
+  }, [username, currentUser?.uid])
 
   // --- Loading ---
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-950 via-purple-950/20 to-blue-950/20 flex items-center justify-center">
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-12 h-12 border-2 border-gray-700 border-t-purple-400 rounded-full animate-spin" />
+      <div className="min-h-screen bg-gray-50 dark:bg-[#0a0a12] flex items-center justify-center">
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-center gap-4">
+          <div className="w-12 h-12 rounded-2xl flex items-center justify-center" style={glassCard(isDark)}>
+            <FaDna className="text-purple-500 text-xl animate-pulse" />
+          </div>
           <p className="text-gray-500 text-sm">Loading profile...</p>
-        </div>
+        </motion.div>
       </div>
     )
   }
@@ -123,14 +168,14 @@ export default function PublicProfilePage() {
   // --- Not Found ---
   if (notFound || !data) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-950 via-purple-950/20 to-blue-950/20 flex items-center justify-center px-4">
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center">
-          <div className="w-20 h-20 mx-auto mb-6 rounded-2xl flex items-center justify-center bg-white/[0.04] border border-white/[0.08]">
+      <div className="min-h-screen bg-gray-50 dark:bg-[#0a0a12] flex items-center justify-center px-4">
+        <motion.div {...fadeUp} className="text-center">
+          <div className="w-20 h-20 mx-auto mb-6 rounded-3xl flex items-center justify-center" style={glassCard(isDark)}>
             <FaLock className="text-gray-400 text-2xl" />
           </div>
-          <h1 className="text-2xl font-bold text-white mb-2">Profile Not Found</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Profile Not Found</h1>
           <p className="text-gray-500 mb-6">This profile doesn&apos;t exist or is set to private.</p>
-          <Link href="/" className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-xl font-semibold hover:shadow-xl hover:shadow-purple-500/20 transition-all">
+          <Link href="/" className="inline-flex items-center gap-2 px-6 py-3 btn-primary rounded-full font-semibold">
             <FaArrowLeft className="text-sm" /> Go Home
           </Link>
         </motion.div>
@@ -138,140 +183,187 @@ export default function PublicProfilePage() {
     )
   }
 
-  const { userProfile, skillDNAProfile, onboardingData, careerGoals } = data
+  const { userProfile, skillDNAProfile, onboardingData, careerGoals, ownerUid } = data
+  const isOwner = currentUser?.uid === ownerUid
   const privacy: PrivacySettings = userProfile.privacy || DEFAULT_PRIVACY
   const hasSkillDNA = skillDNAProfile !== null
 
-  // Compute stats
+  // Owner sees everything, public respects privacy
+  const show = (field: keyof PrivacySettings) => isOwner || (privacy[field] as boolean)
+
   const skillCount = skillDNAProfile?.technicalSkills?.length || 0
   const clusterCount = skillDNAProfile?.skillClusters?.length || 0
+  const achievements = onboardingData?.academic?.achievements || []
   const languagesKnown = skillDNAProfile?.technicalSkills
     ?.filter(s => s.category?.toLowerCase().includes('language') || s.category?.toLowerCase().includes('programming'))
     ?.map(s => s.name) || []
-  const achievements = onboardingData?.academic?.achievements || []
+
+  // Private field indicator for owner
+  const PrivateBadge = () => (
+    <span className="inline-flex items-center gap-1 text-[9px] px-1.5 py-0.5 rounded-full bg-amber-500/15 text-amber-400 border border-amber-500/20 ml-1.5">
+      <FaEyeSlash className="text-[7px]" /> Private
+    </span>
+  )
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-950 via-purple-950/10 to-blue-950/10">
-      {/* Background Decorations */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-20 -left-48 w-[500px] h-[500px] bg-purple-500/5 rounded-full blur-3xl" />
-        <div className="absolute top-1/2 -right-48 w-[500px] h-[500px] bg-blue-500/5 rounded-full blur-3xl" />
-        <div className="absolute bottom-20 left-1/3 w-[400px] h-[400px] bg-indigo-500/5 rounded-full blur-3xl" />
+    <div className="min-h-screen bg-gray-50 dark:bg-[#0a0a12] transition-colors duration-300">
+      {/* ── Background orbs ── */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden print:hidden">
+        <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-purple-500/[0.03] dark:bg-purple-500/[0.06] rounded-full blur-3xl animate-float" />
+        <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-blue-500/[0.03] dark:bg-blue-500/[0.06] rounded-full blur-3xl animate-float" style={{ animationDelay: '5s' }} />
+        <div className="absolute top-1/2 left-0 w-[400px] h-[400px] bg-indigo-500/[0.02] dark:bg-indigo-500/[0.04] rounded-full blur-3xl animate-float" style={{ animationDelay: '10s' }} />
       </div>
 
-      {/* Navigation */}
-      <div className="relative z-20 px-4 pt-6 max-w-5xl mx-auto print:hidden">
+      {/* ── Top nav ── */}
+      <div className="relative z-20 px-4 sm:px-6 pt-6 max-w-5xl mx-auto print:hidden">
         <div className="flex items-center justify-between">
-          <Link href="/" className="inline-flex items-center gap-2 text-gray-500 hover:text-white transition-colors">
-            <FaArrowLeft className="text-sm" />
-            <span>Home</span>
+          <Link href="/" className="inline-flex items-center gap-2 text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors">
+            <FaArrowLeft className="text-sm" /> <span className="text-sm">Home</span>
           </Link>
-          <ProfileDownload targetRef={profileRef} userName={userProfile.username} />
+          <div className="flex items-center gap-3">
+            {isOwner && (
+              <span className="inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full text-emerald-600 dark:text-emerald-400" style={glassCardSubtle(isDark)}>
+                <FaShieldAlt className="text-[10px]" /> Your Profile
+              </span>
+            )}
+            <ProfileDownload targetRef={profileRef} userName={userProfile.username} />
+          </div>
         </div>
       </div>
 
-      {/* MAIN PROFILE CONTENT */}
-      <div ref={profileRef} className="relative z-10 max-w-5xl mx-auto px-4 py-8 space-y-6">
+      {/* ═══════ MAIN CONTENT ═══════ */}
+      <motion.div
+        ref={profileRef}
+        variants={staggerContainer}
+        initial="initial"
+        animate="animate"
+        className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 py-6 space-y-5"
+      >
 
-        {/* ═══════════════════════════════════════════════════════ */}
-        {/* SECTION 1: PROFILE HEADER + HERO                       */}
-        {/* ═══════════════════════════════════════════════════════ */}
+        {/* ═══════════════════════════════════════════════ */}
+        {/* HERO CARD                                       */}
+        {/* ═══════════════════════════════════════════════ */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="rounded-3xl overflow-hidden bg-white/[0.04] backdrop-blur-xl border border-white/[0.08] shadow-2xl"
+          variants={fadeUp}
+          className="rounded-[28px] relative"
+          style={glassCard(isDark)}
         >
-          {/* Cover gradient */}
-          <div className="h-32 sm:h-40 bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600 relative overflow-hidden">
-            <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMSIgZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwwLjEpIi8+PC9zdmc+')] opacity-30" />
+          {/* Cover */}
+          <div className="relative h-36 sm:h-44 overflow-hidden rounded-t-[28px]">
+            <div className="absolute inset-0 bg-gradient-to-br from-purple-600 via-blue-500 to-indigo-600" />
+            <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMzAiIGN5PSIzMCIgcj0iMS41IiBmaWxsPSJyZ2JhKDI1NSwyNTUsMjU1LDAuMDgpIi8+PC9zdmc+')] opacity-50" />
+            {/* Floating shimmer */}
+            <motion.div
+              className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent"
+              initial={{ x: '-100%' }}
+              animate={{ x: '200%' }}
+              transition={{ duration: 4, repeat: Infinity, repeatDelay: 6, ease: 'linear' }}
+            />
             {hasSkillDNA && (
-              <div className="absolute bottom-3 right-4 flex items-center gap-1.5 bg-white/10 backdrop-blur-md px-3 py-1 rounded-full">
-                <FaDna className="text-white/80 text-xs animate-pulse" />
-                <span className="text-white/80 text-xs font-medium">SkillDNA™ Verified</span>
+              <div className="absolute bottom-3 right-4 flex items-center gap-1.5 backdrop-blur-md px-3 py-1 rounded-full border border-white/20 bg-white/10">
+                <FaDna className="text-white/90 text-xs animate-pulse" />
+                <span className="text-white/90 text-[11px] font-medium">SkillDNA™ Verified</span>
               </div>
             )}
           </div>
 
-          {/* Profile info */}
-          <div className="px-6 sm:px-8 pb-6 sm:pb-8 -mt-16 sm:-mt-20">
-            <div className="flex flex-col sm:flex-row sm:items-end gap-4 sm:gap-6">
-              {/* Avatar */}
-              <div className="w-28 h-28 sm:w-36 sm:h-36 rounded-2xl overflow-hidden border-4 border-gray-950 bg-gradient-to-br from-purple-500/20 to-blue-500/20 flex-shrink-0">
+          {/* Profile info — avatar uses relative positioning + negative margin, sits OUTSIDE cover's overflow context */}
+          <div className="relative z-10 px-6 sm:px-8 pb-6 sm:pb-8">
+            {/* Avatar row */}
+            <div className="-mt-14 sm:-mt-16 mb-4 flex flex-col sm:flex-row sm:items-end gap-4 sm:gap-5">
+              <motion.div
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
+                className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl overflow-hidden flex-shrink-0 ring-4 ring-gray-50 dark:ring-[#0a0a12] relative z-20"
+                style={{
+                  background: isDark ? 'rgba(30,30,50,0.9)' : 'rgba(255,255,255,0.9)',
+                  boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
+                }}
+              >
                 {userProfile.profilePhoto ? (
-                  <Image src={userProfile.profilePhoto} alt={userProfile.fullName} width={144} height={144} className="object-cover w-full h-full" />
+                  <Image src={userProfile.profilePhoto} alt={userProfile.fullName} width={112} height={112} className="object-cover w-full h-full" />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center text-4xl sm:text-5xl font-bold text-gray-400">
+                  <div className="w-full h-full flex items-center justify-center text-3xl sm:text-4xl font-bold bg-gradient-to-br from-purple-500/20 to-blue-500/20 text-gray-400">
                     {userProfile.fullName?.charAt(0)?.toUpperCase() || 'U'}
                   </div>
                 )}
-              </div>
+              </motion.div>
 
-              {/* Name + Bio */}
-              <div className="flex-1 min-w-0 pb-1">
-                <h1 className="text-2xl sm:text-3xl font-bold text-white truncate">{userProfile.fullName}</h1>
-                <p className="text-gray-500 text-sm mt-0.5">@{userProfile.username}</p>
+              <div className="flex-1 min-w-0">
+                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white truncate">{userProfile.fullName}</h1>
+                <p className="text-gray-500 dark:text-gray-500 text-sm mt-0.5">@{userProfile.username}</p>
                 {userProfile.bio && (
-                  <p className="text-gray-400 text-sm mt-2 max-w-xl">{userProfile.bio}</p>
+                  <p className="text-gray-600 dark:text-gray-400 text-sm mt-2 max-w-xl leading-relaxed">{userProfile.bio}</p>
                 )}
-
-                {/* Quick chips */}
-                <div className="flex flex-wrap gap-2 mt-3">
-                  {privacy.showCollege && userProfile.college && (
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs bg-white/[0.06] border border-white/[0.08] text-gray-300">
-                      <FaUniversity className="text-blue-400 text-[10px]" /> {userProfile.college}
-                    </span>
-                  )}
-                  {privacy.showBranch && userProfile.branch && (
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs bg-white/[0.06] border border-white/[0.08] text-gray-300">
-                      <FaCodeBranch className="text-purple-400 text-[10px]" /> {userProfile.branch}
-                    </span>
-                  )}
-                  {privacy.showYear && userProfile.year && (
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs bg-white/[0.06] border border-white/[0.08] text-gray-300">
-                      <FaGraduationCap className="text-green-400 text-[10px]" /> {userProfile.year}
-                    </span>
-                  )}
-                  {privacy.showRollNumber && userProfile.rollNumber && (
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs bg-white/[0.06] border border-white/[0.08] text-gray-300">
-                      <FaIdCard className="text-amber-400 text-[10px]" /> {userProfile.rollNumber}
-                    </span>
-                  )}
-                </div>
               </div>
 
-              {/* Social links */}
+              {/* Social */}
               {(userProfile.linkedin || userProfile.github || userProfile.portfolio) && (
                 <div className="flex items-center gap-2 sm:pb-1">
                   {userProfile.linkedin && (
-                    <a href={userProfile.linkedin} target="_blank" rel="noopener noreferrer" className="p-2.5 bg-white/[0.06] rounded-xl hover:bg-white/[0.12] transition-colors">
-                      <FaLinkedin className="text-blue-400" />
+                    <a href={userProfile.linkedin} target="_blank" rel="noopener noreferrer"
+                      className="p-2.5 rounded-xl transition-all hover:scale-110" style={glassCardSubtle(isDark)}>
+                      <FaLinkedin className="text-blue-500" />
                     </a>
                   )}
                   {userProfile.github && (
-                    <a href={userProfile.github} target="_blank" rel="noopener noreferrer" className="p-2.5 bg-white/[0.06] rounded-xl hover:bg-white/[0.12] transition-colors">
-                      <FaGithub className="text-gray-400" />
+                    <a href={userProfile.github} target="_blank" rel="noopener noreferrer"
+                      className="p-2.5 rounded-xl transition-all hover:scale-110" style={glassCardSubtle(isDark)}>
+                      <FaGithub className="text-gray-600 dark:text-gray-400" />
                     </a>
                   )}
                   {userProfile.portfolio && (
-                    <a href={userProfile.portfolio} target="_blank" rel="noopener noreferrer" className="p-2.5 bg-white/[0.06] rounded-xl hover:bg-white/[0.12] transition-colors">
-                      <FaGlobe className="text-green-400" />
+                    <a href={userProfile.portfolio} target="_blank" rel="noopener noreferrer"
+                      className="p-2.5 rounded-xl transition-all hover:scale-110" style={glassCardSubtle(isDark)}>
+                      <FaGlobe className="text-green-500" />
                     </a>
                   )}
                 </div>
               )}
             </div>
 
-            {/* Contact info row */}
-            {(privacy.showEmail || privacy.showPhone) && (
-              <div className="flex flex-wrap items-center gap-4 mt-4 pt-4 border-t border-white/[0.06]">
-                {privacy.showEmail && userProfile.email && (
-                  <span className="flex items-center gap-1.5 text-sm text-gray-400">
-                    <FaEnvelope className="text-gray-500 text-xs" /> {userProfile.email}
+            {/* Info chips */}
+            <div className="flex flex-wrap gap-2">
+              {show('showCollege') && userProfile.college && (
+                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium text-gray-700 dark:text-gray-300 transition-all hover:scale-[1.03]" style={glassCardSubtle(isDark)}>
+                  <FaUniversity className="text-blue-500 text-[10px]" /> {userProfile.college}
+                  {isOwner && !privacy.showCollege && <PrivateBadge />}
+                </span>
+              )}
+              {show('showBranch') && userProfile.branch && (
+                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium text-gray-700 dark:text-gray-300 transition-all hover:scale-[1.03]" style={glassCardSubtle(isDark)}>
+                  <FaCodeBranch className="text-purple-500 text-[10px]" /> {userProfile.branch}
+                  {isOwner && !privacy.showBranch && <PrivateBadge />}
+                </span>
+              )}
+              {show('showYear') && userProfile.year && (
+                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium text-gray-700 dark:text-gray-300 transition-all hover:scale-[1.03]" style={glassCardSubtle(isDark)}>
+                  <FaGraduationCap className="text-green-500 text-[10px]" /> {userProfile.year}
+                  {isOwner && !privacy.showYear && <PrivateBadge />}
+                </span>
+              )}
+              {show('showRollNumber') && userProfile.rollNumber && (
+                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium text-gray-700 dark:text-gray-300 transition-all hover:scale-[1.03]" style={glassCardSubtle(isDark)}>
+                  <FaIdCard className="text-amber-500 text-[10px]" /> {userProfile.rollNumber}
+                  {isOwner && !privacy.showRollNumber && <PrivateBadge />}
+                </span>
+              )}
+            </div>
+
+            {/* Contact row */}
+            {(show('showEmail') || show('showPhone')) && (
+              <div className="flex flex-wrap items-center gap-4 mt-4 pt-4" style={{ borderTop: `1px solid ${isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'}` }}>
+                {show('showEmail') && userProfile.email && (
+                  <span className="flex items-center gap-1.5 text-sm text-gray-600 dark:text-gray-400">
+                    <FaEnvelope className="text-gray-400 dark:text-gray-600 text-xs" /> {userProfile.email}
+                    {isOwner && !privacy.showEmail && <PrivateBadge />}
                   </span>
                 )}
-                {privacy.showPhone && userProfile.phone && (
-                  <span className="flex items-center gap-1.5 text-sm text-gray-400">
-                    <FaPhone className="text-gray-500 text-xs" /> +91 {userProfile.phone}
+                {show('showPhone') && userProfile.phone && (
+                  <span className="flex items-center gap-1.5 text-sm text-gray-600 dark:text-gray-400">
+                    <FaPhone className="text-gray-400 dark:text-gray-600 text-xs" /> +91 {userProfile.phone}
+                    {isOwner && !privacy.showPhone && <PrivateBadge />}
                   </span>
                 )}
               </div>
@@ -279,87 +371,81 @@ export default function PublicProfilePage() {
           </div>
         </motion.div>
 
-        {/* ═══════════════════════════════════════════════════════ */}
-        {/* SECTION 2: SKILL DNA STAT CARDS                        */}
-        {/* ═══════════════════════════════════════════════════════ */}
+        {/* ═══════════════════════════════════════════════ */}
+        {/* STAT CARDS                                      */}
+        {/* ═══════════════════════════════════════════════ */}
         {hasSkillDNA && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="grid grid-cols-2 md:grid-cols-4 gap-4"
-          >
+          <motion.div variants={fadeUp} className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {[
-              { label: 'Dynamic Score', value: skillDNAProfile!.dynamicSkillScore, suffix: '/1000', icon: FaTrophy, color: 'from-yellow-500 to-amber-500' },
-              { label: 'Skills Tracked', value: skillCount, suffix: '', icon: FaCode, color: 'from-purple-500 to-fuchsia-500' },
-              { label: 'Skill Clusters', value: clusterCount, suffix: '', icon: FaFire, color: 'from-orange-500 to-red-500' },
-              { label: 'Career Alignment', value: `${skillDNAProfile!.careerAlignmentScore}%`, suffix: '', icon: FaBullseye, color: 'from-green-500 to-emerald-500' },
+              { label: 'Dynamic Score', value: skillDNAProfile!.dynamicSkillScore, suffix: '/1000', icon: FaTrophy, gradient: 'from-yellow-500 to-amber-500' },
+              { label: 'Skills Tracked', value: skillCount, suffix: '', icon: FaCode, gradient: 'from-purple-500 to-fuchsia-500' },
+              { label: 'Skill Clusters', value: clusterCount, suffix: '', icon: FaFire, gradient: 'from-orange-500 to-red-500' },
+              { label: 'Career Alignment', value: `${skillDNAProfile!.careerAlignmentScore}%`, suffix: '', icon: FaBullseye, gradient: 'from-green-500 to-emerald-500' },
             ].map((s, i) => (
               <motion.div
                 key={s.label}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.15 + i * 0.05 }}
-                className="bg-white/[0.04] backdrop-blur-sm border border-white/[0.08] rounded-2xl p-5 text-center"
+                transition={{ delay: 0.3 + i * 0.08, duration: 0.5 }}
+                className="rounded-2xl p-5 text-center hover-lift cursor-default"
+                style={glassCard(isDark)}
               >
-                <div className={`w-10 h-10 mx-auto rounded-xl bg-gradient-to-br ${s.color} flex items-center justify-center text-white mb-3`}>
-                  <s.icon />
+                <div className={`w-10 h-10 mx-auto rounded-xl bg-gradient-to-br ${s.gradient} flex items-center justify-center text-white mb-3 shadow-lg`}>
+                  <s.icon className="text-sm" />
                 </div>
-                <p className="text-2xl font-bold text-white">
-                  {s.value}<span className="text-xs text-gray-500 font-normal">{s.suffix}</span>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                  {s.value}<span className="text-xs text-gray-400 font-normal">{s.suffix}</span>
                 </p>
-                <p className="text-xs text-gray-500 mt-0.5">{s.label}</p>
+                <p className="text-[11px] text-gray-500 mt-0.5 uppercase tracking-wider font-medium">{s.label}</p>
               </motion.div>
             ))}
           </motion.div>
         )}
 
-        {/* Two-column layout for main content */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* ═══════════════════════════════════════════════ */}
+        {/* TWO-COLUMN LAYOUT                               */}
+        {/* ═══════════════════════════════════════════════ */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
 
-          {/* ═══════════ LEFT COLUMN (2/3) ═══════════ */}
-          <div className="lg:col-span-2 space-y-6">
+          {/* ── LEFT COLUMN (2/3) ── */}
+          <div className="lg:col-span-2 space-y-5">
 
-            {/* ═══════════════════════════════════════════════════════ */}
-            {/* SECTION 3: ABOUT / EXPERIENCE                          */}
-            {/* ═══════════════════════════════════════════════════════ */}
+            {/* PAST EXPERIENCE */}
             {onboardingData?.pastExperience && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-                className="bg-white/[0.04] backdrop-blur-sm border border-white/[0.08] rounded-2xl p-6"
-              >
-                <h2 className="text-lg font-bold text-white mb-3 flex items-center gap-2">
-                  <FaHistory className="text-blue-400" /> Past Experience
+              <motion.div variants={fadeUp} className="rounded-[24px] p-6" style={glassCard(isDark)}>
+                <h2 className="text-base font-bold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+                  <FaHistory className="text-blue-500" /> Past Experience
                 </h2>
-                <p className="text-gray-400 text-sm leading-relaxed whitespace-pre-line">{onboardingData.pastExperience}</p>
+                <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed whitespace-pre-line">{onboardingData.pastExperience}</p>
               </motion.div>
             )}
 
-            {/* CURRENT LEARNING */}
-            {(onboardingData?.currentSituation || (skillDNAProfile?.learningPaths && skillDNAProfile.learningPaths.length > 0)) && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.25 }}
-                className="bg-white/[0.04] backdrop-blur-sm border border-white/[0.08] rounded-2xl p-6"
-              >
-                <h2 className="text-lg font-bold text-white mb-3 flex items-center gap-2">
-                  <FaRocket className="text-cyan-400" /> Currently Learning
+            {/* CURRENTLY LEARNING */}
+            {(onboardingData?.currentSituation || (skillDNAProfile?.technicalSkills?.filter(s => s.trend === 'rising').length ?? 0) > 0) && (
+              <motion.div variants={fadeUp} className="rounded-[24px] p-6" style={glassCard(isDark)}>
+                <h2 className="text-base font-bold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+                  <FaRocket className="text-cyan-500" /> Currently Learning
                 </h2>
                 {onboardingData?.currentSituation && (
-                  <p className="text-gray-400 text-sm leading-relaxed mb-4">{onboardingData.currentSituation}</p>
+                  <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed mb-4">{onboardingData.currentSituation}</p>
                 )}
-                {/* Rising skills */}
                 {skillDNAProfile?.technicalSkills?.filter(s => s.trend === 'rising').length! > 0 && (
-                  <div className="mt-3">
-                    <p className="text-xs text-gray-500 uppercase tracking-wider font-medium mb-2">Skills on the Rise</p>
+                  <div>
+                    <p className="text-[10px] text-gray-500 uppercase tracking-wider font-semibold mb-2">Skills on the Rise</p>
                     <div className="flex flex-wrap gap-2">
                       {skillDNAProfile!.technicalSkills.filter(s => s.trend === 'rising').map(s => (
-                        <span key={s.name} className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-lg bg-green-500/10 border border-green-500/20 text-green-400">
-                          <FaArrowUp className="text-[10px]" /> {s.name} ({s.score}%)
-                        </span>
+                        <motion.span
+                          key={s.name}
+                          whileHover={{ scale: 1.05 }}
+                          className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-xl font-medium"
+                          style={{
+                            background: isDark ? 'rgba(34,197,94,0.1)' : 'rgba(34,197,94,0.08)',
+                            border: `1px solid ${isDark ? 'rgba(34,197,94,0.2)' : 'rgba(34,197,94,0.15)'}`,
+                            color: isDark ? '#4ade80' : '#16a34a'
+                          }}
+                        >
+                          <FaArrowUp className="text-[9px]" /> {s.name} ({s.score}%)
+                        </motion.span>
                       ))}
                     </div>
                   </div>
@@ -369,51 +455,42 @@ export default function PublicProfilePage() {
 
             {/* FUTURE GOALS */}
             {(careerGoals || onboardingData?.futureAspiration) && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
-                className="bg-white/[0.04] backdrop-blur-sm border border-white/[0.08] rounded-2xl p-6"
-              >
-                <h2 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
-                  <FaMapSigns className="text-indigo-400" /> Future Goals
+              <motion.div variants={fadeUp} className="rounded-[24px] p-6" style={glassCard(isDark)}>
+                <h2 className="text-base font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                  <FaMapSigns className="text-indigo-500" /> Future Goals
                 </h2>
                 {onboardingData?.futureAspiration && (
-                  <p className="text-gray-400 text-sm leading-relaxed mb-4">{onboardingData.futureAspiration}</p>
+                  <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed mb-4">{onboardingData.futureAspiration}</p>
                 )}
                 {careerGoals && (
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                    {careerGoals.shortTerm && (
-                      <div className="p-4 rounded-xl bg-blue-500/5 border border-blue-500/10">
-                        <p className="text-[10px] text-blue-400 uppercase tracking-wider font-semibold mb-1">Short-Term</p>
-                        <p className="text-gray-300 text-sm">{careerGoals.shortTerm}</p>
+                    {[
+                      { label: 'Short-Term', value: careerGoals.shortTerm, color: 'blue' },
+                      { label: 'Mid-Term', value: careerGoals.midTerm, color: 'purple' },
+                      { label: 'Long-Term', value: careerGoals.longTerm, color: 'green' },
+                    ].filter(g => g.value).map(g => (
+                      <div key={g.label} className="p-4 rounded-2xl" style={glassCardSubtle(isDark)}>
+                        <p className={`text-[10px] uppercase tracking-wider font-semibold mb-1.5 text-${g.color}-500`}>{g.label}</p>
+                        <p className="text-gray-700 dark:text-gray-300 text-sm">{g.value}</p>
                       </div>
-                    )}
-                    {careerGoals.midTerm && (
-                      <div className="p-4 rounded-xl bg-purple-500/5 border border-purple-500/10">
-                        <p className="text-[10px] text-purple-400 uppercase tracking-wider font-semibold mb-1">Mid-Term</p>
-                        <p className="text-gray-300 text-sm">{careerGoals.midTerm}</p>
-                      </div>
-                    )}
-                    {careerGoals.longTerm && (
-                      <div className="p-4 rounded-xl bg-green-500/5 border border-green-500/10">
-                        <p className="text-[10px] text-green-400 uppercase tracking-wider font-semibold mb-1">Long-Term</p>
-                        <p className="text-gray-300 text-sm">{careerGoals.longTerm}</p>
-                      </div>
-                    )}
+                    ))}
                   </div>
                 )}
                 {careerGoals?.dreamRole && (
                   <div className="mt-4 flex items-center gap-2">
-                    <FaStar className="text-yellow-400 text-sm" />
-                    <span className="text-sm text-gray-400">Dream Role:</span>
-                    <span className="text-sm text-white font-medium">{careerGoals.dreamRole}</span>
+                    <FaStar className="text-yellow-500 text-sm" />
+                    <span className="text-sm text-gray-500 dark:text-gray-500">Dream Role:</span>
+                    <span className="text-sm text-gray-900 dark:text-white font-semibold">{careerGoals.dreamRole}</span>
                   </div>
                 )}
                 {careerGoals?.targetIndustries && careerGoals.targetIndustries.length > 0 && (
-                  <div className="mt-2 flex flex-wrap gap-1.5">
+                  <div className="mt-3 flex flex-wrap gap-1.5">
                     {careerGoals.targetIndustries.map(ind => (
-                      <span key={ind} className="text-xs px-2 py-0.5 rounded-md bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">
+                      <span key={ind} className="text-xs px-2.5 py-1 rounded-xl font-medium" style={{
+                        background: isDark ? 'rgba(99,102,241,0.1)' : 'rgba(99,102,241,0.08)',
+                        border: `1px solid ${isDark ? 'rgba(99,102,241,0.2)' : 'rgba(99,102,241,0.12)'}`,
+                        color: isDark ? '#a5b4fc' : '#4f46e5'
+                      }}>
                         {ind}
                       </span>
                     ))}
@@ -422,38 +499,38 @@ export default function PublicProfilePage() {
               </motion.div>
             )}
 
-            {/* TECHNICAL SKILLS BREAKDOWN */}
+            {/* TECHNICAL SKILLS */}
             {hasSkillDNA && skillDNAProfile!.technicalSkills.length > 0 && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.35 }}
-                className="bg-white/[0.04] backdrop-blur-sm border border-white/[0.08] rounded-2xl p-6"
-              >
-                <h2 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
-                  <FaCode className="text-purple-400" /> Technical Skills
+              <motion.div variants={fadeUp} className="rounded-[24px] p-6" style={glassCard(isDark)}>
+                <h2 className="text-base font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                  <FaCode className="text-purple-500" /> Technical Skills
                 </h2>
                 <div className="space-y-3">
                   {skillDNAProfile!.technicalSkills.map((skill, i) => (
-                    <div key={skill.name}>
+                    <motion.div
+                      key={skill.name}
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.4 + i * 0.04 }}
+                    >
                       <div className="flex items-center justify-between mb-1">
                         <div className="flex items-center gap-2">
-                          <span className="text-sm font-medium text-white">{skill.name}</span>
-                          <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-white/[0.06] text-gray-500">{skill.category}</span>
-                          {skill.trend === 'rising' && <span className="text-green-400 text-xs">↑</span>}
-                          {skill.trend === 'declining' && <span className="text-red-400 text-xs">↓</span>}
+                          <span className="text-sm font-medium text-gray-800 dark:text-white">{skill.name}</span>
+                          <span className="text-[10px] px-1.5 py-0.5 rounded-lg font-medium" style={glassCardSubtle(isDark)}>{skill.category}</span>
+                          {skill.trend === 'rising' && <span className="text-green-500 text-xs">↑</span>}
+                          {skill.trend === 'declining' && <span className="text-red-500 text-xs">↓</span>}
                         </div>
                         <span className={`text-sm font-bold ${getScoreColor(skill.score)}`}>{skill.score}%</span>
                       </div>
-                      <div className="h-2 bg-white/[0.06] rounded-full overflow-hidden">
+                      <div className="h-2 rounded-full overflow-hidden" style={{ background: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)' }}>
                         <motion.div
                           className={`h-full bg-gradient-to-r ${getScoreGradient(skill.score)} rounded-full`}
                           initial={{ width: 0 }}
                           animate={{ width: `${skill.score}%` }}
-                          transition={{ duration: 0.8, delay: 0.4 + i * 0.04 }}
+                          transition={{ duration: 0.8, delay: 0.5 + i * 0.04, ease: [0.25, 0.46, 0.45, 0.94] }}
                         />
                       </div>
-                    </div>
+                    </motion.div>
                   ))}
                 </div>
               </motion.div>
@@ -461,33 +538,26 @@ export default function PublicProfilePage() {
 
             {/* BEHAVIORAL TRAITS */}
             {hasSkillDNA && skillDNAProfile!.behavioralTraits.length > 0 && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 }}
-                className="bg-white/[0.04] backdrop-blur-sm border border-white/[0.08] rounded-2xl p-6"
-              >
-                <h2 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
-                  <FaLightbulb className="text-amber-400" /> Behavioral Profile
+              <motion.div variants={fadeUp} className="rounded-[24px] p-6" style={glassCard(isDark)}>
+                <h2 className="text-base font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                  <FaLightbulb className="text-amber-500" /> Behavioral Profile
                 </h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {skillDNAProfile!.behavioralTraits.map((trait, i) => (
-                    <div key={trait.name} className="flex items-center gap-3">
-                      <div className="flex-1">
-                        <div className="flex justify-between mb-1">
-                          <span className="text-sm font-medium text-gray-300">{trait.name}</span>
-                          <span className={`text-sm font-bold ${getScoreColor(trait.score)}`}>{trait.score}%</span>
-                        </div>
-                        <div className="h-1.5 bg-white/[0.06] rounded-full overflow-hidden">
-                          <motion.div
-                            className={`h-full bg-gradient-to-r ${getScoreGradient(trait.score)} rounded-full`}
-                            initial={{ width: 0 }}
-                            animate={{ width: `${trait.score}%` }}
-                            transition={{ duration: 0.8, delay: 0.45 + i * 0.05 }}
-                          />
-                        </div>
-                        <p className="text-[10px] text-gray-600 mt-0.5">{trait.description}</p>
+                    <div key={trait.name}>
+                      <div className="flex justify-between mb-1">
+                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{trait.name}</span>
+                        <span className={`text-sm font-bold ${getScoreColor(trait.score)}`}>{trait.score}%</span>
                       </div>
+                      <div className="h-1.5 rounded-full overflow-hidden" style={{ background: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)' }}>
+                        <motion.div
+                          className={`h-full bg-gradient-to-r ${getScoreGradient(trait.score)} rounded-full`}
+                          initial={{ width: 0 }}
+                          animate={{ width: `${trait.score}%` }}
+                          transition={{ duration: 0.8, delay: 0.5 + i * 0.05 }}
+                        />
+                      </div>
+                      <p className="text-[10px] text-gray-500 mt-0.5">{trait.description}</p>
                     </div>
                   ))}
                 </div>
@@ -497,34 +567,39 @@ export default function PublicProfilePage() {
             {/* AI RECOMMENDATIONS */}
             {hasSkillDNA && (skillDNAProfile!.skillGaps.length > 0 || skillDNAProfile!.learningPaths.length > 0) && (
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.45 }}
-                className="bg-gradient-to-br from-purple-500/5 to-blue-500/5 backdrop-blur-sm border border-purple-500/10 rounded-2xl p-6"
+                variants={fadeUp}
+                className="rounded-[24px] p-6"
+                style={{
+                  ...glassCard(isDark),
+                  background: isDark
+                    ? 'linear-gradient(135deg, rgba(139,92,246,0.08), rgba(59,130,246,0.06))'
+                    : 'linear-gradient(135deg, rgba(139,92,246,0.06), rgba(59,130,246,0.04))',
+                }}
               >
-                <h2 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
-                  <FaBrain className="text-purple-400" /> AI Recommendations
+                <h2 className="text-base font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                  <FaBrain className="text-purple-500" /> AI Recommendations
                 </h2>
 
-                {/* Skill Gaps */}
                 {skillDNAProfile!.skillGaps.length > 0 && (
                   <div className="mb-6">
-                    <p className="text-xs text-gray-500 uppercase tracking-wider font-medium mb-3">Priority Skill Gaps</p>
+                    <p className="text-[10px] text-gray-500 uppercase tracking-wider font-semibold mb-3">Priority Skill Gaps</p>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                       {skillDNAProfile!.skillGaps.slice(0, 4).map(gap => {
-                        const priorityColor = gap.priority === 'high' ? 'text-red-400 bg-red-500/10 border-red-500/20' :
-                          gap.priority === 'medium' ? 'text-yellow-400 bg-yellow-500/10 border-yellow-500/20' :
-                            'text-blue-400 bg-blue-500/10 border-blue-500/20'
+                        const pColors = gap.priority === 'high'
+                          ? { bg: isDark ? 'rgba(239,68,68,0.08)' : 'rgba(239,68,68,0.06)', border: isDark ? 'rgba(239,68,68,0.2)' : 'rgba(239,68,68,0.12)', text: isDark ? '#f87171' : '#dc2626' }
+                          : gap.priority === 'medium'
+                            ? { bg: isDark ? 'rgba(245,158,11,0.08)' : 'rgba(245,158,11,0.06)', border: isDark ? 'rgba(245,158,11,0.2)' : 'rgba(245,158,11,0.12)', text: isDark ? '#fbbf24' : '#d97706' }
+                            : { bg: isDark ? 'rgba(59,130,246,0.08)' : 'rgba(59,130,246,0.06)', border: isDark ? 'rgba(59,130,246,0.2)' : 'rgba(59,130,246,0.12)', text: isDark ? '#60a5fa' : '#2563eb' }
                         return (
-                          <div key={gap.skill} className={`p-3 rounded-xl border ${priorityColor.split(' ').slice(1).join(' ')}`}>
+                          <div key={gap.skill} className="p-3 rounded-2xl" style={{ background: pColors.bg, border: `1px solid ${pColors.border}` }}>
                             <div className="flex items-center justify-between mb-1">
-                              <span className="text-sm font-medium text-white">{gap.skill}</span>
-                              <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${priorityColor}`}>
+                              <span className="text-sm font-medium text-gray-800 dark:text-white">{gap.skill}</span>
+                              <span className="text-[10px] px-1.5 py-0.5 rounded-full font-semibold" style={{ color: pColors.text, background: `${pColors.bg}` }}>
                                 {gap.priority.toUpperCase()}
                               </span>
                             </div>
-                            <p className="text-xs text-gray-500">
-                              Current: {gap.currentLevel}% → Required: {gap.requiredLevel}%
+                            <p className="text-[11px] text-gray-500">
+                              {gap.currentLevel}% → {gap.requiredLevel}%
                             </p>
                           </div>
                         )
@@ -533,28 +608,24 @@ export default function PublicProfilePage() {
                   </div>
                 )}
 
-                {/* Learning Paths */}
                 {skillDNAProfile!.learningPaths.length > 0 && (
                   <div>
-                    <p className="text-xs text-gray-500 uppercase tracking-wider font-medium mb-3">Recommended Learning Paths</p>
+                    <p className="text-[10px] text-gray-500 uppercase tracking-wider font-semibold mb-3">Recommended Paths</p>
                     <div className="space-y-3">
                       {skillDNAProfile!.learningPaths.slice(0, 3).map(path => (
-                        <div key={path.title} className="p-4 rounded-xl bg-white/[0.03] border border-white/[0.06]">
+                        <div key={path.title} className="p-4 rounded-2xl" style={glassCardSubtle(isDark)}>
                           <div className="flex items-start justify-between mb-2">
-                            <h4 className="text-sm font-bold text-white">{path.title}</h4>
-                            <div className="flex items-center gap-2 flex-shrink-0">
-                              <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/[0.06] text-gray-400">
-                                <FaClock className="inline mr-0.5" /> {path.estimatedDuration}
-                              </span>
-                              <span className="text-[10px] px-2 py-0.5 rounded-full bg-purple-500/10 text-purple-400">
-                                <FaSignal className="inline mr-0.5" /> {path.difficulty}
+                            <h4 className="text-sm font-bold text-gray-800 dark:text-white">{path.title}</h4>
+                            <div className="flex items-center gap-1.5 flex-shrink-0 ml-2">
+                              <span className="text-[10px] px-2 py-0.5 rounded-full font-medium" style={glassCardSubtle(isDark)}>
+                                <FaClock className="inline mr-0.5 text-[8px]" /> {path.estimatedDuration}
                               </span>
                             </div>
                           </div>
-                          <p className="text-xs text-gray-500 mb-2">{path.description}</p>
+                          <p className="text-[11px] text-gray-500 dark:text-gray-500 mb-2">{path.description}</p>
                           <div className="flex flex-wrap gap-1">
                             {path.relatedSkills.map(s => (
-                              <span key={s} className="text-[10px] px-1.5 py-0.5 rounded bg-white/[0.06] text-gray-400">{s}</span>
+                              <span key={s} className="text-[10px] px-1.5 py-0.5 rounded-lg font-medium" style={glassCardSubtle(isDark)}>{s}</span>
                             ))}
                           </div>
                         </div>
@@ -566,84 +637,84 @@ export default function PublicProfilePage() {
             )}
           </div>
 
-          {/* ═══════════ RIGHT COLUMN (1/3) ═══════════ */}
-          <div className="space-y-6">
+          {/* ── RIGHT COLUMN (1/3) ── */}
+          <div className="space-y-5">
 
-            {/* AI PERSONA CARD */}
+            {/* AI PERSONA */}
             {hasSkillDNA && skillDNAProfile!.persona && (
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-                className="bg-gradient-to-br from-purple-500/10 via-white/[0.03] to-blue-500/10 backdrop-blur-sm border border-purple-500/15 rounded-2xl p-6"
+                variants={fadeUp}
+                className="rounded-[24px] p-6 relative overflow-hidden"
+                style={{
+                  ...glassCard(isDark),
+                  background: isDark
+                    ? 'linear-gradient(145deg, rgba(139,92,246,0.1), rgba(59,130,246,0.06), rgba(30,30,50,0.4))'
+                    : 'linear-gradient(145deg, rgba(139,92,246,0.08), rgba(59,130,246,0.04), rgba(255,255,255,0.5))',
+                }}
               >
-                <h3 className="text-sm font-bold text-white mb-3 flex items-center gap-2">
-                  <FaBrain className="text-purple-400" /> AI Persona
-                </h3>
-                <h4 className="text-lg font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent mb-2">
-                  {skillDNAProfile!.persona.headline}
-                </h4>
-                <p className="text-xs text-gray-400 leading-relaxed mb-4">{skillDNAProfile!.persona.description}</p>
+                {/* Glass shimmer */}
+                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-purple-500/10 to-transparent rounded-full blur-2xl" />
+                <div className="relative z-10">
+                  <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+                    <FaBrain className="text-purple-500" /> AI Persona
+                  </h3>
+                  <h4 className="text-lg font-bold bg-gradient-to-r from-purple-500 to-blue-500 bg-clip-text text-transparent mb-2">
+                    {skillDNAProfile!.persona.headline}
+                  </h4>
+                  <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed mb-4">{skillDNAProfile!.persona.description}</p>
 
-                <div className="space-y-3">
-                  <div>
-                    <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">Personality Type</p>
-                    <p className="text-sm text-white font-medium">{skillDNAProfile!.persona.personalityType}</p>
-                  </div>
-
-                  <div>
-                    <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">Strengths</p>
-                    <div className="space-y-1">
-                      {skillDNAProfile!.persona.strengths.map(s => (
-                        <p key={s} className="text-xs text-gray-300 flex items-center gap-1.5">
-                          <span className="text-green-400">+</span> {s}
-                        </p>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div>
-                    <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">Growth Areas</p>
-                    <div className="space-y-1">
-                      {skillDNAProfile!.persona.areasForGrowth.map(a => (
-                        <p key={a} className="text-xs text-gray-300 flex items-center gap-1.5">
-                          <span className="text-amber-400">↗</span> {a}
-                        </p>
-                      ))}
-                    </div>
-                  </div>
-
-                  {skillDNAProfile!.persona.careerFit.length > 0 && (
+                  <div className="space-y-3">
                     <div>
-                      <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">Career Fit</p>
-                      <div className="flex flex-wrap gap-1">
-                        {skillDNAProfile!.persona.careerFit.map(fit => (
-                          <span key={fit} className="text-[10px] px-2 py-0.5 rounded-md bg-blue-500/10 text-blue-300 border border-blue-500/20">
-                            {fit}
-                          </span>
-                        ))}
-                      </div>
+                      <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1 font-semibold">Type</p>
+                      <p className="text-sm text-gray-800 dark:text-white font-medium">{skillDNAProfile!.persona.personalityType}</p>
                     </div>
-                  )}
+                    <div>
+                      <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1 font-semibold">Strengths</p>
+                      {skillDNAProfile!.persona.strengths.map(s => (
+                        <p key={s} className="text-xs text-gray-600 dark:text-gray-300 flex items-center gap-1.5 mb-0.5">
+                          <span className="text-green-500 font-bold">+</span> {s}
+                        </p>
+                      ))}
+                    </div>
+                    <div>
+                      <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1 font-semibold">Growth</p>
+                      {skillDNAProfile!.persona.areasForGrowth.map(a => (
+                        <p key={a} className="text-xs text-gray-600 dark:text-gray-300 flex items-center gap-1.5 mb-0.5">
+                          <span className="text-amber-500 font-bold">↗</span> {a}
+                        </p>
+                      ))}
+                    </div>
+                    {skillDNAProfile!.persona.careerFit.length > 0 && (
+                      <div>
+                        <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1.5 font-semibold">Career Fit</p>
+                        <div className="flex flex-wrap gap-1">
+                          {skillDNAProfile!.persona.careerFit.map(fit => (
+                            <span key={fit} className="text-[10px] px-2 py-0.5 rounded-xl font-medium" style={{
+                              background: isDark ? 'rgba(59,130,246,0.1)' : 'rgba(59,130,246,0.08)',
+                              border: `1px solid ${isDark ? 'rgba(59,130,246,0.2)' : 'rgba(59,130,246,0.12)'}`,
+                              color: isDark ? '#93c5fd' : '#2563eb'
+                            }}>
+                              {fit}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </motion.div>
             )}
 
             {/* ACHIEVEMENTS */}
             {achievements.length > 0 && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.25 }}
-                className="bg-white/[0.04] backdrop-blur-sm border border-white/[0.08] rounded-2xl p-6"
-              >
-                <h3 className="text-sm font-bold text-white mb-3 flex items-center gap-2">
-                  <FaAward className="text-yellow-400" /> Achievements
+              <motion.div variants={fadeUp} className="rounded-[24px] p-6" style={glassCard(isDark)}>
+                <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+                  <FaAward className="text-yellow-500" /> Achievements
                 </h3>
                 <div className="space-y-2">
                   {achievements.map((ach, i) => (
-                    <div key={i} className="flex items-start gap-2 text-xs text-gray-300">
-                      <FaCheckCircle className="text-yellow-400 text-[10px] mt-0.5 flex-shrink-0" />
+                    <div key={i} className="flex items-start gap-2 text-xs text-gray-600 dark:text-gray-300">
+                      <FaCheckCircle className="text-yellow-500 text-[10px] mt-0.5 flex-shrink-0" />
                       <span>{ach}</span>
                     </div>
                   ))}
@@ -653,67 +724,51 @@ export default function PublicProfilePage() {
 
             {/* EDUCATION */}
             {onboardingData?.academic && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
-                className="bg-white/[0.04] backdrop-blur-sm border border-white/[0.08] rounded-2xl p-6"
-              >
-                <h3 className="text-sm font-bold text-white mb-3 flex items-center gap-2">
-                  <FaUserGraduate className="text-blue-400" /> Education
+              <motion.div variants={fadeUp} className="rounded-[24px] p-6" style={glassCard(isDark)}>
+                <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+                  <FaUserGraduate className="text-blue-500" /> Education
                 </h3>
                 <div className="space-y-1">
-                  {onboardingData.academic.degree && (
-                    <p className="text-sm text-white font-medium">{onboardingData.academic.degree}</p>
-                  )}
-                  {onboardingData.academic.field && (
-                    <p className="text-xs text-gray-400">{onboardingData.academic.field}</p>
-                  )}
-                  {onboardingData.academic.institution && (
-                    <p className="text-xs text-gray-500">{onboardingData.academic.institution}</p>
-                  )}
-                  {onboardingData.academic.year && (
-                    <p className="text-xs text-gray-500">Class of {onboardingData.academic.year}</p>
-                  )}
-                  {onboardingData.academic.gpa && (
-                    <p className="text-xs text-gray-500">GPA: {onboardingData.academic.gpa}</p>
-                  )}
+                  {onboardingData.academic.degree && <p className="text-sm text-gray-800 dark:text-white font-medium">{onboardingData.academic.degree}</p>}
+                  {onboardingData.academic.field && <p className="text-xs text-gray-600 dark:text-gray-400">{onboardingData.academic.field}</p>}
+                  {onboardingData.academic.institution && <p className="text-xs text-gray-500">{onboardingData.academic.institution}</p>}
+                  {onboardingData.academic.year && <p className="text-xs text-gray-500">Class of {onboardingData.academic.year}</p>}
+                  {onboardingData.academic.gpa && <p className="text-xs text-gray-500">GPA: {onboardingData.academic.gpa}</p>}
                 </div>
               </motion.div>
             )}
 
-            {/* LANGUAGES / INTERESTS */}
+            {/* LANGUAGES & INTERESTS */}
             {(languagesKnown.length > 0 || (onboardingData?.interests && onboardingData.interests.length > 0)) && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.35 }}
-                className="bg-white/[0.04] backdrop-blur-sm border border-white/[0.08] rounded-2xl p-6"
-              >
+              <motion.div variants={fadeUp} className="rounded-[24px] p-6" style={glassCard(isDark)}>
                 {languagesKnown.length > 0 && (
                   <div className="mb-4">
-                    <h3 className="text-sm font-bold text-white mb-2 flex items-center gap-2">
-                      <FaLanguage className="text-cyan-400" /> Languages & Tools
+                    <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
+                      <FaLanguage className="text-cyan-500" /> Languages
                     </h3>
                     <div className="flex flex-wrap gap-1.5">
                       {languagesKnown.map(l => (
-                        <span key={l} className="text-xs px-2 py-0.5 rounded-md bg-cyan-500/10 text-cyan-300 border border-cyan-500/20">
-                          {l}
-                        </span>
+                        <span key={l} className="text-[10px] px-2 py-0.5 rounded-xl font-medium" style={{
+                          background: isDark ? 'rgba(6,182,212,0.1)' : 'rgba(6,182,212,0.08)',
+                          border: `1px solid ${isDark ? 'rgba(6,182,212,0.2)' : 'rgba(6,182,212,0.12)'}`,
+                          color: isDark ? '#67e8f9' : '#0891b2'
+                        }}>{l}</span>
                       ))}
                     </div>
                   </div>
                 )}
                 {onboardingData?.interests && onboardingData.interests.length > 0 && (
                   <div>
-                    <h3 className="text-sm font-bold text-white mb-2 flex items-center gap-2">
-                      <FaStar className="text-pink-400" /> Interests
+                    <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
+                      <FaStar className="text-pink-500" /> Interests
                     </h3>
                     <div className="flex flex-wrap gap-1.5">
                       {onboardingData.interests.map(int => (
-                        <span key={int} className="text-xs px-2 py-0.5 rounded-md bg-pink-500/10 text-pink-300 border border-pink-500/20">
-                          {int}
-                        </span>
+                        <span key={int} className="text-[10px] px-2 py-0.5 rounded-xl font-medium" style={{
+                          background: isDark ? 'rgba(236,72,153,0.1)' : 'rgba(236,72,153,0.08)',
+                          border: `1px solid ${isDark ? 'rgba(236,72,153,0.2)' : 'rgba(236,72,153,0.12)'}`,
+                          color: isDark ? '#f9a8d4' : '#db2777'
+                        }}>{int}</span>
                       ))}
                     </div>
                   </div>
@@ -723,26 +778,24 @@ export default function PublicProfilePage() {
 
             {/* SKILL CLUSTERS */}
             {hasSkillDNA && skillDNAProfile!.skillClusters.length > 0 && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 }}
-                className="bg-white/[0.04] backdrop-blur-sm border border-white/[0.08] rounded-2xl p-6"
-              >
-                <h3 className="text-sm font-bold text-white mb-3 flex items-center gap-2">
-                  <FaChartLine className="text-green-400" /> Skill Clusters
+              <motion.div variants={fadeUp} className="rounded-[24px] p-6" style={glassCard(isDark)}>
+                <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+                  <FaChartLine className="text-green-500" /> Skill Clusters
                 </h3>
                 <div className="space-y-3">
                   {skillDNAProfile!.skillClusters.map(cluster => (
-                    <div key={cluster.name} className="p-3 rounded-xl bg-white/[0.03] border border-white/[0.06]">
+                    <div key={cluster.name} className="p-3 rounded-2xl" style={glassCardSubtle(isDark)}>
                       <div className="flex items-center justify-between mb-1">
-                        <span className="text-xs font-bold text-white">{cluster.name}</span>
+                        <span className="text-xs font-bold text-gray-800 dark:text-white">{cluster.name}</span>
                         <span className={`text-xs font-bold ${getScoreColor(cluster.strength)}`}>{cluster.strength}%</span>
                       </div>
                       <p className="text-[10px] text-gray-500 mb-2">{cluster.description}</p>
                       <div className="flex flex-wrap gap-1">
                         {cluster.skills.map(s => (
-                          <span key={s} className="text-[10px] px-1.5 py-0.5 rounded bg-purple-500/10 text-purple-300">{s}</span>
+                          <span key={s} className="text-[10px] px-1.5 py-0.5 rounded-lg font-medium" style={{
+                            background: isDark ? 'rgba(139,92,246,0.1)' : 'rgba(139,92,246,0.08)',
+                            color: isDark ? '#c4b5fd' : '#7c3aed'
+                          }}>{s}</span>
                         ))}
                       </div>
                     </div>
@@ -751,36 +804,31 @@ export default function PublicProfilePage() {
               </motion.div>
             )}
 
-            {/* SCORE GAUGES */}
+            {/* SCORE SUMMARY */}
             {hasSkillDNA && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.45 }}
-                className="bg-white/[0.04] backdrop-blur-sm border border-white/[0.08] rounded-2xl p-6"
-              >
-                <h3 className="text-sm font-bold text-white mb-3 flex items-center gap-2">
-                  <FaTrophy className="text-yellow-400" /> Score Summary
+              <motion.div variants={fadeUp} className="rounded-[24px] p-6" style={glassCard(isDark)}>
+                <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+                  <FaTrophy className="text-yellow-500" /> Scores
                 </h3>
                 <div className="space-y-3">
                   {[
-                    { label: 'Cognitive Score', value: skillDNAProfile!.cognitiveScore, icon: FaBrain, color: 'from-purple-500 to-fuchsia-500' },
-                    { label: 'Learning Velocity', value: skillDNAProfile!.learningVelocity, icon: FaRocket, color: 'from-blue-500 to-cyan-500' },
-                    { label: 'Career Alignment', value: skillDNAProfile!.careerAlignmentScore, icon: FaBullseye, color: 'from-green-500 to-emerald-500' },
-                  ].map(score => (
-                    <div key={score.label}>
+                    { label: 'Cognitive', value: skillDNAProfile!.cognitiveScore, icon: FaBrain, gradient: 'from-purple-500 to-fuchsia-500' },
+                    { label: 'Learning Speed', value: skillDNAProfile!.learningVelocity, icon: FaRocket, gradient: 'from-blue-500 to-cyan-500' },
+                    { label: 'Career Match', value: skillDNAProfile!.careerAlignmentScore, icon: FaBullseye, gradient: 'from-green-500 to-emerald-500' },
+                  ].map(s => (
+                    <div key={s.label}>
                       <div className="flex items-center justify-between mb-1">
-                        <span className="text-xs text-gray-400 flex items-center gap-1.5">
-                          <score.icon className="text-[10px]" /> {score.label}
+                        <span className="text-xs text-gray-600 dark:text-gray-400 flex items-center gap-1.5">
+                          <s.icon className="text-[10px]" /> {s.label}
                         </span>
-                        <span className="text-xs font-bold text-white">{score.value}/100</span>
+                        <span className="text-xs font-bold text-gray-800 dark:text-white">{s.value}/100</span>
                       </div>
-                      <div className="h-1.5 bg-white/[0.06] rounded-full overflow-hidden">
+                      <div className="h-1.5 rounded-full overflow-hidden" style={{ background: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)' }}>
                         <motion.div
-                          className={`h-full bg-gradient-to-r ${score.color} rounded-full`}
+                          className={`h-full bg-gradient-to-r ${s.gradient} rounded-full`}
                           initial={{ width: 0 }}
-                          animate={{ width: `${score.value}%` }}
-                          transition={{ duration: 0.8, delay: 0.5 }}
+                          animate={{ width: `${s.value}%` }}
+                          transition={{ duration: 1, delay: 0.6 }}
                         />
                       </div>
                     </div>
@@ -791,25 +839,20 @@ export default function PublicProfilePage() {
           </div>
         </div>
 
-        {/* ═══════════════════════════════════════════════════════ */}
-        {/* FOOTER BRANDING                                        */}
-        {/* ═══════════════════════════════════════════════════════ */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.5 }}
-          className="text-center py-6 border-t border-white/[0.06]"
-        >
-          <p className="text-xs text-gray-600">
-            Profile powered by <span className="font-semibold text-gray-400">matriXO</span> · <span className="font-semibold text-purple-400">SkillDNA™</span>
+        {/* ═══════════════════════════════════════════════ */}
+        {/* FOOTER                                          */}
+        {/* ═══════════════════════════════════════════════ */}
+        <motion.div variants={fadeUp} className="text-center py-6" style={{ borderTop: `1px solid ${isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'}` }}>
+          <p className="text-xs text-gray-500">
+            Profile on <span className="font-semibold text-gray-700 dark:text-gray-300">matriXO</span> · <span className="font-semibold text-purple-500">SkillDNA™</span>
           </p>
           {hasSkillDNA && (
-            <p className="text-[10px] text-gray-700 mt-1">
-              Last analyzed: {new Date(skillDNAProfile!.lastUpdated).toLocaleDateString()} · v{skillDNAProfile!.version} · Score: {skillDNAProfile!.dynamicSkillScore}/1000 ({getScoreGrade(skillDNAProfile!.dynamicSkillScore, 1000)})
+            <p className="text-[10px] text-gray-400 dark:text-gray-600 mt-1">
+              v{skillDNAProfile!.version} · {getScoreGrade(skillDNAProfile!.dynamicSkillScore, 1000)} · {new Date(skillDNAProfile!.lastUpdated).toLocaleDateString()}
             </p>
           )}
         </motion.div>
-      </div>
+      </motion.div>
     </div>
   )
 }

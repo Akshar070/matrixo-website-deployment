@@ -192,8 +192,8 @@ export function AttendanceMarker({ onAttendanceMarked }: { onAttendanceMarked?: 
   const todayDayOfWeek = new Date().getDay() // 0 = Sunday, 6 = Saturday
   const todayDayName = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][todayDayOfWeek]
   const hasWorkingDayOverride = holidays.some(h => h.date === todayString && h.name === '__WORKING_DAY__')
-  const isWeekend = (todayDayOfWeek === 0 || todayDayOfWeek === 6) && !hasWorkingDayOverride
-  const isTodayOff = isTodayHoliday || isWeekend
+  const isSunday = todayDayOfWeek === 0 && !hasWorkingDayOverride // Only Sunday is auto-holiday (Saturday is working day)
+  const isTodayOff = (isTodayHoliday || isSunday) && !hasWorkingDayOverride
 
   // Update time every second
   useEffect(() => {
@@ -512,7 +512,7 @@ export function AttendanceMarker({ onAttendanceMarked }: { onAttendanceMarked?: 
     )
   }
 
-  // If today is a holiday or weekend, show notice
+  // If today is a holiday or Sunday, show notice
   if (isTodayOff) {
     return (
       <Card padding="lg" glow>
@@ -520,11 +520,11 @@ export function AttendanceMarker({ onAttendanceMarked }: { onAttendanceMarked?: 
           <div className="w-20 h-20 rounded-full bg-purple-500/20 flex items-center justify-center mx-auto mb-4">
             <FaPlane className="text-4xl text-purple-400" />
           </div>
-          {isWeekend ? (
+          {isSunday && !isTodayHoliday ? (
             <>
-              <h2 className="text-2xl font-bold text-white mb-2">It's {todayDayName}! 🌟</h2>
+              <h2 className="text-2xl font-bold text-white mb-2">It's Sunday! 🌟</h2>
               <p className="text-neutral-400 mb-4">
-                Enjoy your weekend — no attendance required!
+                Enjoy your day off — no attendance required!
               </p>
             </>
           ) : (
@@ -539,7 +539,7 @@ export function AttendanceMarker({ onAttendanceMarked }: { onAttendanceMarked?: 
             </>
           )}
           <Badge variant="warning" className="mt-4">
-            Attendance marking is disabled for {isWeekend ? 'weekends' : 'holidays'}
+            Attendance marking is disabled for {isSunday && !isTodayHoliday ? 'Sundays' : 'holidays'}
           </Badge>
         </div>
       </Card>

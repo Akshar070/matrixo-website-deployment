@@ -317,7 +317,7 @@ function AddEventModal({
 // ============================================
 
 export function Calendar() {
-  const { employee, holidays, calendarEvents, isHoliday, deleteCalendarEvent, deleteHoliday } = useEmployeeAuth()
+  const { employee, holidays, calendarEvents, isHoliday, addHoliday, deleteCalendarEvent, deleteHoliday } = useEmployeeAuth()
   const [currentDate, setCurrentDate] = useState(new Date())
   const [showAddHoliday, setShowAddHoliday] = useState(false)
   const [showAddEvent, setShowAddEvent] = useState(false)
@@ -327,6 +327,7 @@ export function Calendar() {
   const [viewMode, setViewMode] = useState<'month' | 'list'>('month')
   // State for the day details panel (right side)
   const [panelSelectedDay, setPanelSelectedDay] = useState<CalendarDay | null>(null)
+  const [togglingWorkingDay, setTogglingWorkingDay] = useState(false)
 
   const isAdmin = employee?.role === 'admin'
 
@@ -521,6 +522,33 @@ export function Calendar() {
     }
   }
 
+  // Toggle a day between working day and holiday (admin only)
+  const handleToggleWorkingDay = async (day: CalendarDay) => {
+    if (!isAdmin) return
+    setTogglingWorkingDay(true)
+    try {
+      const workingDayOverride = holidays.find(h => h.date === day.dateString && h.name === '__WORKING_DAY__')
+      if (workingDayOverride) {
+        // Currently marked as working day — remove override to restore holiday/Sunday status
+        await deleteHoliday(workingDayOverride.id!)
+        toast.success('Day restored as holiday/off day')
+      } else {
+        // Mark as working day override
+        await addHoliday({
+          date: day.dateString,
+          name: '__WORKING_DAY__',
+          description: 'Admin override: marked as working day',
+          type: 'company'
+        })
+        toast.success('Day marked as working day — attendance is now enabled')
+      }
+    } catch (error) {
+      toast.error('Failed to update day status')
+    } finally {
+      setTogglingWorkingDay(false)
+    }
+  }
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -692,6 +720,47 @@ export function Calendar() {
                     </Button>
                   )}
                 </div>
+
+                {/* Admin: Toggle Working Day / Holiday */}
+                {isAdmin && (panelDisplayDay.date.getDay() === 0 || panelDisplayDay.holiday) && (() => {
+                  const hasOverride = holidays.some(h => h.date === panelDisplayDay.dateString && h.name === '__WORKING_DAY__')
+                  const isSunday = panelDisplayDay.date.getDay() === 0
+                  return (
+                    <div className="mb-3 pb-3 border-b border-neutral-800">
+                      <button
+                        onClick={() => handleToggleWorkingDay(panelDisplayDay)}
+                        disabled={togglingWorkingDay}
+                        className={`w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all ${
+                          hasOverride
+                            ? 'bg-amber-500/20 border border-amber-500/40 text-amber-300 hover:bg-amber-500/30'
+                            : 'bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 hover:bg-emerald-500/30'
+                        } disabled:opacity-50 disabled:cursor-not-allowed`}
+                      >
+                        {togglingWorkingDay ? (
+                          <>
+                            <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                            Updating...
+                          </>
+                        ) : hasOverride ? (
+                          <>
+                            <FaUmbrellaBeach />
+                            Restore as {isSunday ? 'Sunday Off' : 'Holiday'}
+                          </>
+                        ) : (
+                          <>
+                            <FaBriefcase />
+                            Mark as Working Day
+                          </>
+                        )}
+                      </button>
+                      {hasOverride && (
+                        <p className="text-xs text-emerald-400/70 text-center mt-1.5">
+                          ✓ This day has been marked as a working day by admin
+                        </p>
+                      )}
+                    </div>
+                  )
+                })()}
 
                 {/* Day Content */}
                 <div className="flex-1 overflow-y-auto">

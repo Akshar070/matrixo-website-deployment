@@ -11,15 +11,20 @@ import { toast } from 'sonner'
 import config from '@/lib/config'
 import { getFirestore, collection, query, where, getDocs } from 'firebase/firestore'
 
-const navLinks = [
+const navLinksBeforeFeatures = [
   { name: 'Home', href: '/' },
-  { name: 'Events', href: '/events' },
-  { name: 'Services', href: '/services' },
   { name: 'About', href: '/about' },
   { name: 'Team', href: '/team' },
-  { name: 'Contact', href: '/contact' },
-  { name: 'Careers', href: '/careers' },
+  { name: 'Services', href: '/services' },
 ]
+
+const navLinksAfterFeatures = [
+  { name: 'Events', href: '/events' },
+  { name: 'Career', href: '/careers' },
+  { name: 'Contact', href: '/contact' },
+]
+
+const navLinks = [...navLinksBeforeFeatures, ...navLinksAfterFeatures]
 
 // Employee Portal URL - external domain
 const EMPLOYEE_PORTAL_URL = 'https://team-auth.matrixo.in/employee-portal'
@@ -182,7 +187,7 @@ export default function Navbar() {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-6">
-            {navLinks.map((link, index) => {
+            {navLinksBeforeFeatures.map((link, index) => {
               // Check if active: exact match for home, startsWith for other routes
               const isActive = link.href === '/' 
                 ? pathname === '/'
@@ -259,6 +264,39 @@ export default function Navbar() {
                 </AnimatePresence>
               </div>
             )}
+
+            {navLinksAfterFeatures.map((link, index) => {
+              const isActive = link.href === '/' 
+                ? pathname === '/'
+                : pathname === link.href || pathname.startsWith(link.href + '/')
+              return (
+                <motion.div
+                  key={link.name}
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ 
+                    delay: (navLinksBeforeFeatures.length + index + 1) * 0.05,
+                    duration: 0.3,
+                    ease: [0.4, 0, 0.2, 1]
+                  }}
+                >
+                  <Link
+                    href={link.href}
+                    className={`font-medium transition-all duration-300 ease-out relative group ${
+                      isActive 
+                        ? 'text-blue-500 dark:text-blue-400' 
+                        : 'text-gray-700 dark:text-gray-300 hover:text-blue-500 dark:hover:text-blue-400'
+                    }`}
+                  >
+                    {link.name}
+                    <span className={`absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-blue-500 to-purple-600 
+                                   transition-all duration-300 ease-out ${
+                                     isActive ? 'w-full' : 'w-0 group-hover:w-full'
+                                   }`} />
+                  </Link>
+                </motion.div>
+              )
+            })}
           </div>
 
           {/* Dark Mode Toggle & CTA */}
@@ -417,7 +455,7 @@ export default function Navbar() {
               className="md:hidden overflow-hidden"
             >
               <div className="py-4 space-y-3">
-                {navLinks.map((link) => {
+                {navLinksBeforeFeatures.map((link) => {
                   // Check if active: exact match for home, startsWith for other routes
                   const isActive = link.href === '/' 
                     ? pathname === '/'
@@ -484,6 +522,26 @@ export default function Navbar() {
                     </AnimatePresence>
                   </div>
                 )}
+
+                {navLinksAfterFeatures.map((link) => {
+                  const isActive = link.href === '/' 
+                    ? pathname === '/'
+                    : pathname === link.href || pathname.startsWith(link.href + '/')
+                  return (
+                    <Link
+                      key={link.name}
+                      href={link.href}
+                      onClick={() => setIsOpen(false)}
+                      className={`block px-4 py-2 rounded-lg transition-all duration-200 ease-out ${
+                        isActive
+                          ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 font-semibold'
+                          : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
+                      }`}
+                    >
+                      {link.name}
+                    </Link>
+                  )
+                })}
 
                 {/* Mobile CTA Buttons */}
                 <div className="border-t border-gray-200 dark:border-gray-700 pt-3 mt-3 space-y-2">

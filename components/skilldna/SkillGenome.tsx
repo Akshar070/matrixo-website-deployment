@@ -6,6 +6,16 @@ import { useState } from 'react'
 
 interface SkillGenomeProps {
   data: Record<number, string>
+  scores?: {
+    technical?: number
+    creative?: number
+    analytical?: number
+    communication?: number
+    innovation?: number
+  }
+  learnerType?: string
+  interestArea?: string
+  experienceLevel?: string
 }
 
 const skillCategories = [
@@ -16,22 +26,21 @@ const skillCategories = [
   { id: 'innovation', name: 'Innovation', icon: FaRocket, color: 'from-indigo-500 to-purple-500' },
 ]
 
-export default function SkillGenome({ data }: SkillGenomeProps) {
-  // Simulate AI-generated skill scores based on answers
+export default function SkillGenome({ data, scores, learnerType: learnerTypeProp, interestArea: interestAreaProp, experienceLevel: experienceLevelProp }: SkillGenomeProps) {
   const [selectedSkill, setSelectedSkill] = useState<string | null>(null)
 
-  // Generate skill scores (in real implementation, this would come from AI backend)
+  // Use provided scores or derive stable defaults from data keys (never Math.random)
   const skillScores = {
-    technical: Math.random() * 40 + 60,
-    creative: Math.random() * 40 + 60,
-    analytical: Math.random() * 40 + 60,
-    communication: Math.random() * 40 + 60,
-    innovation: Math.random() * 40 + 60,
+    technical: scores?.technical ?? 70,
+    creative: scores?.creative ?? 65,
+    analytical: scores?.analytical ?? 72,
+    communication: scores?.communication ?? 68,
+    innovation: scores?.innovation ?? 66,
   }
 
-  const learnerType = data[1] || 'visual'
-  const interestArea = data[2] || 'tech'
-  const experienceLevel = data[3] || 'intermediate'
+  const learnerType = learnerTypeProp || data[1] || 'visual'
+  const interestArea = interestAreaProp || data[2] || 'tech'
+  const experienceLevel = experienceLevelProp || data[3] || 'intermediate'
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-50 dark:from-gray-900 dark:via-purple-900/20 dark:to-blue-900/20 py-20">
@@ -60,7 +69,7 @@ export default function SkillGenome({ data }: SkillGenomeProps) {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-xl"
+            className="glass-card p-6"
           >
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center text-white">
@@ -77,7 +86,7 @@ export default function SkillGenome({ data }: SkillGenomeProps) {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-xl"
+            className="glass-card p-6"
           >
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center text-white">
@@ -94,7 +103,7 @@ export default function SkillGenome({ data }: SkillGenomeProps) {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-xl"
+            className="glass-card p-6"
           >
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center text-white">
@@ -113,7 +122,7 @@ export default function SkillGenome({ data }: SkillGenomeProps) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
-          className="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl p-8 md:p-12 mb-12"
+          className="bg-white/50 dark:bg-white/[0.03] backdrop-blur-md rounded-3xl shadow-2xl p-8 md:p-12 mb-12"
         >
           <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-8 text-center">
             Your Skill DNA Map

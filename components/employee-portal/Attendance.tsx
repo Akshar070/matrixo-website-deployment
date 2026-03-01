@@ -226,17 +226,26 @@ export function AttendanceMarker({ onAttendanceMarked }: { onAttendanceMarked?: 
       return
     }
 
-    // On iOS (both Safari and PWA), navigator.permissions API is unreliable.
-    // We silently try getCurrentPosition — if it succeeds, great.
-    // If it fails, we keep status as 'pending' (NOT 'denied') so the
-    // Enable Location button always calls getCurrentPosition again,
-    // which is the ONLY way to trigger the native iOS permission prompt.
-    if (isPWA || isIOSDevice() || !navigator.permissions?.query) {
+    // ─── CRITICAL iOS PWA FIX ───────────────────────────────────────────────
+    // On iOS standalone/PWA mode, calling getCurrentPosition() from a useEffect
+    // (page load, not a user gesture) is silently ignored — iOS NEVER shows the
+    // native "Allow Location" dialog unless the call comes directly from a tap.
+    // So: for iOS PWA, just stay 'pending' and let the user tap "Enable Location".
+    // ──────────────────────────────────────────────────────────────────────────
+    if (isPWA) {
+      // Don't try auto-probe. The "Enable Location" button tap will trigger
+      // getCurrentPosition as a user gesture → iOS shows the permission dialog.
+      setLocationStatus('pending')
+      return
+    }
+
+    // Regular iOS Safari (not PWA/standalone): probe silently.
+    // getCurrentPosition here CAN show the dialog in Safari.
+    if (isIOSDevice() || !navigator.permissions?.query) {
       navigator.geolocation.getCurrentPosition(
         () => setLocationStatus('granted'),
         () => {
-          // On iOS: keep as 'pending' so the button remains active
-          // and will call getCurrentPosition again (which triggers the prompt)
+          // iOS Safari denied or not granted yet — keep 'pending' so the button stays visible
           setLocationStatus('pending')
         },
         { enableHighAccuracy: false, timeout: 5000, maximumAge: 300000 }
@@ -272,10 +281,10 @@ export function AttendanceMarker({ onAttendanceMarked }: { onAttendanceMarked?: 
     fetchTodayAttendance()
   }, [fetchTodayAttendance])
 
-  // Check if it's past the 6PM attendance cutoff
+  // Check if it's past the 7:30PM attendance cutoff
   const isPastCutoff = () => {
     const now = new Date()
-    return now.getHours() >= 18 // 6:00 PM or later
+    return now.getHours() > 19 || (now.getHours() === 19 && now.getMinutes() >= 30) // 7:30 PM or later
   }
 
   const handleMarkAttendance = async () => {
@@ -284,9 +293,9 @@ export function AttendanceMarker({ onAttendanceMarked }: { onAttendanceMarked?: 
       return
     }
 
-    // 6PM cutoff check - only Leave requests can be submitted after 6PM
+    // 7:30PM cutoff check - only Leave requests can be submitted after 7:30PM
     if (isPastCutoff() && selectedStatus !== 'L') {
-      toast.error('Attendance marking is closed for today. The cutoff time is 6:00 PM. Please contact your admin if needed.')
+      toast.error('Attendance marking is closed for today. The cutoff time is 7:30 PM. Please contact your admin if needed.')
       return
     }
 
@@ -393,16 +402,17 @@ export function AttendanceMarker({ onAttendanceMarked }: { onAttendanceMarked?: 
     }
   }
 
-  // Check if editing daily report is allowed (before 6:00 PM / 18:00)
+  // Check if editing daily report is allowed (before 7:30 PM / 19:30)
   const isEditingAllowed = () => {
     const now = new Date()
     const hours = now.getHours()
-    return hours < 18 // Before 6:00 PM
+    const minutes = now.getMinutes()
+    return hours < 19 || (hours === 19 && minutes < 30) // Before 7:30 PM
   }
 
   const handleUpdateNotes = async () => {
     if (!isEditingAllowed()) {
-      toast.error('Daily report can only be updated before 6:00 PM')
+      toast.error('Daily report can only be updated before 7:30 PM')
       return
     }
     
@@ -550,65 +560,80 @@ export function AttendanceMarker({ onAttendanceMarked }: { onAttendanceMarked?: 
               </div>
               
               <div className="space-y-4 mb-6">
-                <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-3">
-                  <p className="text-xs text-red-400">
-                    <strong>Known iOS Issue:</strong> Home Screen apps sometimes don't show location prompts. Follow these steps to fix:
+                <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-3">
+                  <p className="text-xs text-amber-400">
+                    <strong>Why this happens:</strong> On iPhone, a Home Screen app has its own separate location permission. You need to grant it once — just tap the button below and tap <strong>"Allow"</strong> in the iOS popup.
                   </p>
                 </div>
 
-                {/* Method 1: Reset via Safari */}
+                {/* Method 1: Tap the button inside the PWA */}
                 <div>
-                  <p className="text-sm font-semibold text-emerald-400 mb-2">✅ Method 1: Reset Permission (Recommended)</p>
+                  <p className="text-sm font-semibold text-emerald-400 mb-2">✅ Method 1: Grant Permission (Easiest)</p>
                   <div className="bg-neutral-800/50 rounded-xl p-4 space-y-2">
                     <div className="flex items-start gap-3">
                       <div className="w-5 h-5 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400 text-xs font-bold flex-shrink-0">1</div>
-                      <p className="text-sm text-neutral-300">Open <strong className="text-white">Safari</strong> browser</p>
+                      <p className="text-sm text-neutral-300">Tap <strong className="text-white">"Try Again"</strong> below — this will trigger the iOS <strong className="text-white">location permission popup</strong></p>
                     </div>
                     <div className="flex items-start gap-3">
                       <div className="w-5 h-5 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400 text-xs font-bold flex-shrink-0">2</div>
-                      <p className="text-sm text-neutral-300">Go to <strong className="text-white">team-auth.matrixo.in</strong></p>
+                      <p className="text-sm text-neutral-300">Tap <strong className="text-white">"Allow Once"</strong> or <strong className="text-white">"Allow While Using App"</strong> in the popup</p>
                     </div>
                     <div className="flex items-start gap-3">
                       <div className="w-5 h-5 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400 text-xs font-bold flex-shrink-0">3</div>
-                      <p className="text-sm text-neutral-300">Tap <strong className="text-white">Enable Location</strong> and <strong className="text-white">Allow</strong> the popup</p>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <div className="w-5 h-5 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400 text-xs font-bold flex-shrink-0">4</div>
-                      <p className="text-sm text-neutral-300">Now open the <strong className="text-white">Home Screen app</strong> - it should work!</p>
+                      <p className="text-sm text-neutral-300">If no popup appeared, the permission may already be blocked — go to Method 2</p>
                     </div>
                   </div>
                 </div>
 
-                {/* Method 2: Reinstall app */}
+                {/* Method 2: Fix via iPhone Settings */}
                 <div>
-                  <p className="text-sm font-semibold text-blue-400 mb-2">🔄 Method 2: Reinstall Home Screen App</p>
+                  <p className="text-sm font-semibold text-blue-400 mb-2">⚙️ Method 2: Enable in iPhone Settings</p>
                   <div className="bg-neutral-800/50 rounded-xl p-4 space-y-2">
                     <div className="flex items-start gap-3">
                       <div className="w-5 h-5 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400 text-xs font-bold flex-shrink-0">1</div>
-                      <p className="text-sm text-neutral-300"><strong className="text-white">Delete</strong> the matriXO app from Home Screen</p>
+                      <p className="text-sm text-neutral-300">Open iPhone <strong className="text-white">Settings</strong></p>
                     </div>
                     <div className="flex items-start gap-3">
                       <div className="w-5 h-5 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400 text-xs font-bold flex-shrink-0">2</div>
-                      <p className="text-sm text-neutral-300">Go to <strong className="text-white">Settings → Safari → Clear History and Website Data</strong></p>
+                      <p className="text-sm text-neutral-300">Go to <strong className="text-white">Privacy & Security → Location Services</strong></p>
                     </div>
                     <div className="flex items-start gap-3">
                       <div className="w-5 h-5 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400 text-xs font-bold flex-shrink-0">3</div>
-                      <p className="text-sm text-neutral-300">Open Safari, visit <strong className="text-white">team-auth.matrixo.in</strong></p>
+                      <p className="text-sm text-neutral-300">Scroll down and find <strong className="text-white">Safari Websites</strong> — set it to <strong className="text-white">"While Using App"</strong></p>
                     </div>
                     <div className="flex items-start gap-3">
                       <div className="w-5 h-5 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400 text-xs font-bold flex-shrink-0">4</div>
-                      <p className="text-sm text-neutral-300">Allow location when prompted</p>
+                      <p className="text-sm text-neutral-300">Come back to this app and tap <strong className="text-white">"Try Again"</strong></p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Method 3: Reinstall */}
+                <div>
+                  <p className="text-sm font-semibold text-purple-400 mb-2">🔄 Method 3: Re-add to Home Screen</p>
+                  <div className="bg-neutral-800/50 rounded-xl p-4 space-y-2">
+                    <div className="flex items-start gap-3">
+                      <div className="w-5 h-5 rounded-full bg-purple-500/20 flex items-center justify-center text-purple-400 text-xs font-bold flex-shrink-0">1</div>
+                      <p className="text-sm text-neutral-300"><strong className="text-white">Delete</strong> the matriXO app from your Home Screen</p>
                     </div>
                     <div className="flex items-start gap-3">
-                      <div className="w-5 h-5 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400 text-xs font-bold flex-shrink-0">5</div>
-                      <p className="text-sm text-neutral-300">Add to Home Screen again (Share → Add to Home Screen)</p>
+                      <div className="w-5 h-5 rounded-full bg-purple-500/20 flex items-center justify-center text-purple-400 text-xs font-bold flex-shrink-0">2</div>
+                      <p className="text-sm text-neutral-300">Open <strong className="text-white">Safari</strong> and visit <strong className="text-white">team-auth.matrixo.in</strong></p>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <div className="w-5 h-5 rounded-full bg-purple-500/20 flex items-center justify-center text-purple-400 text-xs font-bold flex-shrink-0">3</div>
+                      <p className="text-sm text-neutral-300">Tap <strong className="text-white">Share →</strong> <strong className="text-white">Add to Home Screen</strong></p>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <div className="w-5 h-5 rounded-full bg-purple-500/20 flex items-center justify-center text-purple-400 text-xs font-bold flex-shrink-0">4</div>
+                      <p className="text-sm text-neutral-300">Open the app — tap <strong className="text-white">"Enable Location"</strong> and allow the popup</p>
                     </div>
                   </div>
                 </div>
                 
                 <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-3">
                   <p className="text-xs text-amber-400">
-                    <strong>Quick Alternative:</strong> You can always use Safari directly to mark attendance if the Home Screen app has issues.
+                    <strong>Quick Alternative:</strong> You can always use Safari directly to mark attendance if the Home Screen app has persistent issues.
                   </p>
                 </div>
               </div>
@@ -656,7 +681,7 @@ export function AttendanceMarker({ onAttendanceMarked }: { onAttendanceMarked?: 
         )}
       </AnimatePresence>
 
-      {/* 6PM Cutoff Banner */}
+      {/* 7:30PM Cutoff Banner */}
       {isPastCutoff() && !todayAttendance && (
         <div className="mb-6 p-4 bg-gradient-to-r from-red-500/20 to-orange-500/20 border border-red-500/30 rounded-xl">
           <div className="flex items-start gap-3">
@@ -666,7 +691,7 @@ export function AttendanceMarker({ onAttendanceMarked }: { onAttendanceMarked?: 
             <div className="flex-1">
               <h3 className="font-semibold text-red-400">Attendance Cutoff Passed</h3>
               <p className="text-sm text-neutral-400 mt-1">
-                The attendance marking window has closed for today. The daily cutoff is 6:00 PM. 
+                The attendance marking window has closed for today. The daily cutoff is 7:30 PM. 
                 Your attendance for today will be marked as Absent. Contact your admin if you need corrections.
               </p>
             </div>
@@ -682,21 +707,29 @@ export function AttendanceMarker({ onAttendanceMarked }: { onAttendanceMarked?: 
               <FaLocationArrow className="text-amber-400" />
             </div>
             <div className="flex-1">
-              <h3 className="font-semibold text-amber-400">Location Required</h3>
+              <h3 className="font-semibold text-amber-400">Location Access Required</h3>
               <p className="text-sm text-neutral-400 mt-1">
-                Location services are mandatory for marking attendance. Please enable location access to continue.
+                {isIOSPWAMode
+                  ? 'Tap "Enable Location" below — iOS will ask for permission in a popup. You must tap "Allow" to continue.'
+                  : 'Location services are mandatory for marking attendance. Please enable location access to continue.'}
               </p>
+              {isIOSPWAMode && (
+                <p className="text-xs text-amber-300/80 mt-1.5 flex items-start gap-1">
+                  <FaApple className="flex-shrink-0 mt-0.5" />
+                  <span>This is a Home Screen app — <strong>each tap on "Enable Location" triggers the iOS dialog.</strong> Tap it now if you haven't seen the popup yet.</span>
+                </p>
+              )}
               {isIOSPWAMode && iosLocationAttempts > 0 && (
                 <p className="text-xs text-red-400 mt-2">
-                  ⚠️ If the location popup didn't appear, tap below — each tap tries to trigger it.
+                  ⚠️ Popup didn't appear? Try tapping again. After 2 failed tries, see the "How to Fix" instructions below.
                 </p>
               )}
               <button
                 onClick={requestLocationPermission}
-                className="mt-3 px-4 py-2 bg-amber-500 hover:bg-amber-400 text-black font-medium rounded-lg transition-all flex items-center gap-2"
+                className="mt-3 px-4 py-2 bg-amber-500 hover:bg-amber-400 text-black font-semibold rounded-lg transition-all flex items-center gap-2 text-sm"
               >
                 <FaLocationArrow />
-                Enable Location
+                {isIOSPWAMode ? '📍 Enable Location (iOS)' : 'Enable Location'}
               </button>
             </div>
           </div>

@@ -147,8 +147,10 @@ export default function CareersContent() {
   return (
     <div className="min-h-screen pt-20">
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-gray-950 via-gray-900 to-black text-white py-20">
-        <div className="container-custom px-4 sm:px-6">
+      <section className="relative bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-950 dark:via-gray-900 dark:to-black text-gray-900 dark:text-white py-20 overflow-hidden">
+        <div className="absolute top-1/3 -right-32 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-1/3 -left-32 w-80 h-80 bg-purple-500/10 rounded-full blur-3xl" />
+        <div className="container-custom px-4 sm:px-6 relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -157,10 +159,10 @@ export default function CareersContent() {
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-display font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-blue-500">
               Careers
             </h1>
-            <p className="text-lg sm:text-xl md:text-2xl text-gray-300 mb-8">
+            <p className="text-lg sm:text-xl md:text-2xl text-gray-600 dark:text-gray-300 mb-8">
               Join matriXO and help shape the future of technical education
             </p>
-            <p className="text-gray-400 text-base sm:text-lg max-w-2xl mx-auto">
+            <p className="text-gray-500 dark:text-gray-400 text-base sm:text-lg max-w-2xl mx-auto">
               We're building innovative solutions that empower students and educational institutions. 
               Be part of a team that's making a real difference in how people learn and grow.
             </p>
@@ -169,7 +171,7 @@ export default function CareersContent() {
       </section>
 
       {/* Open Roles Section */}
-      <section className="py-20 bg-white dark:bg-gray-950">
+      <section className="py-20 bg-transparent">
         <div className="container-custom px-4 sm:px-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -183,19 +185,21 @@ export default function CareersContent() {
             <p className="text-xl text-gray-600 dark:text-gray-400">
               Discover opportunities that match your skills and passion
             </p>
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              className="mt-6 max-w-2xl mx-auto"
-            >
-              <div className="bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-4">
-                <p className="text-sm text-amber-800 dark:text-amber-200 font-medium">
-                  📢 Due to the high volume of applications we're receiving, our team is working diligently to review each submission. 
-                  Please allow some time for us to get back to you. We appreciate your patience and interest in joining matriXO!
-                </p>
-              </div>
-            </motion.div>
+            {roles.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+                className="mt-6 max-w-2xl mx-auto"
+              >
+                <div className="bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-4">
+                  <p className="text-sm text-amber-800 dark:text-amber-200 font-medium">
+                    Ã°Å¸â€œÂ¢ Due to the high volume of applications we're receiving, our team is working diligently to review each submission. 
+                    Please allow some time for us to get back to you. We appreciate your patience and interest in joining matriXO!
+                  </p>
+                </div>
+              </motion.div>
+            )}
           </motion.div>
 
           {loading ? (
@@ -257,7 +261,7 @@ export default function CareersContent() {
                         name="fullName"
                         value={formData.fullName}
                         onChange={handleInputChange}
-                        className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                        className="w-full px-4 py-3 rounded-lg border border-gray-200/30 dark:border-white/[0.06] bg-white/50 dark:bg-white/[0.03] backdrop-blur-md text-gray-900 dark:text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
                         placeholder="Enter your full name"
                       />
                       {errors.fullName && <p className="text-red-500 text-sm mt-1">{errors.fullName}</p>}
@@ -273,7 +277,7 @@ export default function CareersContent() {
                         name="email"
                         value={formData.email}
                         onChange={handleInputChange}
-                        className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                        className="w-full px-4 py-3 rounded-lg border border-gray-200/30 dark:border-white/[0.06] bg-white/50 dark:bg-white/[0.03] backdrop-blur-md text-gray-900 dark:text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
                         placeholder="your.email@example.com"
                       />
                       {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
@@ -289,7 +293,7 @@ export default function CareersContent() {
                         name="phone"
                         value={formData.phone}
                         onChange={handleInputChange}
-                        className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                        className="w-full px-4 py-3 rounded-lg border border-gray-200/30 dark:border-white/[0.06] bg-white/50 dark:bg-white/[0.03] backdrop-blur-md text-gray-900 dark:text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
                         placeholder="1234567890"
                       />
                       {errors.phone && <p className="text-red-500 text-sm mt-1">{errors.phone}</p>}
@@ -305,7 +309,7 @@ export default function CareersContent() {
                         name="college"
                         value={formData.college}
                         onChange={handleInputChange}
-                        className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                        className="w-full px-4 py-3 rounded-lg border border-gray-200/30 dark:border-white/[0.06] bg-white/50 dark:bg-white/[0.03] backdrop-blur-md text-gray-900 dark:text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
                         placeholder="Your institution name"
                       />
                       {errors.college && <p className="text-red-500 text-sm mt-1">{errors.college}</p>}
@@ -321,7 +325,7 @@ export default function CareersContent() {
                         name="yearOrExperience"
                         value={formData.yearOrExperience}
                         onChange={handleInputChange}
-                        className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                        className="w-full px-4 py-3 rounded-lg border border-gray-200/30 dark:border-white/[0.06] bg-white/50 dark:bg-white/[0.03] backdrop-blur-md text-gray-900 dark:text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
                         placeholder="e.g., 3rd Year B.Tech or 2 years experience"
                       />
                       {errors.yearOrExperience && <p className="text-red-500 text-sm mt-1">{errors.yearOrExperience}</p>}
@@ -337,7 +341,7 @@ export default function CareersContent() {
                         name="interestedRole"
                         value={formData.interestedRole}
                         onChange={handleInputChange}
-                        className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                        className="w-full px-4 py-3 rounded-lg border border-gray-200/30 dark:border-white/[0.06] bg-white/50 dark:bg-white/[0.03] backdrop-blur-md text-gray-900 dark:text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
                         placeholder="e.g., Full Stack Developer, Marketing Manager, etc."
                       />
                       {errors.interestedRole && <p className="text-red-500 text-sm mt-1">{errors.interestedRole}</p>}
@@ -404,7 +408,7 @@ export default function CareersContent() {
       </section>
 
       {/* Why Join Section */}
-      <section className="py-20 bg-gray-50 dark:bg-gray-900">
+      <section className="py-20 bg-white/30 dark:bg-white/[0.01] backdrop-blur-sm">
         <div className="container-custom px-4 sm:px-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -422,17 +426,17 @@ export default function CareersContent() {
               {
                 title: 'Impact at Scale',
                 description: 'Work on products that directly impact thousands of students and educational institutions.',
-                icon: '🚀',
+                icon: 'Ã°Å¸Å¡â‚¬',
               },
               {
                 title: 'Innovation First',
                 description: 'Be at the forefront of EdTech innovation with AI, blockchain, and cutting-edge technologies.',
-                icon: '💡',
+                icon: 'Ã°Å¸â€™Â¡',
               },
               {
                 title: 'Growth & Learning',
                 description: 'Continuous learning opportunities, mentorship, and career development programs.',
-                icon: '📈',
+                icon: 'Ã°Å¸â€œË†',
               },
             ].map((benefit, index) => (
               <motion.div

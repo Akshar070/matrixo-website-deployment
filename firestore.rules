@@ -113,13 +113,27 @@ service cloud.firestore {
     // USER PROFILES COLLECTION
     // ================================================
     match /UserProfiles/{userId} {
-      // Users can only read their own profile
-      allow read: if isAuthenticated() && request.auth.uid == userId;
+      // Anyone can read profiles (public profiles need this)
+      allow read: if true;
       // Users can create their own profile (once)
       allow create: if isAuthenticated() && request.auth.uid == userId;
       // Users can update their own profile (restricted fields enforced in app)
       allow update: if isAuthenticated() && request.auth.uid == userId;
       // Users cannot delete profiles
+      allow delete: if false;
+    }
+
+    // ================================================
+    // USERNAMES COLLECTION (username -> uid mapping)
+    // ================================================
+    match /Usernames/{usernameId} {
+      // Anyone can read (needed for public profile lookups & availability checks)
+      allow read: if true;
+      // Authenticated users can create username mappings
+      allow create: if isAuthenticated();
+      // Only the owner can update their username mapping
+      allow update: if isAuthenticated() && resource.data.uid == request.auth.uid;
+      // Users cannot delete username mappings
       allow delete: if false;
     }
 
@@ -207,6 +221,41 @@ service cloud.firestore {
     match /leaveRequests/{requestId} {
       allow read: if isAuthenticated();
       allow write: if isAuthenticated();
+    }
+
+    // ================================================
+    // SKILLDNA USERS COLLECTION
+    // ================================================
+    match /skillDNA_users/{userId} {
+      // Users can only read their own SkillDNA profile
+      allow read: if isAuthenticated() && request.auth.uid == userId;
+      // Users can create their own SkillDNA profile
+      allow create: if isAuthenticated() && request.auth.uid == userId;
+      // Users can update their own profile
+      allow update: if isAuthenticated() && request.auth.uid == userId;
+      // Users cannot delete SkillDNA profiles
+      allow delete: if false;
+
+      // Version history subcollection
+      match /versions/{versionId} {
+        allow read: if isAuthenticated() && request.auth.uid == userId;
+        allow create: if isAuthenticated() && request.auth.uid == userId;
+        allow update, delete: if false;
+      }
+
+      // Assessment results subcollection
+      match /assessments/{assessmentId} {
+        allow read: if isAuthenticated() && request.auth.uid == userId;
+        allow create: if isAuthenticated() && request.auth.uid == userId;
+        allow update, delete: if false;
+      }
+
+      // Activity log subcollection
+      match /activityLog/{logId} {
+        allow read: if isAuthenticated() && request.auth.uid == userId;
+        allow create: if isAuthenticated() && request.auth.uid == userId;
+        allow update, delete: if false;
+      }
     }
   }
 }

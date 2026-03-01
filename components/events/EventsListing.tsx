@@ -39,8 +39,10 @@ export default function EventsListing() {
   return (
     <div className="min-h-screen pt-5 pb-20">
       {/* Header */}
-      <section className="bg-gradient-to-br from-gray-950 via-gray-900 to-black text-white py-16 sm:py-20">
-        <div className="container-custom px-4 sm:px-6">
+      <section className="relative bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-950 dark:via-gray-900 dark:to-black text-gray-900 dark:text-white py-16 sm:py-20 overflow-hidden">
+        <div className="absolute top-1/3 -right-32 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-1/3 -left-32 w-80 h-80 bg-purple-500/10 rounded-full blur-3xl" />
+        <div className="container-custom px-4 sm:px-6 relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -49,7 +51,7 @@ export default function EventsListing() {
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-display font-bold mb-4 sm:mb-6">
               Explore <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-purple-600">Programs</span>
             </h1>
-            <p className="text-base sm:text-lg md:text-xl text-gray-300">
+            <p className="text-base sm:text-lg md:text-xl text-gray-600 dark:text-gray-300">
               Workshops, hackathons, bootcamps, and technical events designed to accelerate your tech career
             </p>
           </motion.div>
@@ -57,7 +59,7 @@ export default function EventsListing() {
       </section>
 
       {/* Filters and Search - Compact Version */}
-      <section className="bg-gray-50 dark:bg-gray-900 py-3 sm:py-4 border-b border-gray-200 dark:border-gray-800">
+      <section className="bg-white/40 dark:bg-white/[0.02] backdrop-blur-md py-3 sm:py-4 border-b border-gray-200/30 dark:border-white/[0.06]">
         <div className="container-custom px-4 sm:px-6">
           {/* Compact Filter Row */}
           <div className="flex flex-col lg:flex-row gap-3 items-start lg:items-center">
@@ -69,8 +71,7 @@ export default function EventsListing() {
                 placeholder="Search programs, topics..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-9 pr-3 py-2 rounded-full bg-white dark:bg-gray-800 border border-gray-300 
-                         dark:border-gray-700 focus:border-blue-500 focus:outline-none transition-colors text-sm text-gray-900 dark:text-white"
+                className="w-full pl-9 pr-3 py-2 rounded-full glass-input text-sm"
               />
             </div>
 
@@ -88,7 +89,7 @@ export default function EventsListing() {
                   className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200 flex items-center gap-1.5 ${
                     sortOption === option.value
                       ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-md'
-                      : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700'
+                      : 'glass-chip text-gray-700 dark:text-gray-300'
                   }`}
                 >
                   <option.icon className="text-xs" />
@@ -114,7 +115,7 @@ export default function EventsListing() {
                   className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200 ${
                     categoryFilter === cat.value
                       ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-md'
-                      : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700'
+                      : 'glass-chip text-gray-700 dark:text-gray-300'
                   }`}
                 >
                   {cat.label}
@@ -131,7 +132,7 @@ export default function EventsListing() {
       </section>
 
       {/* Events Grid */}
-      <section className="section-padding bg-white dark:bg-gray-950">
+      <section className="section-padding bg-transparent">
         <div className="container-custom px-4 sm:px-6">
           {filteredAndSortedEvents.length === 0 ? (
             <div className="text-center py-20">
@@ -165,7 +166,7 @@ export default function EventsListing() {
                       target={isExternal ? "_blank" : undefined}
                       rel={isExternal ? "noopener noreferrer" : undefined}
                     >
-                      <div className="group bg-white dark:bg-gray-900 rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl 
+                      <div className="group glass-card overflow-hidden
                                     transition-all duration-200 hover:-translate-y-2 border-2 border-transparent 
                                     hover:border-blue-500/30 h-full flex flex-col">
                         {/* Image */}
@@ -189,7 +190,7 @@ export default function EventsListing() {
                           )}
                           {event.status === 'sold-out' && (
                             <div className="absolute top-4 right-4 bg-gradient-to-r from-red-600 via-orange-500 to-yellow-500 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg animate-celebrate animate-shine">
-                              🎉 SOLD OUT 🎊
+                              Ã°Å¸Å½â€° SOLD OUT Ã°Å¸Å½Å 
                             </div>
                           )}
                           <div className="absolute bottom-4 left-4 bg-black/70 backdrop-blur-sm text-white px-3 py-1 rounded-full text-xs font-semibold">
@@ -217,7 +218,7 @@ export default function EventsListing() {
                           <div className="space-y-2 mb-4 flex-1">
                             <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
                               <FaCalendar className="mr-2 text-blue-500 flex-shrink-0" />
-                              {format(new Date(event.date), 'MMM dd, yyyy • hh:mm a')}
+                              {format(new Date(event.date), 'MMM dd, yyyy Ã¢â‚¬Â¢ hh:mm a')}
                             </div>
                             <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
                               <FaMapMarkerAlt className="mr-2 text-purple-600 flex-shrink-0" />
@@ -230,12 +231,12 @@ export default function EventsListing() {
                             {event.status === 'sold-out' ? (
                               <div className="w-full">
                                 <div className="bg-gradient-to-r from-red-50 via-orange-50 to-yellow-50 dark:from-red-900/20 dark:via-orange-900/20 dark:to-yellow-900/20 border-2 border-red-500 rounded-xl p-4 text-center">
-                                  <span className="text-3xl mb-2 block">🎉</span>
+                                  <span className="text-3xl mb-2 block">Ã°Å¸Å½â€°</span>
                                   <span className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-red-600 via-orange-500 to-yellow-500 bg-clip-text text-transparent">
                                     SOLD OUT!
                                   </span>
                                   <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mt-1">
-                                    🎊 All tickets claimed! 🎊
+                                    Ã°Å¸Å½Å  All tickets claimed! Ã°Å¸Å½Å 
                                   </p>
                                 </div>
                               </div>
@@ -245,11 +246,11 @@ export default function EventsListing() {
                                   <span className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">From</span>
                                   <div className="flex items-baseline gap-1 sm:gap-2">
                                     <span className="text-xl sm:text-2xl font-bold gradient-text">
-                                      ₹{Math.min(...event.tickets.map((t: any) => t.price))}
+                                      Ã¢â€šÂ¹{Math.min(...event.tickets.map((t: any) => t.price))}
                                     </span>
                                     {event.tickets.some((t: any) => t.originalPrice) && (
                                       <span className="text-xs sm:text-sm text-gray-400 line-through">
-                                        ₹{(event.tickets.find((t: any) => t.originalPrice) as any)?.originalPrice}
+                                        Ã¢â€šÂ¹{(event.tickets.find((t: any) => t.originalPrice) as any)?.originalPrice}
                                       </span>
                                     )}
                                   </div>

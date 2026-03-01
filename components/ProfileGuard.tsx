@@ -15,6 +15,7 @@ const PUBLIC_ROUTES = [
   '/refund',
   '/shipping',
   '/employee-portal',
+  '/u',
 ]
 
 function isPublicRoute(pathname: string): boolean {

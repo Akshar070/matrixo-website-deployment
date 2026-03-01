@@ -376,7 +376,7 @@ export default function PublicProfilePage() {
 
             {/* Name + username + bio — below avatar */}
             <div className="mb-4">
-              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white truncate">{userProfile.fullName}</h1>
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white break-words">{userProfile.fullName}</h1>
               <p className="text-gray-500 dark:text-gray-500 text-sm mt-1">@{userProfile.username}</p>
 
               {/* Bio section — editable for owner */}

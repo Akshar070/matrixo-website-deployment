@@ -1158,22 +1158,22 @@ html {
    ============================================ */
 @media print {
   /* Hide navigation, footer, and download buttons */
-  nav, footer, .print\\:hidden,
+  nav, footer, .print\:hidden,
   [class*="BetaBanner"],
   [class*="Navbar"],
   [class*="Footer"] {
     display: none !important;
   }
 
-  /* Reset backgrounds for printing */
+  /* Reset backgrounds for printing - use white for readability */
   body {
-    background: #0a0a0f !important;
+    background: #ffffff !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
     color-adjust: exact !important;
   }
 
-  /* Ensure gradients and colors print */
+  /* Force printing colors */
   * {
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
@@ -1184,6 +1184,41 @@ html {
     display: none !important;
   }
 
+  /* Override dark backgrounds for print */
+  .dark .min-h-screen,
+  .min-h-screen {
+    background: #ffffff !important;
+  }
+
+  /* Replace glass/backdrop-filter cards with solid backgrounds for print */
+  [style*="backdrop-filter"],
+  [style*="backdropFilter"] {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    background: #ffffff !important;
+    border-color: #e5e7eb !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
+  }
+
+  /* Ensure text is dark for print */
+  .dark h1, .dark h2, .dark h3, .dark h4, .dark p, .dark span, .dark div {
+    color: #111827 !important;
+  }
+
+  .dark .text-white {
+    color: #111827 !important;
+  }
+
+  .dark .text-gray-300, .dark .text-gray-400, .dark .text-gray-500 {
+    color: #4b5563 !important;
+  }
+
+  /* Keep gradient cover visible for print */
+  .rounded-t-\\[28px\\] {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
   /* Adjust page margins */
   @page {
     margin: 0.5in;
@@ -1191,8 +1226,37 @@ html {
   }
 
   /* Prevent page breaks inside profile sections */
-  .rounded-2xl, .rounded-3xl {
+  .rounded-2xl, .rounded-3xl, .rounded-\\[24px\\], .rounded-\\[28px\\] {
     break-inside: avoid;
     page-break-inside: avoid;
+    background: #ffffff !important;
+    border: 1px solid #e5e7eb !important;
   }
+
+  /* Ensure progress bars and skill bars are visible */
+  .bg-gradient-to-r {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Make info chips visible */
+  .rounded-xl[style] {
+    background: #f3f4f6 !important;
+    border: 1px solid #d1d5db !important;
+  }
+
+  /* Stat cards should have light background */
+  .hover-lift {
+    background: #f9fafb !important;
+    border: 1px solid #e5e7eb !important;
+  }
+}
+
+/* Special class added by ProfileDownload before printing */
+body.printing-profile {
+  /* Helps browser prepare for print mode */
+}
+
+body.printing-profile .min-h-screen {
+  background: #ffffff !important;
 }

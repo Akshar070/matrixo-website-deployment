@@ -10,10 +10,11 @@ import {
   FaStar, FaArrowUp, FaBriefcase, FaLightbulb, FaChartLine,
   FaCheckCircle, FaClock, FaSignal, FaBook, FaCode,
   FaHistory, FaMapSigns, FaUserGraduate, FaAward, FaLanguage,
-  FaEyeSlash, FaShieldAlt
+  FaEyeSlash, FaShieldAlt, FaCamera, FaEdit, FaSave, FaTimes, FaSpinner
 } from 'react-icons/fa'
-import { doc, getDoc } from 'firebase/firestore'
-import { db } from '@/lib/firebaseConfig'
+import { doc, getDoc, updateDoc } from 'firebase/firestore'
+import { db, storage } from '@/lib/firebaseConfig'
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
 import { useAuth } from '@/lib/AuthContext'
 import { UserProfile, PrivacySettings, DEFAULT_PRIVACY } from '@/lib/ProfileContext'
 import { SkillDNAProfile, SkillDNAUserDocument, OnboardingData, CareerGoal } from '@/lib/skilldna/types'
@@ -84,6 +85,10 @@ export default function PublicProfilePage() {
   const [loading, setLoading] = useState(true)
   const [notFound, setNotFound] = useState(false)
   const [isDark, setIsDark] = useState(true)
+  const [uploadingCover, setUploadingCover] = useState(false)
+  const [editingBio, setEditingBio] = useState(false)
+  const [bioText, setBioText] = useState('')
+  const [savingBio, setSavingBio] = useState(false)
 
   // Detect light/dark mode
   useEffect(() => {
@@ -150,6 +155,42 @@ export default function PublicProfilePage() {
 
     if (username) fetchProfile()
   }, [username, currentUser?.uid])
+
+  // --- Cover photo upload handler ---
+  const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file || !data || !currentUser) return
+    if (file.size > 5 * 1024 * 1024) { alert('Cover photo must be under 5MB'); return }
+    setUploadingCover(true)
+    try {
+      const coverRef = ref(storage, `cover-photos/${data.ownerUid}`)
+      await uploadBytes(coverRef, file)
+      const url = await getDownloadURL(coverRef)
+      const profileDocRef = doc(db, 'UserProfiles', data.ownerUid)
+      await updateDoc(profileDocRef, { coverPhoto: url, updatedAt: new Date() })
+      setData(prev => prev ? { ...prev, userProfile: { ...prev.userProfile, coverPhoto: url } } : prev)
+    } catch (err) {
+      console.error('Failed to upload cover:', err)
+    } finally {
+      setUploadingCover(false)
+    }
+  }
+
+  // --- Bio save handler ---
+  const handleSaveBio = async () => {
+    if (!data || !currentUser) return
+    setSavingBio(true)
+    try {
+      const profileDocRef = doc(db, 'UserProfiles', data.ownerUid)
+      await updateDoc(profileDocRef, { bio: bioText.trim(), updatedAt: new Date() })
+      setData(prev => prev ? { ...prev, userProfile: { ...prev.userProfile, bio: bioText.trim() } } : prev)
+      setEditingBio(false)
+    } catch (err) {
+      console.error('Failed to save bio:', err)
+    } finally {
+      setSavingBio(false)
+    }
+  }
 
   // --- Loading ---
   if (loading) {
@@ -249,8 +290,13 @@ export default function PublicProfilePage() {
           style={glassCard(isDark)}
         >
           {/* Cover */}
-          <div className="relative h-36 sm:h-44 overflow-hidden rounded-t-[28px]">
-            <div className="absolute inset-0 bg-gradient-to-br from-purple-600 via-blue-500 to-indigo-600" />
+          <div className="relative h-36 sm:h-44 overflow-hidden rounded-t-[28px] group/cover">
+            {/* Cover photo or gradient fallback */}
+            {userProfile.coverPhoto ? (
+              <Image src={userProfile.coverPhoto} alt="Cover" fill className="object-cover" />
+            ) : (
+              <div className="absolute inset-0 bg-gradient-to-br from-purple-600 via-blue-500 to-indigo-600" />
+            )}
             <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMzAiIGN5PSIzMCIgcj0iMS41IiBmaWxsPSJyZ2JhKDI1NSwyNTUsMjU1LDAuMDgpIi8+PC9zdmc+')] opacity-50" />
             {/* Floating shimmer */}
             <motion.div
@@ -259,6 +305,19 @@ export default function PublicProfilePage() {
               animate={{ x: '200%' }}
               transition={{ duration: 4, repeat: Infinity, repeatDelay: 6, ease: 'linear' }}
             />
+            {/* Owner cover photo upload button */}
+            {isOwner && (
+              <label htmlFor="cover-upload" className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover/cover:opacity-100 transition-opacity cursor-pointer print:hidden">
+                {uploadingCover ? (
+                  <FaSpinner className="animate-spin text-white text-xl" />
+                ) : (
+                  <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/20 backdrop-blur-md border border-white/30 text-white text-sm font-medium">
+                    <FaCamera /> {userProfile.coverPhoto ? 'Change Cover' : 'Add Cover Photo'}
+                  </div>
+                )}
+                <input id="cover-upload" type="file" accept="image/*" onChange={handleCoverUpload} className="hidden" />
+              </label>
+            )}
             {hasSkillDNA && (
               <div className="absolute bottom-3 right-4 flex items-center gap-1.5 backdrop-blur-md px-3 py-1 rounded-full border border-white/20 bg-white/10">
                 <FaDna className="text-white/90 text-xs animate-pulse" />
@@ -267,10 +326,10 @@ export default function PublicProfilePage() {
             )}
           </div>
 
-          {/* Profile info — avatar uses relative positioning + negative margin, sits OUTSIDE cover's overflow context */}
+          {/* Profile info — avatar uses relative positioning + negative margin */}
           <div className="relative z-10 px-6 sm:px-8 pb-6 sm:pb-8">
             {/* Avatar row */}
-            <div className="-mt-14 sm:-mt-16 mb-4 flex flex-col sm:flex-row sm:items-end gap-4 sm:gap-5">
+            <div className="-mt-14 sm:-mt-16 mb-3 flex flex-col sm:flex-row sm:items-end gap-4 sm:gap-5">
               <motion.div
                 initial={{ scale: 0.8, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
@@ -290,17 +349,9 @@ export default function PublicProfilePage() {
                 )}
               </motion.div>
 
-              <div className="flex-1 min-w-0">
-                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white truncate">{userProfile.fullName}</h1>
-                <p className="text-gray-500 dark:text-gray-500 text-sm mt-0.5">@{userProfile.username}</p>
-                {userProfile.bio && (
-                  <p className="text-gray-600 dark:text-gray-400 text-sm mt-2 max-w-xl leading-relaxed">{userProfile.bio}</p>
-                )}
-              </div>
-
-              {/* Social */}
+              {/* Social links — right-aligned on desktop */}
               {(userProfile.linkedin || userProfile.github || userProfile.portfolio) && (
-                <div className="flex items-center gap-2 sm:pb-1">
+                <div className="flex items-center gap-2 sm:ml-auto sm:pb-1">
                   {userProfile.linkedin && (
                     <a href={userProfile.linkedin} target="_blank" rel="noopener noreferrer"
                       className="p-2.5 rounded-xl transition-all hover:scale-110" style={glassCardSubtle(isDark)}>
@@ -319,6 +370,57 @@ export default function PublicProfilePage() {
                       <FaGlobe className="text-green-500" />
                     </a>
                   )}
+                </div>
+              )}
+            </div>
+
+            {/* Name + username + bio — below avatar */}
+            <div className="mb-4">
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white truncate">{userProfile.fullName}</h1>
+              <p className="text-gray-500 dark:text-gray-500 text-sm mt-1">@{userProfile.username}</p>
+
+              {/* Bio section — editable for owner */}
+              {editingBio && isOwner ? (
+                <div className="mt-3 max-w-xl print:hidden">
+                  <textarea
+                    value={bioText}
+                    onChange={e => setBioText(e.target.value)}
+                    maxLength={300}
+                    rows={3}
+                    placeholder="Write a short description about yourself..."
+                    className="w-full px-4 py-2.5 rounded-xl text-sm bg-white/10 dark:bg-white/[0.06] border border-gray-300 dark:border-white/10 text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/40 resize-none"
+                    autoFocus
+                  />
+                  <div className="flex items-center gap-2 mt-2">
+                    <button onClick={handleSaveBio} disabled={savingBio}
+                      className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-xs font-medium transition-colors disabled:opacity-50">
+                      {savingBio ? <FaSpinner className="animate-spin text-xs" /> : <FaSave className="text-xs" />} Save
+                    </button>
+                    <button onClick={() => setEditingBio(false)}
+                      className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-gray-200 dark:bg-white/10 text-gray-700 dark:text-gray-300 rounded-lg text-xs font-medium transition-colors">
+                      <FaTimes className="text-xs" /> Cancel
+                    </button>
+                    <span className="text-[10px] text-gray-400 ml-auto">{bioText.length}/300</span>
+                  </div>
+                </div>
+              ) : (
+                <div className="mt-2 max-w-xl group/bio">
+                  {userProfile.bio ? (
+                    <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
+                      {userProfile.bio}
+                      {isOwner && (
+                        <button onClick={() => { setBioText(userProfile.bio || ''); setEditingBio(true) }}
+                          className="inline-flex items-center gap-1 ml-2 text-blue-500 hover:text-blue-400 text-xs opacity-0 group-hover/bio:opacity-100 transition-opacity print:hidden">
+                          <FaEdit className="text-[10px]" /> Edit
+                        </button>
+                      )}
+                    </p>
+                  ) : isOwner ? (
+                    <button onClick={() => { setBioText(''); setEditingBio(true) }}
+                      className="text-gray-400 hover:text-blue-500 text-sm transition-colors flex items-center gap-1.5 print:hidden">
+                      <FaEdit className="text-xs" /> Add a description
+                    </button>
+                  ) : null}
                 </div>
               )}
             </div>

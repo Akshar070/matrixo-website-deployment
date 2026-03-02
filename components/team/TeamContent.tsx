@@ -66,6 +66,22 @@ function getLinkedin(name: string, firestoreLinkedin?: string): string {
   return ''
 }
 
+// Local profile image mapping (fallback when Firestore profileImage is empty)
+const localProfileImages: Record<string, string> = {
+  'M-A001': '/intern-images/M-A001.webp',
+  'M-A005': '/intern-images/M-A005.webp',
+  'M-A006': '/intern-images/M-A006.webp',
+  'M-A008': '/intern-images/M-A008.webp',
+  'M-A009': '/intern-images/M-A009.webp',
+  'M-A010': '/intern-images/M-A010.webp',
+  'M-A011': '/intern-images/M-A011.webp',
+}
+
+function getProfileImage(employeeId: string, firestoreImage: string): string {
+  if (firestoreImage) return firestoreImage
+  return localProfileImages[employeeId] || ''
+}
+
 export default function TeamContent() {
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([])
   const [loading, setLoading] = useState(true)
@@ -90,7 +106,7 @@ export default function TeamContent() {
             department: data.department || '',
             designation: data.designation || '',
             joiningDate: data.joiningDate || '',
-            profileImage: data.profileImage || '',
+            profileImage: getProfileImage(data.employeeId || doc.id, data.profileImage || ''),
             role: data.role || 'employee',
             linkedin: getLinkedin(name, data.linkedin),
           })

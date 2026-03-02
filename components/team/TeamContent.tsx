@@ -57,6 +57,22 @@ const linkedinMap: Record<string, string> = {
   'shravya': 'https://www.linkedin.com/in/shravya-datla-388447287',
 }
 
+// Fallback profile images for interns (mapped by employeeId)
+const internImageMap: Record<string, string> = {
+  'M-A001': '/intern-images/M-A001.webp',
+  'M-A005': '/intern-images/M-A005.webp',
+  'M-A006': '/intern-images/M-A006.webp',
+  'M-A008': '/intern-images/M-A008.jpeg',
+  'M-A009': '/intern-images/M-A009.jpg',
+  'M-A010': '/intern-images/M-A010.png',
+  'M-A011': '/intern-images/M-A011.png',
+}
+
+function getProfileImage(employeeId: string, firestoreImage?: string): string {
+  if (firestoreImage) return firestoreImage
+  return internImageMap[employeeId] || ''
+}
+
 function getLinkedin(name: string, firestoreLinkedin?: string): string {
   if (firestoreLinkedin) return firestoreLinkedin
   const nameLower = name.toLowerCase()
@@ -83,14 +99,15 @@ export default function TeamContent() {
           // Skip the Admin account from the team page
           if (data.name === 'Admin' || data.employeeId === 'Admin' || data.role === 'admin' && !data.designation) return
           const name = data.name || ''
+          const employeeId = data.employeeId || doc.id
           members.push({
-            employeeId: data.employeeId || doc.id,
+            employeeId: employeeId,
             name: name,
             email: data.email || '',
             department: data.department || '',
             designation: data.designation || '',
             joiningDate: data.joiningDate || '',
-            profileImage: data.profileImage || '',
+            profileImage: getProfileImage(employeeId, data.profileImage),
             role: data.role || 'employee',
             linkedin: getLinkedin(name, data.linkedin),
           })

@@ -9,7 +9,7 @@ import { analyzeUserProfile, generateMockProfile } from '@/lib/skilldna/ai-engin
 import { AIAnalysisRequest } from '@/lib/skilldna/types';
 
 export const dynamic = 'force-dynamic';
-export const maxDuration = 60; // Allow up to 60 seconds for AI response
+export const maxDuration = 10; // Vercel Hobby plan max is 10s
 
 // Rate limiting: simple in-memory store
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>();

@@ -57,7 +57,12 @@ CRITICAL RULES:
 7. All other scores range from 0-100.
 8. Be honest about gaps - don't inflate scores.
 9. Consider the user's past experience, current situation, and future aspirations.
-10. Behavioral traits should reflect work style and personality answers.`;
+10. Behavioral traits should reflect work style and personality answers.
+11. NEVER mirror or parrot the user's exact words or phrases in the persona summary. Reframe everything professionally using your own language — synthesize insights, don't copy input.
+12. Persona headline must be a creative professional title, NOT "Aspiring [dreamRole] with [field] Background".
+13. Learning path titles should be personalized and creative, not generic (e.g. NOT just "[dreamRole] Mastery Path").
+14. Include a "hiringReadiness" field (0-100) indicating how interview-ready the user appears.
+15. Include a "confidenceIndex" field (0-100) estimating the reliability of this analysis based on input quality.`;
 }
 
 function buildAnalysisPrompt(data: OnboardingData): string {
@@ -115,11 +120,18 @@ Generate a JSON response with EXACTLY this structure:
   "careerAlignmentScore": 0-100,
   "learningVelocityEstimate": 0-100,
   "dynamicSkillScore": 0-1000,
+  "hiringReadiness": 0-100,
+  "confidenceIndex": 0-100,
   "learningPaths": [{"title": "string", "description": "string", "steps": ["string"], "estimatedDuration": "string", "difficulty": "beginner|intermediate|advanced|expert", "relatedSkills": ["string"]}],
   "persona": {"headline": "string", "description": "string", "strengths": ["string"], "areasForGrowth": ["string"], "personalityType": "string", "careerFit": ["string"]}
 }
 
-Provide at least 5 technical skills, 4 behavioral traits, 3 skill clusters, 4 skill gaps, and 3 learning paths.
+IMPORTANT:
+- Provide at least 5 technical skills, 4 behavioral traits, 3 skill clusters, 4 skill gaps, and 3 learning paths.
+- Do NOT copy the user's raw text in the persona. Synthesize and reframe professionally.
+- Learning path titles should be personalized and unique, not generic templates.
+- hiringReadiness: How close this person is to being interview-ready (consider skill depth, experience, gaps).
+- confidenceIndex: How reliable this analysis is based on the quality/depth of the user's input.
 RESPOND WITH JSON ONLY.`;
 }
 
@@ -241,6 +253,8 @@ function validateAnalysisResponse(data: any): AIAnalysisResponse {
   data.careerAlignmentScore = clamp(data.careerAlignmentScore, 0, 100);
   data.learningVelocityEstimate = clamp(data.learningVelocityEstimate, 0, 100);
   data.dynamicSkillScore = clamp(data.dynamicSkillScore, 0, 1000);
+  data.hiringReadiness = clamp(data.hiringReadiness ?? 40, 0, 100);
+  data.confidenceIndex = clamp(data.confidenceIndex ?? 50, 0, 100);
 
   // Validate arrays
   if (!Array.isArray(data.technicalSkills)) data.technicalSkills = [];
@@ -407,6 +421,28 @@ export function generateMockProfile(data: OnboardingData): AIAnalysisResponse {
     beginner: 25, intermediate: 50, advanced: 75, expert: 90
   };
 
+  // Professional reframing helpers — never parrot raw user text
+  const workStyleLabel = data.personality.workStyle === 'solo' ? 'independent' : data.personality.workStyle === 'team' ? 'collaborative' : 'versatile';
+  const motivationLabel = data.personality.motivationDriver === 'impact' ? 'purpose-driven innovation' : data.personality.motivationDriver === 'mastery' ? 'deep technical mastery' : data.personality.motivationDriver === 'autonomy' ? 'self-directed growth' : 'professional excellence';
+  const challengeLabel = data.personality.challengeApproach === 'head-on' ? 'Pioneer' : data.personality.challengeApproach === 'systematic' ? 'Strategist' : data.personality.challengeApproach === 'creative' ? 'Innovator' : 'Orchestrator';
+  const decisionLabel = data.personality.decisionMaking === 'analytical' ? 'data-informed' : data.personality.decisionMaking === 'intuitive' ? 'intuition-guided' : 'consensus-building';
+  const learningLabel = data.personality.learningPreference === 'visual' ? 'visual learning' : data.personality.learningPreference === 'hands-on' ? 'experiential learning' : data.personality.learningPreference === 'reading' ? 'research-based learning' : 'discussion-based learning';
+
+  // Compute hiring readiness from skills depth + experience signals
+  const avgSkillScore = data.skills.length > 0
+    ? data.skills.reduce((sum, s) => sum + (levelScores[s.level] || 30), 0) / data.skills.length
+    : 25;
+  const hiringReadiness = Math.min(100, Math.round(avgSkillScore * 0.6 + data.selfRating.technicalDepth * 2 + data.selfRating.communication));
+  const confidenceIndex = Math.min(100, Math.round(
+    (data.skills.length > 0 ? 20 : 0) +
+    (data.pastExperience.length > 20 ? 15 : 5) +
+    (data.currentSituation.length > 20 ? 15 : 5) +
+    (data.futureAspiration.length > 20 ? 10 : 3) +
+    (data.careerGoals.dreamRole ? 15 : 0) +
+    (data.academic.degree ? 10 : 0) +
+    (data.interests.length > 0 ? 10 : 0)
+  ));
+
   return {
     technicalSkills: data.skills.map(s => ({
       name: s.name,
@@ -436,30 +472,32 @@ export function generateMockProfile(data: OnboardingData): AIAnalysisResponse {
     ],
     careerAlignmentScore: 55,
     learningVelocityEstimate: data.selfRating.learningSpeed * 10,
+    hiringReadiness,
+    confidenceIndex,
     dynamicSkillScore: Math.min(1000, Math.round(
-      data.skills.reduce((sum, s) => sum + levelScores[s.level], 0) / data.skills.length * 8 + 
+      data.skills.reduce((sum, s) => sum + levelScores[s.level], 0) / Math.max(data.skills.length, 1) * 8 + 
       (data.selfRating.problemSolving + data.selfRating.technicalDepth) * 15
     )),
     learningPaths: [
       {
-        title: `${data.careerGoals.dreamRole} Mastery Path`,
-        description: `Structured path to become a ${data.careerGoals.dreamRole}`,
+        title: `From Foundations to ${data.academic.field || 'Tech'} Excellence`,
+        description: `A comprehensive roadmap to build professional expertise and career momentum`,
         steps: ['Foundation Assessment', 'Core Skills Development', 'Project-Based Learning', 'Industry Certification', 'Portfolio Building'],
         estimatedDuration: '6 months',
         difficulty: 'intermediate',
         relatedSkills: skillNames.slice(0, 3),
       },
       {
-        title: 'Technical Interview Prep',
-        description: 'Comprehensive preparation for technical interviews',
+        title: 'Interview Readiness Accelerator',
+        description: 'Sharpen problem-solving and technical communication for career opportunities',
         steps: ['Data Structures Review', 'Algorithm Practice', 'System Design Basics', 'Mock Interviews', 'Company-Specific Prep'],
         estimatedDuration: '3 months',
         difficulty: 'advanced',
         relatedSkills: ['Problem Solving', 'Data Structures', 'Algorithms'],
       },
       {
-        title: 'Soft Skills Enhancement',
-        description: 'Develop crucial professional soft skills',
+        title: 'Professional Impact Toolkit',
+        description: 'Develop the interpersonal and communication skills that accelerate career growth',
         steps: ['Communication Workshop', 'Public Speaking Practice', 'Team Collaboration Projects', 'Leadership Exercises'],
         estimatedDuration: '2 months',
         difficulty: 'beginner',
@@ -467,19 +505,19 @@ export function generateMockProfile(data: OnboardingData): AIAnalysisResponse {
       },
     ],
     persona: {
-      headline: `Aspiring ${data.careerGoals.dreamRole} with ${data.academic.field} Background`,
-      description: `A ${data.personality.workStyle}-oriented learner who ${data.personality.motivationDriver === 'impact' ? 'is driven by making an impact' : data.personality.motivationDriver === 'mastery' ? 'strives for technical mastery' : 'values autonomy and growth'}. Currently focused on ${data.currentSituation.substring(0, 100)}, with a clear vision toward ${data.futureAspiration.substring(0, 100)}.`,
+      headline: `${challengeLabel} ${decisionLabel.charAt(0).toUpperCase() + decisionLabel.slice(1)} Professional · ${data.academic.field || 'Technology'} Domain`,
+      description: `A ${workStyleLabel} problem-solver driven by ${motivationLabel}, with a strong affinity for ${learningLabel}. Demonstrates a ${decisionLabel} approach to challenges and brings ${data.skills.length} tracked technical competencies to the table.`,
       strengths: [
-        `Strong ${data.personality.learningPreference} learner`,
-        `${data.personality.decisionMaking} decision maker`,
-        `${data.skills.length}+ technical skills`,
+        `Effective ${learningLabel} approach`,
+        `${decisionLabel.charAt(0).toUpperCase() + decisionLabel.slice(1)} decision-making style`,
+        `${data.skills.length}+ technical skills across ${[...new Set(data.skills.map(s => s.category))].length} categories`,
       ],
       areasForGrowth: [
-        'Broader industry exposure',
-        'Advanced system design thinking',
-        'Cross-functional collaboration',
+        'Broader industry exposure and cross-domain thinking',
+        'Advanced system design and architecture patterns',
+        'Cross-functional collaboration and stakeholder communication',
       ],
-      personalityType: `${data.personality.workStyle === 'solo' ? 'Independent' : data.personality.workStyle === 'team' ? 'Collaborative' : 'Versatile'} ${data.personality.challengeApproach === 'head-on' ? 'Pioneer' : data.personality.challengeApproach === 'systematic' ? 'Strategist' : 'Innovator'}`,
+      personalityType: `${workStyleLabel.charAt(0).toUpperCase() + workStyleLabel.slice(1)} ${challengeLabel}`,
       careerFit: data.careerGoals.targetIndustries.slice(0, 4),
     },
   };

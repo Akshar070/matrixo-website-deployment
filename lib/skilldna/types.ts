@@ -152,6 +152,8 @@ export interface SkillDNAProfile {
   learningVelocity: number;        // 0-100
   careerAlignmentScore: number;    // 0-100
   dynamicSkillScore: number;       // 0-1000
+  hiringReadiness: number;         // 0-100 — interview readiness indicator
+  confidenceIndex: number;         // 0-100 — analysis reliability score
   skillClusters: SkillCluster[];
   skillGaps: SkillGap[];
   learningPaths: LearningPath[];
@@ -206,6 +208,7 @@ export interface SkillDNAUserDocument {
     role: UserRole;
     createdAt: string;
     onboardingComplete: boolean;
+    skillDNAVersion?: number;      // Tracks which version of onboarding schema was completed
   };
   onboardingData?: OnboardingData;
   skillDNA?: SkillDNAProfile;
@@ -230,6 +233,8 @@ export interface AIAnalysisResponse {
   careerAlignmentScore: number;
   learningVelocityEstimate: number;
   dynamicSkillScore: number;
+  hiringReadiness: number;          // 0-100 — how interview-ready the user appears
+  confidenceIndex: number;          // 0-100 — reliability of this analysis
   learningPaths: LearningPath[];
   persona: AIPersonaSummary;
 }

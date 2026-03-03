@@ -12,7 +12,7 @@ import {
   FaTrophy, FaFire, FaHistory, FaBullseye, FaLightbulb,
   FaGraduationCap, FaChartBar, FaExclamationTriangle
 } from 'react-icons/fa';
-import { SkillDNAProfile, SkillLevel } from '@/lib/skilldna/types';
+import { SkillDNAProfile, SkillLevel, AcademicBackground, CareerGoal } from '@/lib/skilldna/types';
 import { getScoreGrade, getScoreGradient, getScoreColor } from '@/lib/skilldna/scoring';
 import SkillRadarChart from './charts/SkillRadarChart';
 import DynamicScoreMeter from './charts/DynamicScoreMeter';
@@ -29,6 +29,13 @@ interface SkillDNADashboardProps {
   onEditProfile?: () => void;
   onAddSkill?: (skill: { name: string; level: SkillLevel; category: string }) => Promise<void>;
   onRemoveSkill?: (skillName: string) => Promise<void>;
+  onUpdateAcademic?: (academic: AcademicBackground) => Promise<void>;
+  onUpdateInterests?: (interests: string[]) => Promise<void>;
+  onUpdateCareerGoal?: (goal: CareerGoal) => Promise<void>;
+  onRegeneratePersona?: () => Promise<void>;
+  currentAcademic?: AcademicBackground;
+  currentInterests?: string[];
+  currentCareerGoal?: CareerGoal;
 }
 
 export default function SkillDNADashboard({ 
@@ -38,6 +45,13 @@ export default function SkillDNADashboard({
   onEditProfile,
   onAddSkill,
   onRemoveSkill,
+  onUpdateAcademic,
+  onUpdateInterests,
+  onUpdateCareerGoal,
+  onRegeneratePersona,
+  currentAcademic,
+  currentInterests,
+  currentCareerGoal,
 }: SkillDNADashboardProps) {
   const [activeTab, setActiveTab] = useState<'overview' | 'skills' | 'gaps' | 'paths' | 'edit'>('overview');
 
@@ -122,11 +136,13 @@ export default function SkillDNADashboard({
             className="space-y-6"
           >
             {/* Top Stats Row */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
               {[
                 { label: 'Cognitive Score', value: profile.cognitiveScore, max: 100, icon: FaBrain, color: 'from-purple-500 to-fuchsia-500' },
                 { label: 'Learning Velocity', value: profile.learningVelocity, max: 100, icon: FaRocket, color: 'from-blue-500 to-cyan-500' },
                 { label: 'Career Alignment', value: profile.careerAlignmentScore, max: 100, icon: FaBullseye, color: 'from-green-500 to-emerald-500' },
+                { label: 'Hiring Readiness', value: profile.hiringReadiness ?? 0, max: 100, icon: FaTrophy, color: 'from-amber-500 to-orange-500' },
+                { label: 'Confidence Index', value: profile.confidenceIndex ?? 0, max: 100, icon: FaLightbulb, color: 'from-cyan-500 to-teal-500' },
                 { label: 'Skill Clusters', value: profile.skillClusters.length, max: undefined, icon: FaFire, color: 'from-orange-500 to-red-500' },
               ].map((stat, i) => (
                 <motion.div
@@ -238,8 +254,8 @@ export default function SkillDNADashboard({
                       <div className="flex items-center gap-2">
                         <span className="text-sm font-semibold text-gray-900 dark:text-white">{skill.name}</span>
                         <span className="text-xs px-2 py-0.5 rounded-full bg-gray-200 dark:bg-gray-800 text-gray-600 dark:text-gray-400">{skill.category}</span>
-                        {skill.trend === 'rising' && <span className="text-green-400 text-xs">â†‘</span>}
-                        {skill.trend === 'declining' && <span className="text-red-400 text-xs">â†“</span>}
+                        {skill.trend === 'rising' && <span className="text-green-400 text-xs">↑</span>}
+                        {skill.trend === 'declining' && <span className="text-red-400 text-xs">↓</span>}
                       </div>
                       <span className={`text-sm font-bold ${getScoreColor(skill.score)}`}>{skill.score}%</span>
                     </div>
@@ -296,7 +312,19 @@ export default function SkillDNADashboard({
         )}
 
         {activeTab === 'edit' && (
-          <ProfileEditSection profile={profile} onSave={onEditProfile} onAddSkill={onAddSkill} onRemoveSkill={onRemoveSkill} />
+          <ProfileEditSection
+            profile={profile}
+            onSave={onEditProfile}
+            onAddSkill={onAddSkill}
+            onRemoveSkill={onRemoveSkill}
+            onUpdateAcademic={onUpdateAcademic}
+            onUpdateInterests={onUpdateInterests}
+            onUpdateCareerGoal={onUpdateCareerGoal}
+            onRegeneratePersona={onRegeneratePersona}
+            currentAcademic={currentAcademic}
+            currentInterests={currentInterests}
+            currentCareerGoal={currentCareerGoal}
+          />
         )}
       </div>
     </div>

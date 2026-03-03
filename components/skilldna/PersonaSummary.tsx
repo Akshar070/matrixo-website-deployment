@@ -91,7 +91,7 @@ export default function PersonaSummary({ persona }: PersonaSummaryProps) {
             <ul className="space-y-1">
               {persona.areasForGrowth.map((a) => (
                 <li key={a} className="text-sm text-gray-700 dark:text-gray-300 flex items-center gap-1.5">
-                  <span className="text-amber-400 text-xs">â†‘</span> {a}
+                  <span className="text-amber-400 text-xs">→</span> {a}
                 </li>
               ))}
             </ul>

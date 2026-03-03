@@ -210,6 +210,15 @@
     color: #111827;
   }
 
+  /* Global dark-mode dropdown option styling (covers all selects, not just .glass-input) */
+  .dark select option {
+    background-color: #111827;
+    color: #f3f4f6;
+  }
+  .dark select {
+    color-scheme: dark;
+  }
+
   /* iOS 26 Liquid Glass Hero section */
   .glass-hero {
     background: linear-gradient(

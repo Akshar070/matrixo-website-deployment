@@ -20,7 +20,12 @@ const difficultyColors = {
   expert: { bg: 'bg-red-500/10 border-red-500/30', text: 'text-red-400', badge: 'bg-red-500/20' },
 };
 
+const difficultyOrder: Record<string, number> = { beginner: 0, intermediate: 1, advanced: 2, expert: 3 };
+
 export default function LearningPathsSection({ paths }: LearningPathsSectionProps) {
+  const sortedPaths = [...paths].sort(
+    (a, b) => (difficultyOrder[a.difficulty] ?? 99) - (difficultyOrder[b.difficulty] ?? 99)
+  );
   return (
     <div className="space-y-4">
       <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border border-gray-200 dark:border-gray-800 rounded-2xl p-6">
@@ -33,7 +38,7 @@ export default function LearningPathsSection({ paths }: LearningPathsSectionProp
         </p>
 
         <div className="space-y-6">
-          {paths.map((path, i) => {
+          {sortedPaths.map((path, i) => {
             const colors = difficultyColors[path.difficulty] || difficultyColors.intermediate;
 
             return (

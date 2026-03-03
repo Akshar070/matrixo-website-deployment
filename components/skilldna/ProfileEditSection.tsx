@@ -1,20 +1,28 @@
 // ============================================================
 // SkillDNA™ Profile Edit Section
-// User can add/remove skills they learned outside the platform
+// User can add/remove skills, edit academic/interests/career,
+// and regenerate AI persona
 // ============================================================
 
 'use client';
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaEdit, FaPlus, FaTimes, FaSpinner, FaTrash, FaInfoCircle } from 'react-icons/fa';
-import { SkillDNAProfile, SkillLevel } from '@/lib/skilldna/types';
+import { FaEdit, FaPlus, FaTimes, FaSpinner, FaTrash, FaInfoCircle, FaGraduationCap, FaHeart, FaBullseye, FaSyncAlt } from 'react-icons/fa';
+import { SkillDNAProfile, SkillLevel, AcademicBackground, CareerGoal } from '@/lib/skilldna/types';
 
 interface ProfileEditSectionProps {
   profile: SkillDNAProfile;
   onSave?: () => void;
   onAddSkill?: (skill: { name: string; level: SkillLevel; category: string }) => Promise<void>;
   onRemoveSkill?: (skillName: string) => Promise<void>;
+  onUpdateAcademic?: (academic: AcademicBackground) => Promise<void>;
+  onUpdateInterests?: (interests: string[]) => Promise<void>;
+  onUpdateCareerGoal?: (goal: CareerGoal) => Promise<void>;
+  onRegeneratePersona?: () => Promise<void>;
+  currentAcademic?: AcademicBackground;
+  currentInterests?: string[];
+  currentCareerGoal?: CareerGoal;
 }
 
 const SKILL_CATEGORIES = [
@@ -41,13 +49,44 @@ const LEVEL_INFO: Record<SkillLevel, { label: string; color: string; description
   expert:       { label: 'Expert',       color: 'bg-purple-500/20 text-purple-400 border-purple-500/30', description: 'Industry-level mastery' },
 }
 
-export default function ProfileEditSection({ profile, onSave, onAddSkill, onRemoveSkill }: ProfileEditSectionProps) {
+const INTEREST_SUGGESTIONS = [
+  'Artificial Intelligence', 'Web Development', 'Mobile Apps', 'Cloud Computing', 'Cybersecurity',
+  'Data Science', 'Machine Learning', 'Blockchain', 'IoT', 'Game Development',
+  'DevOps', 'UI/UX Design', 'Competitive Programming', 'Open Source', 'Robotics',
+];
+
+const MAX_INTERESTS = 10;
+
+export default function ProfileEditSection({
+  profile, onSave, onAddSkill, onRemoveSkill,
+  onUpdateAcademic, onUpdateInterests, onUpdateCareerGoal, onRegeneratePersona,
+  currentAcademic, currentInterests, currentCareerGoal,
+}: ProfileEditSectionProps) {
   const [newSkillName, setNewSkillName] = useState('');
   const [newSkillLevel, setNewSkillLevel] = useState<SkillLevel>('intermediate');
   const [newSkillCategory, setNewSkillCategory] = useState('Programming');
   const [isSaving, setIsSaving] = useState(false);
   const [removingSkill, setRemovingSkill] = useState<string | null>(null);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+
+  // Academic editing state
+  const [editingAcademic, setEditingAcademic] = useState(false);
+  const [academic, setAcademic] = useState<AcademicBackground>(currentAcademic || { degree: '', field: '', institution: '', year: '' });
+  const [savingAcademic, setSavingAcademic] = useState(false);
+
+  // Interests editing state
+  const [editingInterests, setEditingInterests] = useState(false);
+  const [interests, setInterests] = useState<string[]>(currentInterests || []);
+  const [newInterest, setNewInterest] = useState('');
+  const [savingInterests, setSavingInterests] = useState(false);
+
+  // Career goal editing state
+  const [editingCareer, setEditingCareer] = useState(false);
+  const [careerGoal, setCareerGoal] = useState<CareerGoal>(currentCareerGoal || { shortTerm: '', midTerm: '', longTerm: '', dreamRole: '', targetIndustries: [] });
+  const [savingCareer, setSavingCareer] = useState(false);
+
+  // Regenerate state
+  const [isRegenerating, setIsRegenerating] = useState(false);
 
   const handleAddSkill = async () => {
     if (!newSkillName.trim()) return;
@@ -82,6 +121,80 @@ export default function ProfileEditSection({ profile, onSave, onAddSkill, onRemo
     }
   };
 
+  const handleSaveAcademic = async () => {
+    if (!onUpdateAcademic) return;
+    setSavingAcademic(true);
+    try {
+      await onUpdateAcademic(academic);
+      setEditingAcademic(false);
+      setMessage({ type: 'success', text: 'Academic background updated successfully.' });
+    } catch (error: any) {
+      setMessage({ type: 'error', text: error.message || 'Failed to update academic background.' });
+    } finally {
+      setSavingAcademic(false);
+    }
+  };
+
+  const handleAddInterest = () => {
+    const trimmed = newInterest.trim();
+    if (!trimmed) return;
+    if (interests.length >= MAX_INTERESTS) {
+      setMessage({ type: 'error', text: `Maximum ${MAX_INTERESTS} interests allowed.` });
+      return;
+    }
+    if (interests.some(i => i.toLowerCase() === trimmed.toLowerCase())) {
+      setMessage({ type: 'error', text: `"${trimmed}" is already in your interests.` });
+      return;
+    }
+    setInterests([...interests, trimmed]);
+    setNewInterest('');
+  };
+
+  const handleRemoveInterest = (interest: string) => {
+    setInterests(interests.filter(i => i !== interest));
+  };
+
+  const handleSaveInterests = async () => {
+    if (!onUpdateInterests) return;
+    setSavingInterests(true);
+    try {
+      await onUpdateInterests(interests);
+      setEditingInterests(false);
+      setMessage({ type: 'success', text: 'Interests updated successfully.' });
+    } catch (error: any) {
+      setMessage({ type: 'error', text: error.message || 'Failed to update interests.' });
+    } finally {
+      setSavingInterests(false);
+    }
+  };
+
+  const handleSaveCareer = async () => {
+    if (!onUpdateCareerGoal) return;
+    setSavingCareer(true);
+    try {
+      await onUpdateCareerGoal(careerGoal);
+      setEditingCareer(false);
+      setMessage({ type: 'success', text: 'Career goals updated successfully.' });
+    } catch (error: any) {
+      setMessage({ type: 'error', text: error.message || 'Failed to update career goals.' });
+    } finally {
+      setSavingCareer(false);
+    }
+  };
+
+  const handleRegenerate = async () => {
+    if (!onRegeneratePersona) return;
+    setIsRegenerating(true);
+    try {
+      await onRegeneratePersona();
+      setMessage({ type: 'success', text: 'AI persona regenerated! Check the Overview tab for your new profile.' });
+    } catch (error: any) {
+      setMessage({ type: 'error', text: error.message || 'Failed to regenerate persona.' });
+    } finally {
+      setIsRegenerating(false);
+    }
+  };
+
   const selectedLevelInfo = LEVEL_INFO[newSkillLevel];
 
   return (
@@ -91,12 +204,326 @@ export default function ProfileEditSection({ profile, onSave, onAddSkill, onRemo
       <div className="flex items-start gap-3 p-4 rounded-xl bg-blue-500/10 border border-blue-500/20">
         <FaInfoCircle className="text-blue-400 mt-0.5 flex-shrink-0" />
         <p className="text-sm text-blue-300">
-          Learned something outside matriXO? Add it here and your SkillDNA™ profile will be updated instantly.
-          Skills you add manually are marked as <span className="text-green-400 font-medium">rising</span> to reflect your active learning.
+          Manage your SkillDNA™ profile below. You can edit your academic background, interests, career goals,
+          add or remove skills, and regenerate your AI persona summary.
         </p>
       </div>
 
-      {/* Add New Skill */}
+      {/* Global Message */}
+      <AnimatePresence>
+        {message && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className={`p-3 rounded-xl text-sm flex items-center gap-2 ${
+              message.type === 'success'
+                ? 'bg-green-500/10 border border-green-500/30 text-green-400'
+                : 'bg-red-500/10 border border-red-500/30 text-red-400'
+            }`}
+          >
+            {message.type === 'error' && <FaTimes className="flex-shrink-0" />}
+            {message.text}
+            <button onClick={() => setMessage(null)} className="ml-auto opacity-60 hover:opacity-100">
+              <FaTimes size={12} />
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ===== Academic Background ===== */}
+      <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border border-gray-200 dark:border-gray-800 rounded-2xl p-6">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
+            <FaGraduationCap className="text-blue-400" />
+            Academic Background
+          </h3>
+          {onUpdateAcademic && (
+            <button
+              onClick={() => { setEditingAcademic(!editingAcademic); setAcademic(currentAcademic || { degree: '', field: '', institution: '', year: '' }); }}
+              className="text-sm text-purple-400 hover:text-purple-300 flex items-center gap-1"
+            >
+              <FaEdit size={12} /> {editingAcademic ? 'Cancel' : 'Edit'}
+            </button>
+          )}
+        </div>
+
+        {editingAcademic ? (
+          <div className="space-y-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label className="text-xs text-gray-500 mb-1 block">Degree</label>
+                <select
+                  value={academic.degree}
+                  onChange={(e) => setAcademic({ ...academic, degree: e.target.value })}
+                  className="w-full p-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white focus:border-purple-500 transition-all"
+                >
+                  <option value="">Select degree</option>
+                  <option value="B.Tech">B.Tech</option>
+                  <option value="B.E.">B.E.</option>
+                  <option value="B.Sc">B.Sc</option>
+                  <option value="BCA">BCA</option>
+                  <option value="M.Tech">M.Tech</option>
+                  <option value="M.Sc">M.Sc</option>
+                  <option value="MCA">MCA</option>
+                  <option value="MBA">MBA</option>
+                  <option value="PhD">PhD</option>
+                  <option value="Diploma">Diploma</option>
+                  <option value="Self-taught">Self-taught</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+              <div>
+                <label className="text-xs text-gray-500 mb-1 block">Field of Study</label>
+                <input
+                  type="text"
+                  value={academic.field}
+                  onChange={(e) => setAcademic({ ...academic, field: e.target.value })}
+                  className="w-full p-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white focus:border-purple-500 transition-all"
+                  placeholder="e.g., Computer Science"
+                />
+              </div>
+              <div>
+                <label className="text-xs text-gray-500 mb-1 block">Institution</label>
+                <input
+                  type="text"
+                  value={academic.institution}
+                  onChange={(e) => setAcademic({ ...academic, institution: e.target.value })}
+                  className="w-full p-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white focus:border-purple-500 transition-all"
+                  placeholder="College / University name"
+                />
+              </div>
+              <div>
+                <label className="text-xs text-gray-500 mb-1 block">Year</label>
+                <select
+                  value={academic.year}
+                  onChange={(e) => setAcademic({ ...academic, year: e.target.value })}
+                  className="w-full p-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white focus:border-purple-500 transition-all"
+                >
+                  <option value="">Select year</option>
+                  <option value="1st Year">1st Year</option>
+                  <option value="2nd Year">2nd Year</option>
+                  <option value="3rd Year">3rd Year</option>
+                  <option value="4th Year">4th Year</option>
+                  <option value="Graduate">Graduate</option>
+                  <option value="Post-Graduate">Post-Graduate</option>
+                  <option value="Working Professional">Working Professional</option>
+                </select>
+              </div>
+            </div>
+            <button
+              onClick={handleSaveAcademic}
+              disabled={savingAcademic}
+              className="px-6 py-2.5 bg-purple-600 text-white rounded-xl hover:bg-purple-700 disabled:opacity-50 transition-all flex items-center gap-2 text-sm font-medium"
+            >
+              {savingAcademic ? <FaSpinner className="animate-spin" /> : null}
+              {savingAcademic ? 'Saving...' : 'Save Academic Info'}
+            </button>
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 gap-3 text-sm">
+            <div><span className="text-gray-500">Degree:</span> <span className="text-gray-900 dark:text-white ml-1">{currentAcademic?.degree || '—'}</span></div>
+            <div><span className="text-gray-500">Field:</span> <span className="text-gray-900 dark:text-white ml-1">{currentAcademic?.field || '—'}</span></div>
+            <div><span className="text-gray-500">Institution:</span> <span className="text-gray-900 dark:text-white ml-1">{currentAcademic?.institution || '—'}</span></div>
+            <div><span className="text-gray-500">Year:</span> <span className="text-gray-900 dark:text-white ml-1">{currentAcademic?.year || '—'}</span></div>
+          </div>
+        )}
+      </div>
+
+      {/* ===== Interests ===== */}
+      <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border border-gray-200 dark:border-gray-800 rounded-2xl p-6">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
+            <FaHeart className="text-pink-400" />
+            Interests
+            <span className="text-sm font-normal text-gray-500">({interests.length}/{MAX_INTERESTS})</span>
+          </h3>
+          {onUpdateInterests && (
+            <button
+              onClick={() => { setEditingInterests(!editingInterests); setInterests(currentInterests || []); }}
+              className="text-sm text-purple-400 hover:text-purple-300 flex items-center gap-1"
+            >
+              <FaEdit size={12} /> {editingInterests ? 'Cancel' : 'Edit'}
+            </button>
+          )}
+        </div>
+
+        {editingInterests ? (
+          <div className="space-y-3">
+            {/* Current interests as removable tags */}
+            <div className="flex flex-wrap gap-2">
+              {interests.map((interest) => (
+                <span key={interest} className="inline-flex items-center gap-1 px-3 py-1.5 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded-full text-sm">
+                  {interest}
+                  <button onClick={() => handleRemoveInterest(interest)} className="ml-1 hover:text-red-500">
+                    <FaTimes size={10} />
+                  </button>
+                </span>
+              ))}
+              {interests.length === 0 && <p className="text-gray-500 text-sm">No interests added yet.</p>}
+            </div>
+
+            {/* Add custom interest */}
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={newInterest}
+                onChange={(e) => setNewInterest(e.target.value)}
+                onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleAddInterest(); }}}
+                className="flex-1 p-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:border-purple-500 transition-all"
+                placeholder="Add a custom interest..."
+                disabled={interests.length >= MAX_INTERESTS}
+              />
+              <button
+                onClick={handleAddInterest}
+                disabled={interests.length >= MAX_INTERESTS || !newInterest.trim()}
+                className="px-4 py-3 bg-purple-600 text-white rounded-xl hover:bg-purple-700 disabled:opacity-50 transition-all"
+              >
+                <FaPlus />
+              </button>
+            </div>
+
+            {/* Suggestions */}
+            {interests.length < MAX_INTERESTS && (
+              <div>
+                <p className="text-xs text-gray-500 mb-1.5">Quick add:</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {INTEREST_SUGGESTIONS.filter(s => !interests.some(i => i.toLowerCase() === s.toLowerCase())).slice(0, 8).map((suggestion) => (
+                    <button
+                      key={suggestion}
+                      onClick={() => { if (interests.length < MAX_INTERESTS) setInterests([...interests, suggestion]); }}
+                      className="text-xs px-2.5 py-1 rounded-full bg-gray-200 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-purple-600 hover:text-white transition-all"
+                    >
+                      + {suggestion}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <button
+              onClick={handleSaveInterests}
+              disabled={savingInterests}
+              className="px-6 py-2.5 bg-purple-600 text-white rounded-xl hover:bg-purple-700 disabled:opacity-50 transition-all flex items-center gap-2 text-sm font-medium"
+            >
+              {savingInterests ? <FaSpinner className="animate-spin" /> : null}
+              {savingInterests ? 'Saving...' : 'Save Interests'}
+            </button>
+          </div>
+        ) : (
+          <div className="flex flex-wrap gap-2">
+            {(currentInterests || []).length > 0 ? (currentInterests || []).map((interest) => (
+              <span key={interest} className="text-xs px-3 py-1.5 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30">
+                {interest}
+              </span>
+            )) : <p className="text-gray-500 text-sm">No interests set.</p>}
+          </div>
+        )}
+      </div>
+
+      {/* ===== Career Goals ===== */}
+      <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border border-gray-200 dark:border-gray-800 rounded-2xl p-6">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
+            <FaBullseye className="text-green-400" />
+            Career Goals
+          </h3>
+          {onUpdateCareerGoal && (
+            <button
+              onClick={() => { setEditingCareer(!editingCareer); setCareerGoal(currentCareerGoal || { shortTerm: '', midTerm: '', longTerm: '', dreamRole: '', targetIndustries: [] }); }}
+              className="text-sm text-purple-400 hover:text-purple-300 flex items-center gap-1"
+            >
+              <FaEdit size={12} /> {editingCareer ? 'Cancel' : 'Edit'}
+            </button>
+          )}
+        </div>
+
+        {editingCareer ? (
+          <div className="space-y-3">
+            <div>
+              <label className="text-xs text-gray-500 mb-1 block">Dream Role</label>
+              <input
+                type="text"
+                value={careerGoal.dreamRole}
+                onChange={(e) => setCareerGoal({ ...careerGoal, dreamRole: e.target.value })}
+                className="w-full p-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white focus:border-purple-500 transition-all"
+                placeholder="e.g., Senior Software Engineer"
+              />
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div>
+                <label className="text-xs text-gray-500 mb-1 block">Short-term (1 year)</label>
+                <textarea
+                  value={careerGoal.shortTerm}
+                  onChange={(e) => setCareerGoal({ ...careerGoal, shortTerm: e.target.value })}
+                  rows={2}
+                  className="w-full p-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white focus:border-purple-500 transition-all resize-none"
+                  placeholder="What you'll achieve in the next year"
+                />
+              </div>
+              <div>
+                <label className="text-xs text-gray-500 mb-1 block">Mid-term (2-3 years)</label>
+                <textarea
+                  value={careerGoal.midTerm}
+                  onChange={(e) => setCareerGoal({ ...careerGoal, midTerm: e.target.value })}
+                  rows={2}
+                  className="w-full p-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white focus:border-purple-500 transition-all resize-none"
+                  placeholder="Where you want to be in 2-3 years"
+                />
+              </div>
+              <div>
+                <label className="text-xs text-gray-500 mb-1 block">Long-term (5+ years)</label>
+                <textarea
+                  value={careerGoal.longTerm}
+                  onChange={(e) => setCareerGoal({ ...careerGoal, longTerm: e.target.value })}
+                  rows={2}
+                  className="w-full p-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white focus:border-purple-500 transition-all resize-none"
+                  placeholder="Your ultimate career vision"
+                />
+              </div>
+            </div>
+            <button
+              onClick={handleSaveCareer}
+              disabled={savingCareer}
+              className="px-6 py-2.5 bg-purple-600 text-white rounded-xl hover:bg-purple-700 disabled:opacity-50 transition-all flex items-center gap-2 text-sm font-medium"
+            >
+              {savingCareer ? <FaSpinner className="animate-spin" /> : null}
+              {savingCareer ? 'Saving...' : 'Save Career Goals'}
+            </button>
+          </div>
+        ) : (
+          <div className="space-y-2 text-sm">
+            <div><span className="text-gray-500">Dream Role:</span> <span className="text-gray-900 dark:text-white ml-1">{currentCareerGoal?.dreamRole || '—'}</span></div>
+            <div><span className="text-gray-500">Short-term:</span> <span className="text-gray-900 dark:text-white ml-1">{currentCareerGoal?.shortTerm || '—'}</span></div>
+            <div><span className="text-gray-500">Mid-term:</span> <span className="text-gray-900 dark:text-white ml-1">{currentCareerGoal?.midTerm || '—'}</span></div>
+            <div><span className="text-gray-500">Long-term:</span> <span className="text-gray-900 dark:text-white ml-1">{currentCareerGoal?.longTerm || '—'}</span></div>
+          </div>
+        )}
+      </div>
+
+      {/* ===== Regenerate AI Persona ===== */}
+      {onRegeneratePersona && (
+        <div className="bg-gradient-to-br from-purple-100/40 via-white to-blue-100/40 dark:from-purple-900/20 dark:via-gray-900 dark:to-blue-900/20 backdrop-blur-sm border border-purple-500/20 rounded-2xl p-6">
+          <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
+            <FaSyncAlt className="text-purple-400" />
+            Regenerate AI Persona
+          </h3>
+          <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+            After updating your academic details, interests, or career goals, regenerate your AI persona to reflect the latest changes.
+            This will re-analyze your profile using the AI engine.
+          </p>
+          <button
+            onClick={handleRegenerate}
+            disabled={isRegenerating}
+            className="px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-xl hover:shadow-lg hover:shadow-purple-500/30 disabled:opacity-50 transition-all flex items-center gap-2 font-medium"
+          >
+            {isRegenerating ? <FaSpinner className="animate-spin" /> : <FaSyncAlt />}
+            {isRegenerating ? 'Regenerating...' : 'Regenerate Persona'}
+          </button>
+        </div>
+      )}
+
+      {/* ===== Add New Skill ===== */}
       <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border border-gray-200 dark:border-gray-800 rounded-2xl p-6">
         <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1 flex items-center gap-2">
           <FaEdit className="text-blue-400" />
@@ -163,27 +590,6 @@ export default function ProfileEditSection({ profile, onSave, onAddSkill, onRemo
             </button>
           </div>
         </div>
-
-        <AnimatePresence>
-          {message && (
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              className={`mt-4 p-3 rounded-xl text-sm flex items-center gap-2 ${
-                message.type === 'success'
-                  ? 'bg-green-500/10 border border-green-500/30 text-green-400'
-                  : 'bg-red-500/10 border border-red-500/30 text-red-400'
-              }`}
-            >
-              {message.type === 'error' && <FaTimes className="flex-shrink-0" />}
-              {message.text}
-              <button onClick={() => setMessage(null)} className="ml-auto opacity-60 hover:opacity-100">
-                <FaTimes size={12} />
-              </button>
-            </motion.div>
-          )}
-        </AnimatePresence>
       </div>
 
       {/* Current Skills List */}

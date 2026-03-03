@@ -161,6 +161,8 @@ export function useSkillDNA(): UseSkillDNAReturn {
       const skillDNAProfile: SkillDNAProfile = {
         ...analysisData,
         learningVelocity: analysisData.learningVelocityEstimate,
+        hiringReadiness: analysisData.hiringReadiness ?? 40,
+        confidenceIndex: analysisData.confidenceIndex ?? 50,
         lastUpdated: new Date().toISOString(),
         version: 1,
       };

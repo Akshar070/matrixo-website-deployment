@@ -115,6 +115,7 @@ export async function saveOnboardingData(
     'profile.interests': onboardingData.interests,
     'profile.goals': onboardingData.careerGoals,
     'profile.onboardingComplete': true,
+    'profile.skillDNAVersion': 1,
   });
 }
 
@@ -277,6 +278,48 @@ export async function getAssessmentHistory(
 }
 
 // ---- Activity Log ----
+
+/**
+ * Update user's academic background
+ */
+export async function updateAcademicBackground(
+  userId: string,
+  academic: AcademicBackground
+): Promise<void> {
+  const docRef = doc(db, SKILLDNA_COLLECTION, userId);
+  await updateDoc(docRef, {
+    'profile.education': academic,
+    'onboardingData.academic': academic,
+  });
+}
+
+/**
+ * Update user's interests
+ */
+export async function updateInterests(
+  userId: string,
+  interests: string[]
+): Promise<void> {
+  const docRef = doc(db, SKILLDNA_COLLECTION, userId);
+  await updateDoc(docRef, {
+    'profile.interests': interests,
+    'onboardingData.interests': interests,
+  });
+}
+
+/**
+ * Update user's career goals
+ */
+export async function updateCareerGoals(
+  userId: string,
+  goals: CareerGoal
+): Promise<void> {
+  const docRef = doc(db, SKILLDNA_COLLECTION, userId);
+  await updateDoc(docRef, {
+    'profile.goals': goals,
+    'onboardingData.careerGoals': goals,
+  });
+}
 
 /**
  * Log user activity

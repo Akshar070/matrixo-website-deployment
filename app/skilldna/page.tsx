@@ -6,8 +6,8 @@ import { useSkillDNA } from '@/hooks/useSkillDNA'
 import OnboardingFlow from '@/components/skilldna/OnboardingFlow'
 import SkillDNADashboard from '@/components/skilldna/SkillDNADashboard'
 import AnalyzingScreen from '@/components/skilldna/AnalyzingScreen'
-import { OnboardingData, SkillLevel, TechnicalSkill } from '@/lib/skilldna/types'
-import { updateSkillDNAProfile } from '@/lib/skilldna/firestore-service'
+import { OnboardingData, SkillLevel, TechnicalSkill, AcademicBackground, CareerGoal } from '@/lib/skilldna/types'
+import { updateSkillDNAProfile, updateAcademicBackground, updateInterests, updateCareerGoals } from '@/lib/skilldna/firestore-service'
 import { motion } from 'framer-motion'
 import { FaDna, FaSignInAlt, FaExclamationTriangle, FaRedo } from 'react-icons/fa'
 import Link from 'next/link'
@@ -70,6 +70,41 @@ export default function SkillDNAPage() {
     )
     await updateSkillDNAProfile(user.uid, { technicalSkills: updatedSkills }, 'skill_added')
     await refreshProfile()
+  }
+
+  // Update academic background
+  const handleUpdateAcademic = async (academic: AcademicBackground) => {
+    if (!user) throw new Error('Not authenticated')
+    await updateAcademicBackground(user.uid, academic)
+    await refreshProfile()
+  }
+
+  // Update interests
+  const handleUpdateInterests = async (interests: string[]) => {
+    if (!user) throw new Error('Not authenticated')
+    await updateInterests(user.uid, interests)
+    await refreshProfile()
+  }
+
+  // Update career goals
+  const handleUpdateCareerGoal = async (goal: CareerGoal) => {
+    if (!user) throw new Error('Not authenticated')
+    await updateCareerGoals(user.uid, goal)
+    await refreshProfile()
+  }
+
+  // Regenerate AI persona by re-submitting saved onboarding data
+  const handleRegeneratePersona = async () => {
+    if (!user || !userData?.onboardingData) throw new Error('No onboarding data found')
+    setIsAnalyzing(true)
+    try {
+      await submitOnboarding(userData.onboardingData)
+    } catch (err: any) {
+      console.error('Regeneration failed:', err)
+      throw err
+    } finally {
+      setIsAnalyzing(false)
+    }
   }
 
   // Initialize user document when authenticated
@@ -237,6 +272,13 @@ export default function SkillDNAPage() {
         onRefresh={refreshProfile}
         onAddSkill={handleAddSkill}
         onRemoveSkill={handleRemoveSkill}
+        onUpdateAcademic={handleUpdateAcademic}
+        onUpdateInterests={handleUpdateInterests}
+        onUpdateCareerGoal={handleUpdateCareerGoal}
+        onRegeneratePersona={handleRegeneratePersona}
+        currentAcademic={userData?.profile?.education}
+        currentInterests={userData?.profile?.interests}
+        currentCareerGoal={userData?.profile?.goals}
       />
     )
   }

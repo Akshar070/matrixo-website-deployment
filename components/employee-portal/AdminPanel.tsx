@@ -38,6 +38,25 @@ import { toast } from 'sonner'
 import { Timestamp } from 'firebase/firestore'
 
 // ============================================
+// LOCAL PROFILE IMAGE FALLBACKS
+// ============================================
+const localProfileImages: Record<string, string> = {
+  'M-A001': '/intern-images/M-A001.webp',
+  'M-A005': '/intern-images/M-A005.webp',
+  'M-A006': '/intern-images/M-A006.webp',
+  'M-A008': '/intern-images/M-A008.webp',
+  'M-A009': '/intern-images/M-A009.webp',
+  'M-A010': '/intern-images/M-A010.webp',
+  'M-A011': '/intern-images/M-A011.webp',
+}
+
+const getEmpProfileImage = (profileImage?: string, employeeId?: string): string | undefined => {
+  if (profileImage) return profileImage
+  if (employeeId && localProfileImages[employeeId]) return localProfileImages[employeeId]
+  return undefined
+}
+
+// ============================================
 // TYPES
 // ============================================
 
@@ -163,7 +182,7 @@ function EmployeeProfileModal({
       {/* Employee Header */}
       <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-5 p-4 sm:p-5 bg-gradient-to-r from-neutral-800/80 to-neutral-900/80 backdrop-blur-xl rounded-xl sm:rounded-2xl mb-4 sm:mb-6 border border-white/10">
         <div className="relative">
-          <Avatar src={employee.profileImage} name={employee.name} size="xl" showBorder={false} />
+          <Avatar src={getEmpProfileImage(employee.profileImage, employee.employeeId)} name={employee.name} size="xl" showBorder={false} />
           <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 rounded-full border-2 border-neutral-900" />
         </div>
         <div className="flex-1 min-w-0 text-center sm:text-left">
@@ -455,7 +474,7 @@ function EditAttendanceModal({
       <div className="space-y-4">
         {/* Employee Info */}
         <div className="flex items-center gap-3 p-3 bg-neutral-800/50 rounded-lg">
-          <Avatar src={employee.profileImage} name={employee.name} size="md" showBorder={false} />
+          <Avatar src={getEmpProfileImage(employee.profileImage, employee.employeeId)} name={employee.name} size="md" showBorder={false} />
           <div>
             <p className="font-medium text-white">{employee.name}</p>
             <p className="text-sm text-neutral-400">{employee.employeeId}</p>
@@ -616,7 +635,7 @@ function AttendanceTable({
               >
                 <td className="p-3">
                   <div className="flex items-center gap-3">
-                    <Avatar src={emp.profileImage} name={emp.name} size="sm" showBorder={false} />
+                    <Avatar src={getEmpProfileImage(emp.profileImage, emp.employeeId)} name={emp.name} size="sm" showBorder={false} />
                     <div>
                       <p className="font-medium text-white">{emp.name}</p>
                       <p className="text-xs text-neutral-500">{emp.employeeId}</p>
@@ -729,7 +748,7 @@ function EmployeeList({
           <Card hover className="relative">
               <div className="flex items-center gap-4">
                 <div className="relative">
-                  <Avatar src={emp.profileImage} name={emp.name} size="lg" />
+                  <Avatar src={getEmpProfileImage(emp.profileImage, emp.employeeId)} name={emp.name} size="lg" />
                   <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-neutral-900 rounded-full flex items-center justify-center border border-primary-500/50">
                     <span className="text-[8px] font-bold text-primary-400">M</span>
                   </div>
@@ -1236,7 +1255,7 @@ function ExportReportModal({
                           : 'hover:bg-neutral-700/50 text-white'
                       }`}
                     >
-                      <Avatar src={emp.profileImage} name={emp.name} size="sm" showBorder={false} />
+                      <Avatar src={getEmpProfileImage(emp.profileImage, emp.employeeId)} name={emp.name} size="sm" showBorder={false} />
                       <div className="flex-1 min-w-0">
                         <div className="font-medium truncate">{emp.name}</div>
                         <div className="text-xs text-neutral-500 truncate">{emp.employeeId} • {emp.department}</div>

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { useAuth } from '@/lib/AuthContext'
 import { useSkillDNA } from '@/hooks/useSkillDNA'
 import OnboardingFlow from '@/components/skilldna/OnboardingFlow'
@@ -8,6 +8,7 @@ import SkillDNADashboard from '@/components/skilldna/SkillDNADashboard'
 import AnalyzingScreen from '@/components/skilldna/AnalyzingScreen'
 import { OnboardingData, SkillLevel, TechnicalSkill, AcademicBackground, CareerGoal } from '@/lib/skilldna/types'
 import { updateSkillDNAProfile, updateAcademicBackground, updateInterests, updateCareerGoals, editSkill } from '@/lib/skilldna/firestore-service'
+import { getAllVerifications } from '@/lib/skilldna/verification/firestore-service'
 import { motion } from 'framer-motion'
 import { FaDna, FaSignInAlt, FaExclamationTriangle, FaRedo } from 'react-icons/fa'
 import Link from 'next/link'
@@ -29,6 +30,43 @@ export default function SkillDNAPage() {
   const [initialized, setInitialized] = useState(false)
   const [analysisError, setAnalysisError] = useState<string | null>(null)
   const pendingDataRef = useRef<OnboardingData | null>(null)
+  const [authToken, setAuthToken] = useState<string>('')
+
+  // Refresh auth token
+  useEffect(() => {
+    if (user) {
+      user.getIdToken().then(setAuthToken).catch(console.error)
+    }
+  }, [user])
+
+  // Load verification data into skills after profile loads
+  const loadVerifications = useCallback(async () => {
+    if (!user || !profile) return
+    try {
+      const verifications = await getAllVerifications(user.uid)
+      if (Object.keys(verifications).length === 0) return
+
+      // Merge verification data into skills
+      let hasChanges = false
+      const updatedSkills = profile.technicalSkills.map((skill) => {
+        const key = skill.name.toLowerCase().replace(/[^a-z0-9]/g, '_')
+        const v = verifications[key]
+        if (v) { hasChanges = true; return { ...skill, verification: v } }
+        return skill
+      })
+      if (hasChanges) {
+        await updateSkillDNAProfile(user.uid, { technicalSkills: updatedSkills }, 'profile_updated')
+        await refreshProfile()
+      }
+    } catch (err) {
+      console.error('Failed to load verifications:', err)
+    }
+  }, [user, profile, refreshProfile])
+
+  useEffect(() => {
+    if (profile && user) { loadVerifications() }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [profile?.technicalSkills.length, user?.uid])
 
   // Score mapping for skill levels
   const levelScoreMap: Record<SkillLevel, number> = {
@@ -298,6 +336,9 @@ export default function SkillDNAPage() {
         currentAcademic={userData?.profile?.education}
         currentInterests={userData?.profile?.interests}
         currentCareerGoal={userData?.profile?.goals}
+        userId={user.uid}
+        authToken={authToken}
+        onVerificationComplete={loadVerifications}
       />
     )
   }

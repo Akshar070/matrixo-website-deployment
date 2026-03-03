@@ -37,6 +37,10 @@ interface SkillDNADashboardProps {
   currentAcademic?: AcademicBackground;
   currentInterests?: string[];
   currentCareerGoal?: CareerGoal;
+  // Verification props
+  userId?: string;
+  authToken?: string;
+  onVerificationComplete?: () => void;
 }
 
 export default function SkillDNADashboard({ 
@@ -54,6 +58,9 @@ export default function SkillDNADashboard({
   currentAcademic,
   currentInterests,
   currentCareerGoal,
+  userId,
+  authToken,
+  onVerificationComplete,
 }: SkillDNADashboardProps) {
   const [activeTab, setActiveTab] = useState<'overview' | 'skills' | 'gaps' | 'paths' | 'edit'>('overview');
 
@@ -327,6 +334,9 @@ export default function SkillDNADashboard({
             currentAcademic={currentAcademic}
             currentInterests={currentInterests}
             currentCareerGoal={currentCareerGoal}
+            userId={userId}
+            authToken={authToken}
+            onVerificationComplete={onVerificationComplete}
           />
         )}
       </div>

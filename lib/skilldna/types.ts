@@ -105,6 +105,15 @@ export interface TechnicalSkill {
   trend: 'rising' | 'stable' | 'declining';
   lastAssessed?: string;
   goalAlignment?: SkillGoalAlignment;   // computed alignment to career goals
+  verification?: {
+    isVerified: boolean;
+    verificationScore: number;
+    verificationAttempts: number;
+    lastAttemptDate: string;
+    bestScore: number;
+    status: 'not-verified' | 'verified' | 'failed';
+    cooldownUntil?: string;
+  };
 }
 
 // ---- Goal Alignment Intelligence ----

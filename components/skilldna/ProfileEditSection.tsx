@@ -11,6 +11,7 @@ import {
   FaEdit, FaPlus, FaTimes, FaSpinner, FaTrash, FaInfoCircle,
   FaGraduationCap, FaHeart, FaBullseye, FaSyncAlt, FaCrosshairs,
   FaExclamationTriangle, FaLightbulb, FaChartLine, FaCheck,
+  FaShieldAlt, FaCheckCircle, FaTimesCircle,
 } from 'react-icons/fa';
 import {
   SkillDNAProfile, SkillLevel, AcademicBackground, CareerGoal,
@@ -22,6 +23,8 @@ import {
   detectGoalBasedGaps,
   generatePrioritySuggestions,
 } from '@/lib/skilldna/goal-alignment-engine';
+import { hasVerificationQuestions } from '@/lib/skilldna/verification/question-bank';
+import VerificationTestModal from './VerificationTestModal';
 
 interface ProfileEditSectionProps {
   profile: SkillDNAProfile;
@@ -36,6 +39,10 @@ interface ProfileEditSectionProps {
   currentAcademic?: AcademicBackground;
   currentInterests?: string[];
   currentCareerGoal?: CareerGoal;
+  // Verification props
+  userId?: string;
+  authToken?: string;
+  onVerificationComplete?: () => void;
 }
 
 const SKILL_CATEGORIES = [
@@ -103,6 +110,7 @@ export default function ProfileEditSection({
   profile, onSave, onAddSkill, onRemoveSkill, onEditSkill,
   onUpdateAcademic, onUpdateInterests, onUpdateCareerGoal, onRegeneratePersona,
   currentAcademic, currentInterests, currentCareerGoal,
+  userId, authToken, onVerificationComplete,
 }: ProfileEditSectionProps) {
   // ---- Add skill state ----
   const [newSkillName, setNewSkillName] = useState('');
@@ -135,6 +143,9 @@ export default function ProfileEditSection({
 
   // ---- Regenerate state ----
   const [isRegenerating, setIsRegenerating] = useState(false);
+
+  // ---- Verification state ----
+  const [verifyingSkill, setVerifyingSkill] = useState<string | null>(null);
 
   // ---- Computed: Goal Alignment Intelligence ----
   const goals = currentCareerGoal || { shortTerm: '', midTerm: '', longTerm: '', dreamRole: '', targetIndustries: [] };
@@ -557,6 +568,9 @@ export default function ProfileEditSection({
             {enrichedSkills.map((skill) => {
               const isEditing = editingSkillName === skill.name;
               const alignment = skill.goalAlignment;
+              const vf = skill.verification;
+              const canVerify = !!userId && !!authToken && hasVerificationQuestions(skill.name);
+              const isOnCooldown = vf?.cooldownUntil ? new Date(vf.cooldownUntil) > new Date() : false;
 
               return (
                 <motion.div
@@ -572,6 +586,18 @@ export default function ProfileEditSection({
                       {alignment && (
                         <span className={`text-xs px-2 py-0.5 rounded-full border font-medium flex-shrink-0 ${getTagColor(alignment.strategicTag)}`}>
                           {alignment.strategicTag}
+                        </span>
+                      )}
+
+                      {/* Verification badge */}
+                      {vf?.status === 'verified' && (
+                        <span className="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full bg-green-500/20 text-green-400 border border-green-500/30 font-medium flex-shrink-0" title={`Verified — ${vf.bestScore}%`}>
+                          <FaCheckCircle size={9} /> Verified
+                        </span>
+                      )}
+                      {vf?.status === 'failed' && (
+                        <span className="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full bg-red-500/20 text-red-400 border border-red-500/30 font-medium flex-shrink-0" title={`Failed — ${vf.verificationScore}%`}>
+                          <FaTimesCircle size={9} /> Failed
                         </span>
                       )}
                     </div>
@@ -591,6 +617,28 @@ export default function ProfileEditSection({
                       {onRemoveSkill && (
                         <button onClick={() => handleRemoveSkill(skill.name)} disabled={removingSkill === skill.name} className="opacity-0 group-hover:opacity-100 p-1 text-red-400 hover:text-red-300 transition-all disabled:opacity-50" title={`Remove ${skill.name}`}>
                           {removingSkill === skill.name ? <FaSpinner size={12} className="animate-spin" /> : <FaTrash size={12} />}
+                        </button>
+                      )}
+                      {canVerify && (
+                        <button
+                          onClick={() => setVerifyingSkill(skill.name)}
+                          disabled={isOnCooldown}
+                          className={`opacity-0 group-hover:opacity-100 p-1 transition-all disabled:opacity-40 ${
+                            vf?.status === 'verified'
+                              ? 'text-green-400 hover:text-green-300'
+                              : 'text-purple-400 hover:text-purple-300'
+                          }`}
+                          title={
+                            isOnCooldown
+                              ? 'Cooldown — try again later'
+                              : vf?.status === 'verified'
+                              ? 'Retake verification'
+                              : vf?.status === 'failed'
+                              ? 'Retry verification'
+                              : 'Take verification test'
+                          }
+                        >
+                          <FaShieldAlt size={12} />
                         </button>
                       )}
                     </div>
@@ -785,6 +833,20 @@ export default function ProfileEditSection({
           </div>
         )}
       </div>
+
+      {/* ===== Verification Test Modal ===== */}
+      {verifyingSkill && userId && authToken && (
+        <VerificationTestModal
+          skillName={verifyingSkill}
+          userId={userId}
+          authToken={authToken}
+          onClose={() => setVerifyingSkill(null)}
+          onVerified={() => {
+            setVerifyingSkill(null);
+            if (onVerificationComplete) onVerificationComplete();
+          }}
+        />
+      )}
     </div>
   );
 }

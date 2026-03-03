@@ -186,10 +186,20 @@ export function useSkillDNA(): UseSkillDNAReturn {
     }
   }, [user, getAuthToken, loadUserData]);
 
-  // Refresh profile from Firestore
+  // Refresh profile from Firestore (silent — no loading spinner)
   const refreshProfile = useCallback(async () => {
-    await loadUserData();
-  }, [loadUserData]);
+    if (!user) return;
+    try {
+      const data = await getSkillDNAUser(user.uid);
+      if (data) {
+        setUserData(data);
+        setProfile(data.skillDNA || null);
+        setOnboardingComplete(data.profile?.onboardingComplete === true);
+      }
+    } catch (err: any) {
+      console.error('Silent refresh failed:', err);
+    }
+  }, [user]);
 
   // Trigger profile update (after assessment, skill add, etc.)
   const triggerUpdate = useCallback(async (

@@ -5,7 +5,7 @@
 
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   FaEdit, FaPlus, FaTimes, FaSpinner, FaTrash, FaInfoCircle,
@@ -119,6 +119,8 @@ export default function ProfileEditSection({
   const [isSaving, setIsSaving] = useState(false);
   const [removingSkill, setRemovingSkill] = useState<string | null>(null);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [skillAdded, setSkillAdded] = useState(false);
+  const skillInputRef = useRef<HTMLInputElement>(null);
 
   // ---- Edit skill state ----
   const [editingSkillName, setEditingSkillName] = useState<string | null>(null);
@@ -181,10 +183,16 @@ export default function ProfileEditSection({
     }
     setIsSaving(true);
     setMessage(null);
+    setSkillAdded(false);
     try {
       await onAddSkill({ name: newSkillName.trim(), level: newSkillLevel, category: newSkillCategory });
       setMessage({ type: 'success', text: `"${newSkillName.trim()}" added to your SkillDNA!` });
       setNewSkillName('');
+      setSkillAdded(true);
+      // Auto-focus input for continuous adding
+      setTimeout(() => skillInputRef.current?.focus(), 50);
+      // Auto-dismiss success message after 3 seconds
+      setTimeout(() => { setMessage(null); setSkillAdded(false); }, 3000);
     } catch (error: any) {
       setMessage({ type: 'error', text: error.message || 'Failed to add skill.' });
     } finally {
@@ -525,7 +533,21 @@ export default function ProfileEditSection({
           Whether from YouTube, a bootcamp, a certification, or self-study &mdash; add it here.
         </p>
         <div className="space-y-3">
-          <input type="text" value={newSkillName} onChange={(e) => setNewSkillName(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && !isSaving && newSkillName.trim() && handleAddSkill()} placeholder="e.g., Docker, Figma, TensorFlow, Excel..." className="w-full p-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-100/90 dark:bg-gray-800/90 backdrop-blur-sm text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all" />
+          <input
+            ref={skillInputRef}
+            type="text"
+            value={newSkillName}
+            onChange={(e) => setNewSkillName(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                e.stopPropagation();
+                if (!isSaving && newSkillName.trim()) handleAddSkill();
+              }
+            }}
+            placeholder="e.g., Docker, Figma, TensorFlow, Excel..."
+            className="w-full p-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-100/90 dark:bg-gray-800/90 backdrop-blur-sm text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all"
+          />
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="text-xs text-gray-500 mb-1 block">Category</label>
@@ -550,6 +572,20 @@ export default function ProfileEditSection({
               {isSaving ? 'Saving...' : 'Add Skill'}
             </button>
           </div>
+          {/* Inline success toast */}
+          <AnimatePresence>
+            {skillAdded && (
+              <motion.div
+                initial={{ opacity: 0, y: -8, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -8, scale: 0.95 }}
+                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-green-500/10 border border-green-500/30 text-green-400 text-sm font-medium"
+              >
+                <FaCheckCircle className="flex-shrink-0" />
+                Skill Added &mdash; keep going!
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </div>
 

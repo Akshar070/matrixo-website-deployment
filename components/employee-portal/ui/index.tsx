@@ -546,17 +546,53 @@ export const Modal = ({ isOpen, onClose, title, children, size = 'md', className
     }
   }, [isOpen])
   
-  return (
+  if (typeof window === 'undefined') {
+    return (
+      <AnimatePresence>
+        {isOpen && (
+          <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={onClose}
+              className="fixed inset-0 bg-black/90 backdrop-blur-2xl"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 30 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 30 }}
+              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+              className={`relative w-full ${sizes[size]} bg-neutral-900/95 backdrop-blur-3xl border border-white/20 rounded-2xl sm:rounded-3xl shadow-2xl shadow-black/60 ring-1 ring-white/10 max-h-[90vh] flex flex-col ${className}`}
+            >
+              <div className="absolute inset-0 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-primary-500/10 via-transparent to-transparent pointer-events-none" />
+              {title && (
+                <div className="relative flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-white/10 flex-shrink-0">
+                  <h3 className="text-lg sm:text-xl font-bold text-white truncate pr-2">{title}</h3>
+                  <button onClick={onClose} className="p-1.5 sm:p-2 text-neutral-400 hover:text-white hover:bg-white/10 rounded-lg sm:rounded-xl transition-all duration-200 flex-shrink-0">
+                    <FaTimes />
+                  </button>
+                </div>
+              )}
+              <div className="relative p-4 sm:p-6 overflow-y-auto flex-1">{children}</div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+    )
+  }
+
+  return createPortal(
     <AnimatePresence>
-      {isOpen && typeof window !== 'undefined' && createPortal(
-        <div className="fixed top-0 left-0 right-0 bottom-0 z-[9999] flex items-center justify-center p-4" style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh' }}>
-          {/* Backdrop with strong blur - covers entire viewport */}
+      {isOpen && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4" style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh' }}>
+          {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed top-0 left-0 right-0 bottom-0 bg-black/90 backdrop-blur-2xl"
+            className="fixed inset-0 bg-black/90 backdrop-blur-2xl"
             style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh' }}
           />
           
@@ -589,10 +625,10 @@ export const Modal = ({ isOpen, onClose, title, children, size = 'md', className
               {children}
             </div>
           </motion.div>
-        </div>,
-        document.body
+        </div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   )
 }
 

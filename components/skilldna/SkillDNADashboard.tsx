@@ -5,7 +5,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import {
   FaDna, FaBrain, FaChartLine, FaRocket, FaEdit,
@@ -16,6 +16,8 @@ import {
 import { SkillDNAProfile, SkillLevel, AcademicBackground, CareerGoal } from '@/lib/skilldna/types';
 import { getScoreGrade, getScoreGradient, getScoreColor } from '@/lib/skilldna/scoring';
 import { hasVerificationQuestions } from '@/lib/skilldna/verification/question-bank';
+import { calculateRealisticScores, SCORE_EXPLANATIONS } from '@/lib/skilldna/services/score-calculation-engine';
+import { analyzeGoalIntelligence } from '@/lib/skilldna/services/goal-intelligence-engine';
 import SkillRadarChart from './charts/SkillRadarChart';
 import DynamicScoreMeter from './charts/DynamicScoreMeter';
 import CareerAlignmentBar from './charts/CareerAlignmentBar';
@@ -24,6 +26,8 @@ import PersonaSummary from './PersonaSummary';
 import LearningPathsSection from './LearningPathsSection';
 import ProfileEditSection from './ProfileEditSection';
 import VerificationTestModal from './VerificationTestModal';
+import ScoreTooltip from './ScoreTooltip';
+import GoalAlignmentSection from './GoalAlignmentSection';
 
 interface SkillDNADashboardProps {
   profile: SkillDNAProfile;
@@ -68,6 +72,19 @@ export default function SkillDNADashboard({
   const [activeTab, setActiveTab] = useState<'overview' | 'skills' | 'gaps' | 'paths' | 'edit'>('overview');
   const [verifyingSkill, setVerifyingSkill] = useState<string | null>(null);
 
+  // Compute realistic scores and goal intelligence
+  const realisticScores = useMemo(
+    () => calculateRealisticScores(profile, currentCareerGoal),
+    [profile, currentCareerGoal]
+  );
+
+  const goalIntelligence = useMemo(() => {
+    if (currentCareerGoal && currentCareerGoal.shortTerm) {
+      return analyzeGoalIntelligence(profile.technicalSkills, currentCareerGoal);
+    }
+    return null;
+  }, [profile.technicalSkills, currentCareerGoal]);
+
   const tabs = [
     { id: 'overview' as const, label: 'Overview', icon: FaDna },
     { id: 'skills' as const, label: 'Skills', icon: FaChartBar },
@@ -104,10 +121,10 @@ export default function SkillDNADashboard({
             <div className="flex items-center gap-4">
               <div className="text-center">
                 <div className="text-4xl md:text-5xl font-black bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
-                  {profile.dynamicSkillScore}
+                  {realisticScores.dynamicSkillScore}
                 </div>
                 <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">
-                  / 1000 &middot; {getScoreGrade(profile.dynamicSkillScore, 1000)}
+                  / 1000 &middot; {getScoreGrade(realisticScores.dynamicSkillScore, 1000)}
                 </p>
               </div>
               {onRefresh && (
@@ -151,13 +168,15 @@ export default function SkillDNADashboard({
             {/* Top Stats Row */}
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
               {[
-                { label: 'Cognitive Score', value: profile.cognitiveScore, max: 100, icon: FaBrain, color: 'from-purple-500 to-fuchsia-500' },
-                { label: 'Learning Velocity', value: profile.learningVelocity, max: 100, icon: FaRocket, color: 'from-blue-500 to-cyan-500' },
-                { label: 'Career Alignment', value: profile.careerAlignmentScore, max: 100, icon: FaBullseye, color: 'from-green-500 to-emerald-500' },
-                { label: 'Hiring Readiness', value: profile.hiringReadiness ?? 0, max: 100, icon: FaTrophy, color: 'from-amber-500 to-orange-500' },
-                { label: 'Confidence Index', value: profile.confidenceIndex ?? 0, max: 100, icon: FaLightbulb, color: 'from-cyan-500 to-teal-500' },
+                { label: 'Cognitive Score', value: realisticScores.cognitiveScore, max: 100, icon: FaBrain, color: 'from-purple-500 to-fuchsia-500' },
+                { label: 'Learning Velocity', value: realisticScores.learningVelocity, max: 100, icon: FaRocket, color: 'from-blue-500 to-cyan-500' },
+                { label: 'Career Alignment', value: realisticScores.careerAlignmentScore, max: 100, icon: FaBullseye, color: 'from-green-500 to-emerald-500' },
+                { label: 'Hiring Readiness', value: realisticScores.hiringReadiness, max: 100, icon: FaTrophy, color: 'from-amber-500 to-orange-500' },
+                { label: 'Confidence Index', value: realisticScores.confidenceIndex, max: 100, icon: FaLightbulb, color: 'from-cyan-500 to-teal-500' },
                 { label: 'Skill Clusters', value: profile.skillClusters.length, max: undefined, icon: FaFire, color: 'from-orange-500 to-red-500' },
-              ].map((stat, i) => (
+              ].map((stat, i) => {
+                const explanation = SCORE_EXPLANATIONS[stat.label];
+                return (
                 <motion.div
                   key={stat.label}
                   initial={{ opacity: 0, y: 20 }}
@@ -165,15 +184,21 @@ export default function SkillDNADashboard({
                   transition={{ delay: i * 0.1 }}
                   className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border border-gray-200 dark:border-gray-800 rounded-2xl p-5"
                 >
-                  <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${stat.color} flex items-center justify-center text-white mb-3`}>
-                    <stat.icon />
+                  <div className="flex items-center justify-between mb-3">
+                    <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${stat.color} flex items-center justify-center text-white`}>
+                      <stat.icon />
+                    </div>
+                    {explanation && (
+                      <ScoreTooltip data={explanation} />
+                    )}
                   </div>
                   <p className="text-2xl font-bold text-gray-900 dark:text-white">
                     {stat.value}{stat.max ? <span className="text-sm text-gray-500 font-normal">/{stat.max}</span> : ''}
                   </p>
                   <p className="text-xs text-gray-500 mt-0.5">{stat.label}</p>
                 </motion.div>
-              ))}
+                );
+              })}
             </div>
 
             {/* Charts Row */}
@@ -193,7 +218,7 @@ export default function SkillDNADashboard({
                   <FaTrophy className="text-yellow-400" />
                   Dynamic Skill Score
                 </h3>
-                <DynamicScoreMeter score={profile.dynamicSkillScore} />
+                <DynamicScoreMeter score={realisticScores.dynamicSkillScore} />
               </div>
             </div>
 
@@ -204,11 +229,16 @@ export default function SkillDNADashboard({
                 Career Alignment Progress
               </h3>
               <CareerAlignmentBar
-                score={profile.careerAlignmentScore}
-                cognitiveScore={profile.cognitiveScore}
-                learningVelocity={profile.learningVelocity}
+                score={realisticScores.careerAlignmentScore}
+                cognitiveScore={realisticScores.cognitiveScore}
+                learningVelocity={realisticScores.learningVelocity}
               />
             </div>
+
+            {/* Goal Alignment Intelligence */}
+            {goalIntelligence && (
+              <GoalAlignmentSection intelligence={goalIntelligence} />
+            )}
 
             {/* Persona Summary */}
             <PersonaSummary persona={profile.persona} />

@@ -6,7 +6,8 @@ import { useSkillDNA } from '@/hooks/useSkillDNA'
 import OnboardingFlow from '@/components/skilldna/OnboardingFlow'
 import SkillDNADashboard from '@/components/skilldna/SkillDNADashboard'
 import AnalyzingScreen from '@/components/skilldna/AnalyzingScreen'
-import { OnboardingData } from '@/lib/skilldna/types'
+import { OnboardingData, SkillLevel, TechnicalSkill } from '@/lib/skilldna/types'
+import { updateSkillDNAProfile } from '@/lib/skilldna/firestore-service'
 import { motion } from 'framer-motion'
 import { FaDna, FaSignInAlt, FaExclamationTriangle, FaRedo } from 'react-icons/fa'
 import Link from 'next/link'
@@ -28,6 +29,48 @@ export default function SkillDNAPage() {
   const [initialized, setInitialized] = useState(false)
   const [analysisError, setAnalysisError] = useState<string | null>(null)
   const pendingDataRef = useRef<OnboardingData | null>(null)
+
+  // Score mapping for skill levels
+  const levelScoreMap: Record<SkillLevel, number> = {
+    beginner: 30,
+    intermediate: 55,
+    advanced: 75,
+    expert: 90,
+  }
+
+  // Add a skill manually -> save directly to Firestore, then refresh
+  const handleAddSkill = async (skill: { name: string; level: SkillLevel; category: string }) => {
+    if (!user || !profile) throw new Error('Not authenticated')
+
+    const trimmedName = skill.name.trim()
+    // Prevent duplicates (case-insensitive)
+    const alreadyExists = profile.technicalSkills.some(
+      (s) => s.name.toLowerCase() === trimmedName.toLowerCase()
+    )
+    if (alreadyExists) throw new Error(`"${trimmedName}" is already in your skill list`)
+
+    const newSkill: TechnicalSkill = {
+      name: trimmedName,
+      score: levelScoreMap[skill.level],
+      category: skill.category,
+      trend: 'rising',
+      lastAssessed: new Date().toISOString(),
+    }
+
+    const updatedSkills = [...profile.technicalSkills, newSkill]
+    await updateSkillDNAProfile(user.uid, { technicalSkills: updatedSkills }, 'skill_added')
+    await refreshProfile()
+  }
+
+  // Remove a skill -> update Firestore, then refresh
+  const handleRemoveSkill = async (skillName: string) => {
+    if (!user || !profile) throw new Error('Not authenticated')
+    const updatedSkills = profile.technicalSkills.filter(
+      (s) => s.name.toLowerCase() !== skillName.toLowerCase()
+    )
+    await updateSkillDNAProfile(user.uid, { technicalSkills: updatedSkills }, 'skill_added')
+    await refreshProfile()
+  }
 
   // Initialize user document when authenticated
   useEffect(() => {
@@ -192,6 +235,8 @@ export default function SkillDNAPage() {
         profile={profile}
         userName={user.displayName || undefined}
         onRefresh={refreshProfile}
+        onAddSkill={handleAddSkill}
+        onRemoveSkill={handleRemoveSkill}
       />
     )
   }

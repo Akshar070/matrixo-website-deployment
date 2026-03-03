@@ -12,7 +12,7 @@ import {
   FaTrophy, FaFire, FaHistory, FaBullseye, FaLightbulb,
   FaGraduationCap, FaChartBar, FaExclamationTriangle
 } from 'react-icons/fa';
-import { SkillDNAProfile } from '@/lib/skilldna/types';
+import { SkillDNAProfile, SkillLevel } from '@/lib/skilldna/types';
 import { getScoreGrade, getScoreGradient, getScoreColor } from '@/lib/skilldna/scoring';
 import SkillRadarChart from './charts/SkillRadarChart';
 import DynamicScoreMeter from './charts/DynamicScoreMeter';
@@ -27,13 +27,17 @@ interface SkillDNADashboardProps {
   userName?: string;
   onRefresh?: () => Promise<void>;
   onEditProfile?: () => void;
+  onAddSkill?: (skill: { name: string; level: SkillLevel; category: string }) => Promise<void>;
+  onRemoveSkill?: (skillName: string) => Promise<void>;
 }
 
 export default function SkillDNADashboard({ 
   profile, 
   userName, 
   onRefresh,
-  onEditProfile 
+  onEditProfile,
+  onAddSkill,
+  onRemoveSkill,
 }: SkillDNADashboardProps) {
   const [activeTab, setActiveTab] = useState<'overview' | 'skills' | 'gaps' | 'paths' | 'edit'>('overview');
 
@@ -292,7 +296,7 @@ export default function SkillDNADashboard({
         )}
 
         {activeTab === 'edit' && (
-          <ProfileEditSection profile={profile} onSave={onEditProfile} />
+          <ProfileEditSection profile={profile} onSave={onEditProfile} onAddSkill={onAddSkill} onRemoveSkill={onRemoveSkill} />
         )}
       </div>
     </div>

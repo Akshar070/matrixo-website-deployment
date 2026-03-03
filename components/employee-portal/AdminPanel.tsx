@@ -59,9 +59,11 @@ interface EmployeeWithStats extends EmployeeProfile {
 
 function EmployeeProfileModal({
   employee,
+  isOpen,
   onClose
 }: {
   employee: EmployeeWithStats | null
+  isOpen: boolean
   onClose: () => void
 }) {
   const { getEmployeeAttendanceHistory } = useEmployeeAuth()
@@ -155,7 +157,7 @@ function EmployeeProfileModal({
 
   return (
     <Modal
-      isOpen={true}
+      isOpen={isOpen}
       onClose={onClose}
       title="Employee Profile"
       size="xl"
@@ -1661,8 +1663,19 @@ export function AdminPanel() {
   
   // Modals
   const [selectedEmployee, setSelectedEmployee] = useState<EmployeeWithStats | null>(null)
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false)
   const [editingRecord, setEditingRecord] = useState<{ record: AttendanceRecord, employee: EmployeeProfile } | null>(null)
   const [showExportModal, setShowExportModal] = useState(false)
+
+  const handleViewProfile = useCallback((emp: EmployeeWithStats) => {
+    setSelectedEmployee(emp)
+    setIsProfileModalOpen(true)
+  }, [])
+
+  const handleCloseProfile = useCallback(() => {
+    setIsProfileModalOpen(false)
+    setTimeout(() => setSelectedEmployee(null), 300)
+  }, [])
 
   // Auto-absent job: Run once when AdminPanel loads (marks yesterday's missing as absent)
   useEffect(() => {
@@ -2085,20 +2098,21 @@ export function AdminPanel() {
             employees={employees}
             employeesWithStats={employeesWithStats}
             onEditRecord={(record, emp) => setEditingRecord({ record, employee: emp })}
-            onViewProfile={setSelectedEmployee}
+            onViewProfile={handleViewProfile}
           />
         </Card>
       ) : (
         <EmployeeList
           employees={filteredEmployees}
-          onViewProfile={setSelectedEmployee}
+          onViewProfile={handleViewProfile}
         />
       )}
 
       {/* Modals */}
       <EmployeeProfileModal
         employee={selectedEmployee}
-        onClose={() => setSelectedEmployee(null)}
+        isOpen={isProfileModalOpen}
+        onClose={handleCloseProfile}
       />
       
       <EditAttendanceModal

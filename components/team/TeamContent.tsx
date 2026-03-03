@@ -61,22 +61,6 @@ const linkedinMap: Record<string, string> = {
   'nithin': 'https://www.linkedin.com/in/nithin-yelamati-273513290/',
 }
 
-// Fallback profile images for interns (mapped by employeeId)
-const internImageMap: Record<string, string> = {
-  'M-A001': '/intern-images/M-A001.webp',
-  'M-A005': '/intern-images/M-A005.webp',
-  'M-A006': '/intern-images/M-A006.webp',
-  'M-A008': '/intern-images/M-A008.jpeg',
-  'M-A009': '/intern-images/M-A009.jpg',
-  'M-A010': '/intern-images/M-A010.png',
-  'M-A011': '/intern-images/M-A011.png',
-}
-
-function getProfileImage(employeeId: string, firestoreImage?: string): string {
-  if (firestoreImage) return firestoreImage
-  return internImageMap[employeeId] || ''
-}
-
 function getLinkedin(name: string, firestoreLinkedin?: string): string {
   if (firestoreLinkedin) return firestoreLinkedin
   const nameLower = name.toLowerCase()

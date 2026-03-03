@@ -161,16 +161,20 @@ export default function PublicProfilePage() {
     const file = e.target.files?.[0]
     if (!file || !data || !currentUser) return
     if (file.size > 5 * 1024 * 1024) { alert('Cover photo must be under 5MB'); return }
+    if (!file.type.startsWith('image/')) { alert('Please select an image file'); return }
     setUploadingCover(true)
     try {
-      const coverRef = ref(storage, `cover-photos/${data.ownerUid}`)
-      await uploadBytes(coverRef, file)
+      const extension = file.name.split('.').pop() || 'jpg'
+      const coverRef = ref(storage, `cover-photos/${data.ownerUid}.${extension}`)
+      const metadata = { contentType: file.type }
+      await uploadBytes(coverRef, file, metadata)
       const url = await getDownloadURL(coverRef)
       const profileDocRef = doc(db, 'UserProfiles', data.ownerUid)
       await updateDoc(profileDocRef, { coverPhoto: url, updatedAt: new Date() })
       setData(prev => prev ? { ...prev, userProfile: { ...prev.userProfile, coverPhoto: url } } : prev)
-    } catch (err) {
+    } catch (err: any) {
       console.error('Failed to upload cover:', err)
+      alert(err?.message || 'Failed to upload cover photo. Please try again.')
     } finally {
       setUploadingCover(false)
     }

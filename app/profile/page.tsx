@@ -52,6 +52,7 @@ export default function ProfilePage() {
   const [saving, setSaving] = useState(false)
   const [copied, setCopied] = useState(false)
   const [uploadingPhoto, setUploadingPhoto] = useState(false)
+  const [uploadingCover, setUploadingCover] = useState(false)
   const [isDark, setIsDark] = useState(false)
   const [editData, setEditData] = useState({
     fullName: '', phone: '', college: '', year: '', branch: '',
@@ -203,6 +204,23 @@ export default function ProfilePage() {
     } catch (err) { console.error('Photo upload error:', err); toast.error('Failed to upload photo') } finally { setUploadingPhoto(false) }
   }
 
+  const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file || !user) return
+    if (file.size > 5 * 1024 * 1024) { toast.error('Cover photo must be <5MB'); return }
+    if (!file.type.startsWith('image/')) { toast.error('Please select an image file'); return }
+    setUploadingCover(true)
+    try {
+      const extension = file.name.split('.').pop() || 'jpg'
+      const coverRef = ref(storage, `cover-photos/${user.uid}.${extension}`)
+      const metadata = { contentType: file.type }
+      await uploadBytes(coverRef, file, metadata)
+      const url = await getDownloadURL(coverRef)
+      await updateProfile({ coverPhoto: url })
+      toast.success('Cover photo updated!')
+    } catch (err) { console.error('Cover upload error:', err); toast.error('Failed to upload cover photo') } finally { setUploadingCover(false) }
+  }
+
   const handleCopyLink = () => {
     if (!profile?.username) { toast.error('Set a username first'); return }
     navigator.clipboard.writeText(`${window.location.origin}/u/${profile.username}`)
@@ -266,11 +284,29 @@ export default function ProfilePage() {
 
         {/* Header Card */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="rounded-3xl overflow-hidden mb-4" style={cardStyle}>
-          <div className="h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-blue-500" />
-          <div className="p-6 sm:p-8">
-            <div className="flex items-center gap-5">
+          {/* Cover Photo */}
+          <div className="relative h-32 sm:h-40 overflow-hidden rounded-t-3xl group/cover">
+            {profile?.coverPhoto ? (
+              <Image src={profile.coverPhoto} alt="Cover" fill className="object-cover" unoptimized />
+            ) : (
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-purple-500 to-indigo-600" />
+            )}
+            <div className="absolute inset-0 bg-black/10" />
+            <label htmlFor="cover-upload-profile" className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover/cover:opacity-100 transition-opacity cursor-pointer">
+              {uploadingCover ? (
+                <FaSpinner className="animate-spin text-white text-xl" />
+              ) : (
+                <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/20 backdrop-blur-md border border-white/30 text-white text-sm font-medium">
+                  <FaCamera /> {profile?.coverPhoto ? 'Change Cover' : 'Add Cover Photo'}
+                </div>
+              )}
+              <input id="cover-upload-profile" type="file" accept="image/*" onChange={handleCoverUpload} className="hidden" />
+            </label>
+          </div>
+          <div className="p-6 sm:p-8 -mt-10 relative">
+            <div className="flex items-end gap-5 mb-4">
               {/* Photo */}
-              <div className="relative group">
+              <div className="relative group flex-shrink-0">
                 <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl overflow-hidden bg-white/5 dark:bg-white/[0.06] border border-white/10 dark:border-white/[0.1]">
                   {profile?.profilePhoto ? (
                     <Image src={profile.profilePhoto} alt={profile.fullName} fill className="object-cover" unoptimized />

@@ -510,7 +510,7 @@ export function generateMockProfile(data: OnboardingData): AIAnalysisResponse {
       strengths: [
         `Effective ${learningLabel} approach`,
         `${decisionLabel.charAt(0).toUpperCase() + decisionLabel.slice(1)} decision-making style`,
-        `${data.skills.length}+ technical skills across ${[...new Set(data.skills.map(s => s.category))].length} categories`,
+        `${data.skills.length}+ technical skills across ${Array.from(new Set(data.skills.map(s => s.category))).length} categories`,
       ],
       areasForGrowth: [
         'Broader industry exposure and cross-domain thinking',

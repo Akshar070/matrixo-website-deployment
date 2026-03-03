@@ -6,19 +6,12 @@
 // ============================================================
 
 import { NextRequest, NextResponse } from 'next/server';
-import { getQuestionBank } from '@/lib/skilldna/verification/question-bank';
 import {
   gradeSubmission,
   buildVerificationRecord,
   buildAttemptLog,
 } from '@/lib/skilldna/verification/scoring-engine';
-import {
-  getSkillVerification,
-  saveSkillVerification,
-  logVerificationAttempt,
-  clearTestSession,
-} from '@/lib/skilldna/verification/firestore-service';
-import { TestSession, TestSubmission, TestSessionQuestion } from '@/lib/skilldna/verification/types';
+import { TestSession, TestSubmission, TestSessionQuestion, SkillVerification } from '@/lib/skilldna/verification/types';
 
 export const dynamic = 'force-dynamic';
 
@@ -52,7 +45,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { userId, sessionId, skillName, questions, answers, startedAt, config } = body;
+    const { userId, sessionId, skillName, questions, answers, startedAt, config, existingVerification } = body;
 
     if (!userId || !sessionId || !skillName || !answers || !questions) {
       return NextResponse.json(
@@ -94,21 +87,12 @@ export async function POST(request: NextRequest) {
     // Grade server-side
     const result = gradeSubmission(session, submission);
 
-    // Get existing verification record
-    const existing = await getSkillVerification(userId, skillName);
+    // Build new verification record (client passes existing if any)
+    const existing: SkillVerification | undefined = existingVerification || undefined;
+    const verification = buildVerificationRecord(result, existing);
 
-    // Build new verification record
-    const verification = buildVerificationRecord(result, existing || undefined);
-
-    // Persist to Firestore
-    await saveSkillVerification(userId, skillName, verification);
-
-    // Log attempt
+    // Build attempt log
     const attempt = buildAttemptLog(result);
-    await logVerificationAttempt(userId, attempt);
-
-    // Clear active session
-    await clearTestSession(userId, sessionId);
 
     // Return result (without correct answers)
     return NextResponse.json({
@@ -127,11 +111,13 @@ export async function POST(request: NextRequest) {
         verification: {
           isVerified: verification.isVerified,
           verificationScore: verification.verificationScore,
-          attempts: verification.verificationAttempts,
+          verificationAttempts: verification.verificationAttempts,
+          lastAttemptDate: verification.lastAttemptDate,
           bestScore: verification.bestScore,
           status: verification.status,
           cooldownUntil: verification.cooldownUntil,
         },
+        attempt,
       },
     });
   } catch (err: any) {

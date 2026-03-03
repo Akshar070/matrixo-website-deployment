@@ -10,10 +10,12 @@ import { motion } from 'framer-motion';
 import {
   FaDna, FaBrain, FaChartLine, FaRocket, FaEdit,
   FaTrophy, FaFire, FaHistory, FaBullseye, FaLightbulb,
-  FaGraduationCap, FaChartBar, FaExclamationTriangle
+  FaGraduationCap, FaChartBar, FaExclamationTriangle,
+  FaShieldAlt, FaCheckCircle, FaTimesCircle,
 } from 'react-icons/fa';
 import { SkillDNAProfile, SkillLevel, AcademicBackground, CareerGoal } from '@/lib/skilldna/types';
 import { getScoreGrade, getScoreGradient, getScoreColor } from '@/lib/skilldna/scoring';
+import { hasVerificationQuestions } from '@/lib/skilldna/verification/question-bank';
 import SkillRadarChart from './charts/SkillRadarChart';
 import DynamicScoreMeter from './charts/DynamicScoreMeter';
 import CareerAlignmentBar from './charts/CareerAlignmentBar';
@@ -21,6 +23,7 @@ import SkillGapCards from './SkillGapCards';
 import PersonaSummary from './PersonaSummary';
 import LearningPathsSection from './LearningPathsSection';
 import ProfileEditSection from './ProfileEditSection';
+import VerificationTestModal from './VerificationTestModal';
 
 interface SkillDNADashboardProps {
   profile: SkillDNAProfile;
@@ -63,6 +66,7 @@ export default function SkillDNADashboard({
   onVerificationComplete,
 }: SkillDNADashboardProps) {
   const [activeTab, setActiveTab] = useState<'overview' | 'skills' | 'gaps' | 'paths' | 'edit'>('overview');
+  const [verifyingSkill, setVerifyingSkill] = useState<string | null>(null);
 
   const tabs = [
     { id: 'overview' as const, label: 'Overview', icon: FaDna },
@@ -252,7 +256,12 @@ export default function SkillDNADashboard({
             <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border border-gray-200 dark:border-gray-800 rounded-2xl p-6 mb-6">
               <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-6">Technical Skills Breakdown</h3>
               <div className="space-y-4">
-                {profile.technicalSkills.map((skill, i) => (
+                {profile.technicalSkills.map((skill, i) => {
+                  const vf = skill.verification;
+                  const canVerify = !!userId && !!authToken && hasVerificationQuestions(skill.name);
+                  const isOnCooldown = vf?.cooldownUntil ? new Date(vf.cooldownUntil) > new Date() : false;
+
+                  return (
                   <motion.div
                     key={skill.name}
                     initial={{ opacity: 0, x: -20 }}
@@ -263,10 +272,49 @@ export default function SkillDNADashboard({
                       <div className="flex items-center gap-2">
                         <span className="text-sm font-semibold text-gray-900 dark:text-white">{skill.name}</span>
                         <span className="text-xs px-2 py-0.5 rounded-full bg-gray-200 dark:bg-gray-800 text-gray-600 dark:text-gray-400">{skill.category}</span>
-                        {skill.trend === 'rising' && <span className="text-green-400 text-xs">↑</span>}
-                        {skill.trend === 'declining' && <span className="text-red-400 text-xs">↓</span>}
+                        {skill.trend === 'rising' && <span className="text-green-400 text-xs">{"\u2191"}</span>}
+                        {skill.trend === 'declining' && <span className="text-red-400 text-xs">{"\u2193"}</span>}
+
+                        {/* Verification badge */}
+                        {vf?.status === 'verified' && (
+                          <span className="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full bg-green-500/20 text-green-400 border border-green-500/30 font-medium" title={`Verified \u2014 ${vf.bestScore}%`}>
+                            <FaCheckCircle size={9} /> Verified
+                          </span>
+                        )}
+                        {vf?.status === 'failed' && (
+                          <span className="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full bg-red-500/20 text-red-400 border border-red-500/30 font-medium" title={`Failed \u2014 ${vf.verificationScore}%`}>
+                            <FaTimesCircle size={9} /> Failed
+                          </span>
+                        )}
                       </div>
-                      <span className={`text-sm font-bold ${getScoreColor(skill.score)}`}>{skill.score}%</span>
+                      <div className="flex items-center gap-2">
+                        {canVerify && (
+                          <button
+                            onClick={() => setVerifyingSkill(skill.name)}
+                            disabled={isOnCooldown}
+                            className={`text-xs px-2.5 py-1 rounded-full border font-medium transition-all flex items-center gap-1 disabled:opacity-40 ${
+                              vf?.status === 'verified'
+                                ? 'border-green-500/30 text-green-400 hover:bg-green-500/10'
+                                : vf?.status === 'failed'
+                                ? 'border-red-500/30 text-red-400 hover:bg-red-500/10'
+                                : 'border-purple-500/30 text-purple-400 hover:bg-purple-500/10'
+                            }`}
+                            title={
+                              isOnCooldown
+                                ? 'Cooldown \u2014 try again later'
+                                : vf?.status === 'verified'
+                                ? 'Retake verification'
+                                : vf?.status === 'failed'
+                                ? 'Retry verification'
+                                : 'Take verification test'
+                            }
+                          >
+                            <FaShieldAlt size={10} />
+                            {vf?.status === 'verified' ? 'Retake' : vf?.status === 'failed' ? 'Retry' : 'Verify'}
+                          </button>
+                        )}
+                        <span className={`text-sm font-bold ${getScoreColor(skill.score)}`}>{skill.score}%</span>
+                      </div>
                     </div>
                     <div className="h-3 bg-gray-200 dark:bg-gray-800 rounded-full overflow-hidden">
                       <motion.div
@@ -277,7 +325,8 @@ export default function SkillDNADashboard({
                       />
                     </div>
                   </motion.div>
-                ))}
+                  );
+                })}
               </div>
             </div>
 
@@ -340,6 +389,20 @@ export default function SkillDNADashboard({
           />
         )}
       </div>
+
+      {/* Verification Test Modal (from Skills tab) */}
+      {verifyingSkill && userId && authToken && (
+        <VerificationTestModal
+          skillName={verifyingSkill}
+          userId={userId}
+          authToken={authToken}
+          onClose={() => setVerifyingSkill(null)}
+          onVerified={() => {
+            setVerifyingSkill(null);
+            if (onVerificationComplete) onVerificationComplete();
+          }}
+        />
+      )}
     </div>
   );
 }

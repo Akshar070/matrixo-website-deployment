@@ -13,7 +13,12 @@ import {
   FaArrowRight, FaArrowLeft, FaTrophy, FaRedo, FaShieldAlt,
   FaExclamationTriangle, FaLightbulb, FaChartBar,
 } from 'react-icons/fa';
-import { TestSessionQuestion } from '@/lib/skilldna/verification/types';
+import { TestSessionQuestion, SkillVerification, VerificationAttempt } from '@/lib/skilldna/verification/types';
+import {
+  getSkillVerification,
+  saveSkillVerification,
+  logVerificationAttempt,
+} from '@/lib/skilldna/verification/firestore-service';
 
 // ---- Types for the modal ----
 
@@ -40,14 +45,8 @@ interface VerificationResult {
     hard: { total: number; correct: number };
   };
   timeTakenSeconds: number;
-  verification: {
-    isVerified: boolean;
-    verificationScore: number;
-    attempts: number;
-    bestScore: number;
-    status: string;
-    cooldownUntil?: string;
-  };
+  verification: SkillVerification;
+  attempt: VerificationAttempt;
 }
 
 type ModalPhase = 'loading' | 'intro' | 'test' | 'submitting' | 'result' | 'error';
@@ -137,13 +136,20 @@ export default function VerificationTestModal({
     setPhase('loading');
     setErrorMsg('');
     try {
+      // Fetch existing verification for cooldown check
+      const existingVerification = await getSkillVerification(userId, skillName);
+
       const res = await fetch('/api/skilldna/verify/start', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${authToken}`,
         },
-        body: JSON.stringify({ userId, skillName }),
+        body: JSON.stringify({
+          userId,
+          skillName,
+          existingVerification: existingVerification || undefined,
+        }),
       });
 
       const json = await res.json();
@@ -199,6 +205,9 @@ export default function VerificationTestModal({
         selectedIndex: answers[q.questionId] ?? -1,
       }));
 
+      // Fetch existing verification for the API to build updated record
+      const existingVerification = await getSkillVerification(userId, skillName);
+
       const res = await fetch('/api/skilldna/verify/submit', {
         method: 'POST',
         headers: {
@@ -213,6 +222,7 @@ export default function VerificationTestModal({
           answers: answerArray,
           startedAt: sessionData.startedAt,
           config: sessionData.config,
+          existingVerification: existingVerification || undefined,
         }),
       });
 
@@ -224,9 +234,14 @@ export default function VerificationTestModal({
         return;
       }
 
-      setResult(json.data);
+      // Save verification record to Firestore (client has auth context)
+      const data: VerificationResult = json.data;
+      await saveSkillVerification(userId, skillName, data.verification);
+      await logVerificationAttempt(userId, data.attempt);
+
+      setResult(data);
       setPhase('result');
-      onVerified(json.data);
+      onVerified(data);
     } catch (err: any) {
       setErrorMsg(err.message || 'Network error');
       setPhase('error');
@@ -641,7 +656,7 @@ export default function VerificationTestModal({
 
             {/* Attempt info */}
             <p className="text-center text-xs text-gray-600 mt-3">
-              Attempt #{result.verification.attempts} &middot; Best score: {result.verification.bestScore}%
+              Attempt #{result.verification.verificationAttempts} &middot; Best score: {result.verification.bestScore}%
               {result.verification.cooldownUntil && !result.passed && (
                 <span className="ml-1">&middot; Retake available in 24h</span>
               )}

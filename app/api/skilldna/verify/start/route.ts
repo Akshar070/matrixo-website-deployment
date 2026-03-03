@@ -8,10 +8,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createTestSession, DEFAULT_TEST_CONFIG } from '@/lib/skilldna/verification/test-engine';
 import { hasVerificationQuestions } from '@/lib/skilldna/verification/question-bank';
 import { checkCooldown } from '@/lib/skilldna/verification/scoring-engine';
-import {
-  getSkillVerification,
-  saveTestSession,
-} from '@/lib/skilldna/verification/firestore-service';
+import { SkillVerification } from '@/lib/skilldna/verification/types';
 
 export const dynamic = 'force-dynamic';
 
@@ -62,20 +59,21 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check cooldown
-    const existing = await getSkillVerification(userId, skillName);
-    const cooldown = checkCooldown(existing || undefined);
-
-    if (!cooldown.allowed) {
-      const hoursLeft = Math.ceil(cooldown.remainingMs / (1000 * 60 * 60));
-      return NextResponse.json(
-        {
-          error: `Cooldown active. You can retake this test in ~${hoursLeft} hour(s).`,
-          cooldownUntil: existing?.cooldownUntil,
-          remainingMs: cooldown.remainingMs,
-        },
-        { status: 429 }
-      );
+    // Check cooldown if client passes existing verification info
+    const existingVerification: SkillVerification | undefined = body.existingVerification || undefined;
+    if (existingVerification) {
+      const cooldown = checkCooldown(existingVerification);
+      if (!cooldown.allowed) {
+        const hoursLeft = Math.ceil(cooldown.remainingMs / (1000 * 60 * 60));
+        return NextResponse.json(
+          {
+            error: `Cooldown active. You can retake this test in ~${hoursLeft} hour(s).`,
+            cooldownUntil: existingVerification.cooldownUntil,
+            remainingMs: cooldown.remainingMs,
+          },
+          { status: 429 }
+        );
+      }
     }
 
     // Create test session
@@ -86,9 +84,6 @@ export async function POST(request: NextRequest) {
         { status: 500 }
       );
     }
-
-    // Persist session reference for later grading validation
-    await saveTestSession(userId, session);
 
     // Return session to client (questions have shuffled options, no correct answers)
     return NextResponse.json({

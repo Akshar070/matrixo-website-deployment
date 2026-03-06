@@ -277,7 +277,7 @@ function EmployeeProfileModal({
               )}
             </div>
           </div>
-        ) : (
+        ) : activeTab === 'history' ? (
           <div className="max-h-96 overflow-y-auto">
             {loading ? (
               <div className="flex items-center justify-center py-8">

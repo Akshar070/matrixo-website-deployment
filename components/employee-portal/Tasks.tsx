@@ -269,7 +269,7 @@ function MentionInput({
               index === selectedIndex ? 'bg-primary-500/30 border-l-2 border-primary-500' : 'hover:bg-neutral-700'
             }`}
           >
-            <Avatar src={emp.profileImage} name={emp.name} size="sm" showBorder={false} />
+            <Avatar src={emp.profileImage} name={emp.name} employeeId={emp.employeeId} size="sm" showBorder={false} />
             <div className="flex-1 min-w-0">
               <p className="text-sm text-white font-medium truncate">{emp.name}</p>
               <p className="text-xs text-neutral-500 truncate">{emp.department}</p>
@@ -646,7 +646,7 @@ function TaskModal({
                     }
                   `}
                 >
-                  <Avatar src={emp.profileImage} name={emp.name} size="sm" showBorder={false} />
+                  <Avatar src={emp.profileImage} name={emp.name} employeeId={emp.employeeId} size="sm" showBorder={false} />
                   <div className="flex-1 min-w-0">
                     <p className="text-sm text-white truncate">{emp.name}</p>
                     <p className="text-xs text-neutral-500">{emp.department}</p>
@@ -980,7 +980,7 @@ function TaskDetailModal({
                     }}
                     isAdmin={false}
                   >
-                    <Avatar src={comment.authorImage} name={comment.authorName} size="sm" showBorder={false} />
+                    <Avatar src={comment.authorImage} name={comment.authorName} employeeId={comment.authorId} size="sm" showBorder={false} />
                   </ProfileInfo>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between gap-2">
@@ -1057,11 +1057,7 @@ function TaskDetailModal({
                                     <div className="space-y-1 max-h-32 overflow-y-auto">
                                       {reactedUsers.map((user) => (
                                         <div key={user!.employeeId} className="flex items-center gap-2 px-1 py-0.5 rounded hover:bg-neutral-700/50">
-                                          <img
-                                            src={user!.profileImage || `https://ui-avatars.com/api/?name=${encodeURIComponent(user!.name)}&background=7c3aed&color=fff&size=24`}
-                                            alt={user!.name}
-                                            className="w-5 h-5 rounded-full object-cover flex-shrink-0"
-                                          />
+                                          <Avatar src={user!.profileImage} name={user!.name} employeeId={user!.employeeId} size="sm" showBorder={false} />
                                           <p className="text-xs text-white font-medium truncate">{user!.name}</p>
                                         </div>
                                       ))}

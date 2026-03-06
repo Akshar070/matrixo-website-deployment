@@ -272,7 +272,7 @@ function MentionInput({
                 index === selectedIndex ? 'bg-primary-500/30 border-l-2 border-primary-500' : 'hover:bg-neutral-700'
               }`}
             >
-              <Avatar src={emp.profileImage} name={emp.name} size="sm" showBorder={false} />
+              <Avatar src={emp.profileImage} name={emp.name} employeeId={emp.employeeId} size="sm" showBorder={false} />
               <div className="min-w-0 flex-1">
                 <p className="text-sm text-white font-medium truncate">{emp.name}</p>
                 <p className="text-xs text-neutral-500 truncate">{emp.department}</p>
@@ -398,7 +398,7 @@ function ReplyItem({
           }}
           isAdmin={false}
         >
-          <Avatar src={reply.authorImage} name={reply.authorName || 'Anonymous'} size="sm" showBorder={false} />
+          <Avatar src={reply.authorImage} name={reply.authorName || 'Anonymous'} employeeId={reply.authorId} size="sm" showBorder={false} />
         </ProfileInfo>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
@@ -765,6 +765,7 @@ function DiscussionPost({
             <Avatar 
               src={discussion.authorImage} 
               name={discussion.authorName || 'Anonymous'} 
+              employeeId={discussion.authorId}
               size="md" 
               showBorder={false} 
             />
@@ -932,11 +933,7 @@ function DiscussionPost({
                         <div className="space-y-1.5 max-h-40 overflow-y-auto">
                           {reactedUsers.map((user) => (
                             <div key={user!.employeeId} className="flex items-center gap-2 px-1 py-1 rounded hover:bg-neutral-700/50">
-                              <img
-                                src={user!.profileImage || `https://ui-avatars.com/api/?name=${encodeURIComponent(user!.name)}&background=7c3aed&color=fff&size=32`}
-                                alt={user!.name}
-                                className="w-6 h-6 rounded-full object-cover flex-shrink-0"
-                              />
+                              <Avatar src={user!.profileImage} name={user!.name} employeeId={user!.employeeId} size="sm" showBorder={false} />
                               <div className="min-w-0 flex-1">
                                 <p className="text-xs text-white font-medium truncate">{user!.name}</p>
                                 <p className="text-[10px] text-neutral-500 truncate capitalize">{user!.role || user!.department || 'Employee'}</p>
@@ -1168,7 +1165,7 @@ export function Discussions() {
       {/* Create New Post */}
       <Card padding="md">
         <div className="flex items-start gap-3">
-          <Avatar src={employee?.profileImage} name={employee?.name} size="md" showBorder={false} />
+          <Avatar src={employee?.profileImage} name={employee?.name} employeeId={employee?.employeeId} size="md" showBorder={false} />
           <div className="flex-1">
             <MentionInput
               value={newPostContent}

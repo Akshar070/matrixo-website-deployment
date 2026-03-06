@@ -133,9 +133,22 @@ function formatDuration(start?: string, end?: string): string {
   return m > 0 ? `${h}h ${m}m` : `${h}h`
 }
 
-function getProfileImageUrl(url?: string, name?: string): string {
+function getProfileImageUrl(url?: string, name?: string, employeeId?: string): string {
   if (name && isMatriXOAccount(name)) return MATRIXO_LOGO_URL
   if (url) return url
+  // Check local intern images fallback
+  const localImages: Record<string, string> = {
+    'M-A001': '/intern-images/M-A001.webp',
+    'M-A005': '/intern-images/M-A005.webp',
+    'M-A006': '/intern-images/M-A006.webp',
+    'M-A008': '/intern-images/M-A008.jpeg',
+    'M-A009': '/intern-images/M-A009.jpg',
+    'M-A010': '/intern-images/M-A010.png',
+    'M-A011': '/intern-images/M-A011.png',
+    'M-A012': '/intern-images/M-A012.webp',
+    'M-A013': '/intern-images/M-A013.webp',
+  }
+  if (employeeId && localImages[employeeId]) return localImages[employeeId]
   if (name) {
     const initials = name.split(' ').map(n => n[0]).join('').substring(0, 2)
     return `https://ui-avatars.com/api/?name=${encodeURIComponent(initials)}&background=7c3aed&color=fff&size=200`
@@ -359,7 +372,7 @@ function EmployeeHoverCard({ name, employees }: { name: string; employees: Emplo
             <div className="bg-neutral-900 border border-neutral-700 rounded-xl p-3 shadow-2xl shadow-black/50">
               <div className="flex items-center gap-3">
                 <img
-                  src={getProfileImageUrl(matched.profileImage, matched.name)}
+                  src={getProfileImageUrl(matched.profileImage, matched.name, matched.employeeId)}
                   alt={matched.name}
                   className="w-10 h-10 rounded-full object-cover ring-2 ring-blue-500/30"
                   onError={(e) => { (e.target as HTMLImageElement).src = getProfileImageUrl(undefined, matched.name) }}
@@ -960,7 +973,7 @@ function MeetingDetailModal({
                     className="flex items-center gap-3 p-3 bg-neutral-800/40 rounded-xl border border-neutral-700/50 hover:border-neutral-600/50 transition-all"
                   >
                     <img
-                      src={getProfileImageUrl(matched?.profileImage, att.name)}
+                      src={getProfileImageUrl(matched?.profileImage, att.name, matched?.employeeId)}
                       alt={att.name}
                       className="w-9 h-9 rounded-full object-cover ring-2 ring-blue-500/20"
                       onError={(e) => { (e.target as HTMLImageElement).src = getProfileImageUrl(undefined, att.name) }}

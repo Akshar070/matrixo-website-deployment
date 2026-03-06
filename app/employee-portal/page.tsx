@@ -1092,7 +1092,7 @@ function ProfileTab() {
 
   if (!employee) return null
 
-  const displayImage = localImageUrl || employee.profileImage
+  const displayImage = localImageUrl || employee.profileImage || (employee.employeeId && localProfileImages[employee.employeeId]) || ''
 
   const infoRows = [
     { label: 'Employee ID', value: employee.employeeId },

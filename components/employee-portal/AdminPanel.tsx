@@ -30,7 +30,8 @@ import {
   FaFileCsv,
   FaEnvelope,
   FaCheck,
-  FaHome
+  FaHome,
+  FaListAlt
 } from 'react-icons/fa'
 import { useEmployeeAuth, EmployeeProfile, AttendanceRecord, ActivityLog, LeaveRequest } from '@/lib/employeePortalContext'
 import { Card, Button, Input, Select, Badge, Avatar, Modal, Spinner, EmptyState, Tabs, ProfileInfo, ProfileInfoData, employeeToProfileData } from './ui'
@@ -220,6 +221,7 @@ function EmployeeProfileModal({
       <Tabs
         tabs={[
           { id: 'overview', label: 'Overview' },
+          { id: 'notes', label: `Daily Reports (${attendanceHistory.filter(r => r.notes).length})` },
           { id: 'history', label: `Attendance History (${attendanceHistory.length})` }
         ]}
         activeTab={activeTab}
@@ -386,7 +388,49 @@ function EmployeeProfileModal({
               </table>
             )}
           </div>
-        )}
+        ) : activeTab === 'notes' ? (
+          <div className="max-h-96 overflow-y-auto">
+            {loading ? (
+              <div className="flex items-center justify-center py-8">
+                <Spinner size="lg" />
+              </div>
+            ) : attendanceHistory.filter(r => r.notes).length === 0 ? (
+              <EmptyState
+                icon={<FaListAlt className="text-2xl" />}
+                title="No daily reports"
+                description="This employee has not submitted any daily reports yet"
+              />
+            ) : (
+              <div className="space-y-3">
+                {attendanceHistory
+                  .filter(r => r.notes)
+                  .map((record, i) => (
+                    <div key={i} className="p-4 bg-neutral-800/30 rounded-xl border border-neutral-700/50">
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-medium text-neutral-300">{formatDateString(record.date)}</span>
+                          <Badge size="sm" variant={
+                            record.status === 'P' ? 'success' :
+                            record.status === 'W' ? 'info' :
+                            record.status === 'A' ? 'error' :
+                            record.status === 'L' ? 'warning' : 'default'
+                          }>
+                            {record.status === 'P' ? 'Present' :
+                             record.status === 'W' ? 'WFH' :
+                             record.status === 'A' ? 'Absent' :
+                             record.status === 'L' ? 'Leave' :
+                             record.status === 'O' ? 'On Duty' : record.status}
+                          </Badge>
+                        </div>
+                        <span className="text-xs text-neutral-500">{formatTime(record.timestamp)}</span>
+                      </div>
+                      <p className="text-sm text-neutral-300 whitespace-pre-wrap leading-relaxed">{record.notes}</p>
+                    </div>
+                  ))}
+              </div>
+            )}
+          </div>
+        ) : null}
       </div>
       
       {/* Modify Attendance Modal */}

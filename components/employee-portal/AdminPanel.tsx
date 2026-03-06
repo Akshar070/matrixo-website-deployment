@@ -30,7 +30,8 @@ import {
   FaFileCsv,
   FaEnvelope,
   FaCheck,
-  FaHome
+  FaHome,
+  FaListAlt
 } from 'react-icons/fa'
 import { useEmployeeAuth, EmployeeProfile, AttendanceRecord, ActivityLog, LeaveRequest } from '@/lib/employeePortalContext'
 import { Card, Button, Input, Select, Badge, Avatar, Modal, Spinner, EmptyState, Tabs, ProfileInfo, ProfileInfoData, employeeToProfileData } from './ui'
@@ -165,7 +166,7 @@ function EmployeeProfileModal({
       {/* Employee Header */}
       <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-5 p-4 sm:p-5 bg-gradient-to-r from-neutral-800/80 to-neutral-900/80 backdrop-blur-xl rounded-xl sm:rounded-2xl mb-4 sm:mb-6 border border-white/10">
         <div className="relative">
-          <Avatar src={employee.profileImage} name={employee.name} size="xl" showBorder={false} />
+          <Avatar src={employee.profileImage} name={employee.name} employeeId={employee.employeeId} size="xl" showBorder={false} />
           <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 rounded-full border-2 border-neutral-900" />
         </div>
         <div className="flex-1 min-w-0 text-center sm:text-left">
@@ -199,6 +200,7 @@ function EmployeeProfileModal({
       <Tabs
         tabs={[
           { id: 'overview', label: 'Overview' },
+          { id: 'notes', label: `Daily Reports (${attendanceHistory.filter(r => r.notes).length})` },
           { id: 'history', label: `Attendance History (${attendanceHistory.length})` }
         ]}
         activeTab={activeTab}
@@ -365,7 +367,49 @@ function EmployeeProfileModal({
               </table>
             )}
           </div>
-        )}
+        ) : activeTab === 'notes' ? (
+          <div className="max-h-96 overflow-y-auto">
+            {loading ? (
+              <div className="flex items-center justify-center py-8">
+                <Spinner size="lg" />
+              </div>
+            ) : attendanceHistory.filter(r => r.notes).length === 0 ? (
+              <EmptyState
+                icon={<FaListAlt className="text-2xl" />}
+                title="No daily reports"
+                description="This employee has not submitted any daily reports yet"
+              />
+            ) : (
+              <div className="space-y-3">
+                {attendanceHistory
+                  .filter(r => r.notes)
+                  .map((record, i) => (
+                    <div key={i} className="p-4 bg-neutral-800/30 rounded-xl border border-neutral-700/50">
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-medium text-neutral-300">{formatDateString(record.date)}</span>
+                          <Badge size="sm" variant={
+                            record.status === 'P' ? 'success' :
+                            record.status === 'W' ? 'info' :
+                            record.status === 'A' ? 'error' :
+                            record.status === 'L' ? 'warning' : 'default'
+                          }>
+                            {record.status === 'P' ? 'Present' :
+                             record.status === 'W' ? 'WFH' :
+                             record.status === 'A' ? 'Absent' :
+                             record.status === 'L' ? 'Leave' :
+                             record.status === 'O' ? 'On Duty' : record.status}
+                          </Badge>
+                        </div>
+                        <span className="text-xs text-neutral-500">{formatTime(record.timestamp)}</span>
+                      </div>
+                      <p className="text-sm text-neutral-300 whitespace-pre-wrap leading-relaxed">{record.notes}</p>
+                    </div>
+                  ))}
+              </div>
+            )}
+          </div>
+        ) : null}
       </div>
       
       {/* Modify Attendance Modal */}
@@ -457,7 +501,7 @@ function EditAttendanceModal({
       <div className="space-y-4">
         {/* Employee Info */}
         <div className="flex items-center gap-3 p-3 bg-neutral-800/50 rounded-lg">
-          <Avatar src={employee.profileImage} name={employee.name} size="md" showBorder={false} />
+          <Avatar src={employee.profileImage} name={employee.name} employeeId={employee.employeeId} size="md" showBorder={false} />
           <div>
             <p className="font-medium text-white">{employee.name}</p>
             <p className="text-sm text-neutral-400">{employee.employeeId}</p>
@@ -618,7 +662,7 @@ function AttendanceTable({
               >
                 <td className="p-3">
                   <div className="flex items-center gap-3">
-                    <Avatar src={emp.profileImage} name={emp.name} size="sm" showBorder={false} />
+                    <Avatar src={emp.profileImage} name={emp.name} employeeId={emp.employeeId} size="sm" showBorder={false} />
                     <div>
                       <p className="font-medium text-white">{emp.name}</p>
                       <p className="text-xs text-neutral-500">{emp.employeeId}</p>
@@ -731,7 +775,7 @@ function EmployeeList({
           <Card hover className="relative">
               <div className="flex items-center gap-4">
                 <div className="relative">
-                  <Avatar src={emp.profileImage} name={emp.name} size="lg" />
+                  <Avatar src={emp.profileImage} name={emp.name} employeeId={emp.employeeId} size="lg" />
                   <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-neutral-900 rounded-full flex items-center justify-center border border-primary-500/50">
                     <span className="text-[8px] font-bold text-primary-400">M</span>
                   </div>
@@ -1238,7 +1282,7 @@ function ExportReportModal({
                           : 'hover:bg-neutral-700/50 text-white'
                       }`}
                     >
-                      <Avatar src={emp.profileImage} name={emp.name} size="sm" showBorder={false} />
+                      <Avatar src={emp.profileImage} name={emp.name} employeeId={emp.employeeId} size="sm" showBorder={false} />
                       <div className="flex-1 min-w-0">
                         <div className="font-medium truncate">{emp.name}</div>
                         <div className="text-xs text-neutral-500 truncate">{emp.employeeId} • {emp.department}</div>

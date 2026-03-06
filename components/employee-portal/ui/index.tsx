@@ -632,17 +632,38 @@ export const Alert = ({ children, variant = 'info', icon, className = '' }: Aler
 }
 
 // ============================================
+// LOCAL PROFILE IMAGE FALLBACKS
+// ============================================
+export const localProfileImages: Record<string, string> = {
+  'M-A001': '/intern-images/M-A001.webp',
+  'M-A005': '/intern-images/M-A005.webp',
+  'M-A006': '/intern-images/M-A006.webp',
+  'M-A008': '/intern-images/M-A008.jpeg',
+  'M-A009': '/intern-images/M-A009.jpg',
+  'M-A010': '/intern-images/M-A010.png',
+  'M-A011': '/intern-images/M-A011.png',
+  'M-A012': '/intern-images/M-A012.webp',
+  'M-A013': '/intern-images/M-A013.webp',
+}
+
+export const getLocalProfileImage = (employeeId?: string): string | undefined => {
+  if (employeeId && localProfileImages[employeeId]) return localProfileImages[employeeId]
+  return undefined
+}
+
+// ============================================
 // AVATAR COMPONENT
 // ============================================
 interface AvatarProps {
   src?: string
   name?: string
+  employeeId?: string
   size?: 'sm' | 'md' | 'lg' | 'xl'
   className?: string
   showBorder?: boolean
 }
 
-export const Avatar = ({ src, name = 'User', size = 'md', className = '', showBorder = true }: AvatarProps) => {
+export const Avatar = ({ src, name = 'User', employeeId, size = 'md', className = '', showBorder = true }: AvatarProps) => {
   const sizes = {
     sm: 'w-8 h-8 text-xs',
     md: 'w-10 h-10 text-sm',
@@ -654,6 +675,9 @@ export const Avatar = ({ src, name = 'User', size = 'md', className = '', showBo
   
   const fallbackUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(initials)}&background=4f46e5&color=fff&size=200`
   
+  // Resolve image: src > local fallback by employeeId > ui-avatars
+  const resolvedSrc = src || getLocalProfileImage(employeeId) || fallbackUrl
+  
   return (
     <div 
       className={`
@@ -663,7 +687,7 @@ export const Avatar = ({ src, name = 'User', size = 'md', className = '', showBo
       `}
     >
       <img
-        src={src || fallbackUrl}
+        src={resolvedSrc}
         alt={name}
         className="w-full h-full object-cover"
         onError={(e) => { (e.target as HTMLImageElement).src = fallbackUrl }}

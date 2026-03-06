@@ -70,6 +70,8 @@ const internImageMap: Record<string, string> = {
   'M-A009': '/intern-images/M-A009.jpg',
   'M-A010': '/intern-images/M-A010.png',
   'M-A011': '/intern-images/M-A011.png',
+  'M-A012': '/intern-images/M-A012.webp',
+  'M-A013': '/intern-images/M-A013.webp',
 }
 
 function getProfileImage(employeeId: string, firestoreImage?: string): string {

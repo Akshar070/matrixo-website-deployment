@@ -69,9 +69,24 @@ const useTheme = usePortalTheme
 // Default avatar placeholder
 const DEFAULT_AVATAR = 'https://ui-avatars.com/api/?name=User&background=7c3aed&color=fff&size=200'
 
+// Local profile image mapping (fallback when Firestore profileImage is empty)
+const localProfileImages: Record<string, string> = {
+  'M-A001': '/intern-images/M-A001.webp',
+  'M-A005': '/intern-images/M-A005.webp',
+  'M-A006': '/intern-images/M-A006.webp',
+  'M-A008': '/intern-images/M-A008.jpeg',
+  'M-A009': '/intern-images/M-A009.jpg',
+  'M-A010': '/intern-images/M-A010.png',
+  'M-A011': '/intern-images/M-A011.png',
+  'M-A012': '/intern-images/M-A012.webp',
+  'M-A013': '/intern-images/M-A013.webp',
+}
+
 // Simple helper to get profile image
-const getProfileImageUrl = (url: string | undefined, name?: string): string => {
+const getProfileImageUrl = (url: string | undefined, name?: string, employeeId?: string): string => {
   if (url) return url
+  // Check local intern images fallback
+  if (employeeId && localProfileImages[employeeId]) return localProfileImages[employeeId]
   if (name) {
     const initials = name.split(' ').map(n => n[0]).join('').substring(0, 2)
     return `https://ui-avatars.com/api/?name=${encodeURIComponent(initials)}&background=7c3aed&color=fff&size=200`
@@ -481,7 +496,7 @@ function TopNavbar({
                 }}
               >
                 <img
-                  src={getProfileImageUrl(employee?.profileImage, employee?.name)}
+                  src={getProfileImageUrl(employee?.profileImage, employee?.name, employee?.employeeId)}
                   alt={employee?.name}
                   className="w-8 h-8 rounded-full object-cover ring-2 ring-primary-500/50"
                   onError={(e) => { (e.target as HTMLImageElement).src = DEFAULT_AVATAR }}
@@ -518,7 +533,7 @@ function TopNavbar({
                     <div className="p-4 border-b rounded-t-2xl" style={{ borderColor: darkMode ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.07)', background: 'linear-gradient(135deg, rgba(124,58,237,0.15) 0%, transparent 100%)' }}>
                       <div className="flex items-center gap-3">
                         <img
-                          src={getProfileImageUrl(employee?.profileImage, employee?.name)}
+                          src={getProfileImageUrl(employee?.profileImage, employee?.name, employee?.employeeId)}
                           alt={employee?.name}
                           className="w-12 h-12 rounded-xl object-cover ring-2 ring-primary-500/50"
                         />
@@ -737,7 +752,7 @@ function DashboardOverview({ onTaskClick, onShowMyTasks }: { onTaskClick?: (task
       >
         <div className="flex items-center gap-3 sm:gap-4">
           <img
-            src={getProfileImageUrl(employee?.profileImage, employee?.name)}
+            src={getProfileImageUrl(employee?.profileImage, employee?.name, employee?.employeeId)}
             alt={employee?.name}
             className="w-12 h-12 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl object-cover border-2 border-primary-500"
             onError={(e) => { (e.target as HTMLImageElement).src = DEFAULT_AVATAR }}
@@ -1079,7 +1094,7 @@ function ProfileTab() {
 
   if (!employee) return null
 
-  const displayImage = localImageUrl || employee.profileImage
+  const displayImage = localImageUrl || employee.profileImage || (employee.employeeId && localProfileImages[employee.employeeId]) || ''
 
   const infoRows = [
     { label: 'Employee ID', value: employee.employeeId },

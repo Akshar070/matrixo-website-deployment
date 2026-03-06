@@ -1018,7 +1018,7 @@ export const ProfileInfo = ({
   
   const getRoleBadgeVariant = (role: string) => {
     if (role === 'admin') return 'warning'
-    if (role === 'Intern') return 'info'
+    if ((role || '').toLowerCase().includes('intern')) return 'info'
     return 'primary'
   }
 

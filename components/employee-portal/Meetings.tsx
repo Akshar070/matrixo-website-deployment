@@ -48,6 +48,21 @@ import {
 } from 'firebase/firestore'
 
 // ============================================
+// LOCAL PROFILE IMAGE FALLBACKS
+// ============================================
+const localProfileImages: Record<string, string> = {
+  'M-A001': '/intern-images/M-A001.webp',
+  'M-A005': '/intern-images/M-A005.webp',
+  'M-A006': '/intern-images/M-A006.webp',
+  'M-A008': '/intern-images/M-A008.webp',
+  'M-A009': '/intern-images/M-A009.webp',
+  'M-A010': '/intern-images/M-A010.webp',
+  'M-A011': '/intern-images/M-A011.webp',
+  'M-A012': '/intern-images/M-A012.webp',
+  'M-A013': '/intern-images/M-A013.webp',
+}
+
+// ============================================
 // TYPES
 // ============================================
 
@@ -133,9 +148,10 @@ function formatDuration(start?: string, end?: string): string {
   return m > 0 ? `${h}h ${m}m` : `${h}h`
 }
 
-function getProfileImageUrl(url?: string, name?: string): string {
+function getProfileImageUrl(url?: string, name?: string, employeeId?: string): string {
   if (name && isMatriXOAccount(name)) return MATRIXO_LOGO_URL
   if (url) return url
+  if (employeeId && localProfileImages[employeeId]) return localProfileImages[employeeId]
   if (name) {
     const initials = name.split(' ').map(n => n[0]).join('').substring(0, 2)
     return `https://ui-avatars.com/api/?name=${encodeURIComponent(initials)}&background=7c3aed&color=fff&size=200`
@@ -359,10 +375,10 @@ function EmployeeHoverCard({ name, employees }: { name: string; employees: Emplo
             <div className="bg-neutral-900 border border-neutral-700 rounded-xl p-3 shadow-2xl shadow-black/50">
               <div className="flex items-center gap-3">
                 <img
-                  src={getProfileImageUrl(matched.profileImage, matched.name)}
+                  src={getProfileImageUrl(matched.profileImage, matched.name, matched.employeeId)}
                   alt={matched.name}
                   className="w-10 h-10 rounded-full object-cover ring-2 ring-blue-500/30"
-                  onError={(e) => { (e.target as HTMLImageElement).src = getProfileImageUrl(undefined, matched.name) }}
+                  onError={(e) => { (e.target as HTMLImageElement).src = getProfileImageUrl(undefined, matched.name, matched.employeeId) }}
                 />
                 <div className="min-w-0 flex-1">
                   <p className="text-sm font-semibold text-white truncate">{matched.name}</p>
@@ -379,7 +395,7 @@ function EmployeeHoverCard({ name, employees }: { name: string; employees: Emplo
                   <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${
                     matched.role === 'admin'
                       ? 'bg-amber-500/15 text-amber-400'
-                      : matched.role === 'Intern'
+                      : (matched.role || '').toLowerCase().includes('intern')
                         ? 'bg-purple-500/15 text-purple-400'
                         : 'bg-blue-500/15 text-blue-400'
                   }`}>
@@ -960,10 +976,10 @@ function MeetingDetailModal({
                     className="flex items-center gap-3 p-3 bg-neutral-800/40 rounded-xl border border-neutral-700/50 hover:border-neutral-600/50 transition-all"
                   >
                     <img
-                      src={getProfileImageUrl(matched?.profileImage, att.name)}
+                      src={getProfileImageUrl(matched?.profileImage, att.name, matched?.employeeId)}
                       alt={att.name}
                       className="w-9 h-9 rounded-full object-cover ring-2 ring-blue-500/20"
-                      onError={(e) => { (e.target as HTMLImageElement).src = getProfileImageUrl(undefined, att.name) }}
+                      onError={(e) => { (e.target as HTMLImageElement).src = getProfileImageUrl(undefined, att.name, matched?.employeeId) }}
                     />
                     <div className="flex-1 min-w-0">
                       <p className="text-sm text-neutral-200 font-medium truncate">{att.name}</p>
@@ -978,7 +994,7 @@ function MeetingDetailModal({
                       <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${
                         matched.role === 'admin'
                           ? 'bg-amber-500/15 text-amber-400'
-                          : matched.role === 'Intern'
+                          : (matched.role || '').toLowerCase().includes('intern')
                             ? 'bg-purple-500/15 text-purple-400'
                             : 'bg-blue-500/15 text-blue-400'
                       }`}>

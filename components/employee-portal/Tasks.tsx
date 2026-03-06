@@ -28,6 +28,27 @@ import {
 import { useEmployeeAuth, Task, TaskComment, EmployeeProfile } from '@/lib/employeePortalContext'
 import { Card, Button, Input, Textarea, Select, Modal, Badge, Avatar, EmptyState, Spinner, ProfileInfo, employeeToProfileData } from './ui'
 import { RichTextRenderer } from './RichTextEditor'
+
+// ============================================
+// LOCAL PROFILE IMAGE FALLBACKS
+// ============================================
+const localProfileImages: Record<string, string> = {
+  'M-A001': '/intern-images/M-A001.webp',
+  'M-A005': '/intern-images/M-A005.webp',
+  'M-A006': '/intern-images/M-A006.webp',
+  'M-A008': '/intern-images/M-A008.webp',
+  'M-A009': '/intern-images/M-A009.webp',
+  'M-A010': '/intern-images/M-A010.webp',
+  'M-A011': '/intern-images/M-A011.webp',
+  'M-A012': '/intern-images/M-A012.webp',
+  'M-A013': '/intern-images/M-A013.webp',
+}
+
+const getEmpProfileImage = (profileImage?: string, employeeId?: string): string | undefined => {
+  if (profileImage) return profileImage
+  if (employeeId && localProfileImages[employeeId]) return localProfileImages[employeeId]
+  return undefined
+}
 import { toast } from 'sonner'
 import { Timestamp } from 'firebase/firestore'
 
@@ -269,7 +290,7 @@ function MentionInput({
               index === selectedIndex ? 'bg-primary-500/30 border-l-2 border-primary-500' : 'hover:bg-neutral-700'
             }`}
           >
-            <Avatar src={emp.profileImage} name={emp.name} size="sm" showBorder={false} />
+            <Avatar src={getEmpProfileImage(emp.profileImage, emp.employeeId)} name={emp.name} size="sm" showBorder={false} />
             <div className="flex-1 min-w-0">
               <p className="text-sm text-white font-medium truncate">{emp.name}</p>
               <p className="text-xs text-neutral-500 truncate">{emp.department}</p>
@@ -410,7 +431,7 @@ function TaskModal({
     }
 
     // Validate assignees belong to selected department (if department is selected)
-    if (form.department && form.assignedTo.length > 0) {
+    if (form.department && form.department !== 'Intern' && form.assignedTo.length > 0) {
       const validAssignees = form.assignedTo.filter(id => {
         const emp = employees.find(e => e.employeeId === id)
         return emp && emp.department === form.department
@@ -494,7 +515,7 @@ function TaskModal({
   const departments = useMemo(() => {
     const deptSet = new Set(employees.map(e => e.department).filter(Boolean))
     // Check if there are any interns by role
-    const hasInterns = employees.some(e => e.role === 'Intern')
+    const hasInterns = employees.some(e => (e.role || '').toLowerCase().includes('intern'))
     if (hasInterns) {
       deptSet.add('Intern')
     }
@@ -511,14 +532,15 @@ function TaskModal({
     // Filter by department if selected
     if (form.department) {
       if (form.department === 'Intern') {
-        // For Intern department, filter by role = 'Intern'
-        result = result.filter(emp => emp.role === 'Intern')
+        // For Intern department, filter by role containing 'intern' (case-insensitive)
+        result = result.filter(emp => (emp.role || '').toLowerCase().includes('intern'))
         
-        // If specialization is selected, further filter by designation (contains match)
+        // If specialization is selected, filter by designation or department (contains match)
         if (form.specialization) {
           result = result.filter(emp => 
             emp.designation?.toLowerCase().includes(form.specialization.toLowerCase()) ||
-            emp.designation?.toLowerCase() === form.specialization.toLowerCase()
+            emp.designation?.toLowerCase() === form.specialization.toLowerCase() ||
+            emp.department?.toLowerCase().includes(form.specialization.toLowerCase())
           )
         }
       } else {
@@ -646,7 +668,7 @@ function TaskModal({
                     }
                   `}
                 >
-                  <Avatar src={emp.profileImage} name={emp.name} size="sm" showBorder={false} />
+                  <Avatar src={getEmpProfileImage(emp.profileImage, emp.employeeId)} name={emp.name} size="sm" showBorder={false} />
                   <div className="flex-1 min-w-0">
                     <p className="text-sm text-white truncate">{emp.name}</p>
                     <p className="text-xs text-neutral-500">{emp.department}</p>
@@ -1356,6 +1378,9 @@ export function Tasks({ selectedTaskId, onTaskOpened, showOnlyMyTasks = false }:
         const assignedTo = task?.assignedTo || []
         return assignedTo.some(empId => {
           const emp = employees.find(e => e.employeeId === empId)
+          if (filterRole === 'Intern') {
+            return (emp?.role || '').toLowerCase().includes('intern')
+          }
           return emp?.role === filterRole
         })
       })

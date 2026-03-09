@@ -509,21 +509,10 @@ function TaskModal({
     }))
   }
 
-  // Get unique departments (excluding Admin)
-  // Also add 'Intern' if there are any employees with role 'Intern'
-  // Always include core departments even if no employees exist yet
+  // Fixed department list — only show the three required options
   const departments = useMemo(() => {
-    const deptSet = new Set(employees.map(e => e.department).filter(Boolean))
-    // Check if there are any interns by role
-    const hasInterns = employees.some(e => (e.role || '').toLowerCase().includes('intern'))
-    if (hasInterns) {
-      deptSet.add('Intern')
-    }
-    // Always include core departments
-    const coreDepartments = ['Operations', 'Marketing', 'Management']
-    coreDepartments.forEach(dept => deptSet.add(dept))
-    return Array.from(deptSet).filter(d => d !== 'Admin').sort()
-  }, [employees])
+    return ['Management', 'Intern']
+  }, [])
   
   // Filter employees by selected department and specialization (for Interns)
   const filteredEmployees = useMemo(() => {
@@ -671,7 +660,7 @@ function TaskModal({
                   <Avatar src={getEmpProfileImage(emp.profileImage, emp.employeeId)} name={emp.name} size="sm" showBorder={false} />
                   <div className="flex-1 min-w-0">
                     <p className="text-sm text-white truncate">{emp.name}</p>
-                    <p className="text-xs text-neutral-500">{emp.department}</p>
+                    <p className="text-xs text-neutral-500">{emp.role?.toLowerCase() === 'intern' ? 'Intern' : emp.department}</p>
                   </div>
                   {form.assignedTo.includes(emp.employeeId) && (
                     <FaCheckCircle className="text-primary-500" />

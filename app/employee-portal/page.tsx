@@ -239,7 +239,7 @@ const navigationItems = [
   { id: 'tasks', label: 'Tasks', icon: FaTasks },
   { id: 'meetings', label: 'Meetings', icon: FaVideo },
   { id: 'discussions', label: 'Discussions', icon: FaComments },
-  { id: 'event-checkin', label: 'Event QR', icon: FaQrcode, mobileOnly: true },
+  { id: 'event-checkin', label: 'Event QR', icon: FaQrcode },
   { id: 'profile', label: 'My Profile', icon: FaUserCircle },
   { id: 'job-postings', label: 'Careers', icon: FaBriefcase, adminOnly: true },
 ]

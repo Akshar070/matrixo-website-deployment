@@ -602,73 +602,58 @@
     "subEvents": [
       {
         "name": "PromptOff Championship",
-        "description": "AI Prompt Engineering Competition — 3 rounds testing creativity, logic & technical thinking. Win a Microsoft Hyderabad campus tour! Fee: \\u20B9149",
+        "description": "AI Prompt Engineering Competition — 3 rounds testing creativity, logic & technical thinking. Microsoft Participation Certificates for all. Win an exclusive campus tour at Microsoft Hyderabad! Fee: ₹149 (Individual)",
+        "images": [
+          "/events/wranglex/1.png",
+          "/events/wranglex/2.png"
+        ],
         "image": "/events/wranglex/1.png",
         "registrationLink": "https://datawranglers-jbiet.in/promptoff/",
         "category": "Tech Competition"
       },
       {
         "name": "Tech Presenta",
-        "description": "Technical Presentation Competition — Present innovative ideas through Idea Screening & Final Presentation rounds. Individual: \\u20B999 | Team: \\u20B9169",
-        "image": "/events/wranglex/2.png",
+        "description": "Technical Presentation Competition — Present innovative ideas through Idea Screening & Final Presentation rounds. Individual: ₹99 | Team of 2: ₹169. Win exciting prize money & certificates!",
+        "images": [
+          "/events/wranglex/3.png",
+          "/events/wranglex/4.png"
+        ],
+        "image": "/events/wranglex/3.png",
         "registrationLink": "https://datawranglers-jbiet.in/tech-presenta/",
         "category": "Tech Competition"
       },
       {
+        "name": "Pottery Workshop",
+        "description": "Hands-on clay modelling session — design and build unique pottery with guidance from instructors. Machines & tools provided. Refreshments included. Take home your creation! Team of 3: ₹449 | Team of 4: ₹549",
+        "images": [
+          "/events/wranglex/5.png",
+          "/events/wranglex/6.png"
+        ],
+        "image": "/events/wranglex/5.png",
+        "registrationLink": "https://datawranglers-jbiet.in/pottery/",
+        "category": "Non-Tech"
+      },
+      {
         "name": "BGMI Tournament",
-        "description": "Battlegrounds Mobile India squad-based esports tournament. Assemble your squad and dominate the battlegrounds!",
-        "image": "/events/wranglex/3.png",
+        "description": "Battlegrounds Mobile India esports tournament — Squad Format (4 players). Classic Mode on Erangel, Sanhok & Miramar. Standard competitive rules apply. Prize pool: ₹7500!",
+        "images": [
+          "/events/wranglex/7.png",
+          "/events/wranglex/8.png"
+        ],
+        "image": "/events/wranglex/7.png",
         "registrationLink": "https://datawranglers-jbiet.in/bgmi/",
         "category": "Esports"
       },
       {
         "name": "Free Fire Tournament",
-        "description": "Free Fire battle royale esports tournament — last team standing wins. Form your team and claim victory!",
-        "image": "/events/wranglex/4.png",
+        "description": "Free Fire battle royale esports tournament — last team standing wins. Form your squad and compete for the prize pool!",
+        "images": [
+          "/events/wranglex/9.png",
+          "/events/wranglex/10.png"
+        ],
+        "image": "/events/wranglex/9.png",
         "registrationLink": "https://datawranglers-jbiet.in/freefire/",
         "category": "Esports"
-      },
-      {
-        "name": "Asphalt Racing",
-        "description": "High-speed racing competition — prove your skills on the virtual track and race to the finish line!",
-        "image": "/events/wranglex/5.png",
-        "registrationLink": "https://datawranglers-jbiet.in/asphalt/",
-        "category": "Esports"
-      },
-      {
-        "name": "Stranger Things",
-        "description": "Non-tech mystery competition — solve puzzles, crack codes, and unravel the unknown with your team of 3!",
-        "image": "/events/wranglex/6.png",
-        "registrationLink": "https://datawranglers-jbiet.in/strangerthings/",
-        "category": "Non-Tech"
-      },
-      {
-        "name": "Pottery Workshop",
-        "description": "Hands-on clay modelling session — design and build unique pottery with guidance from instructors. Team of 3: \\u20B9449 | Team of 4: \\u20B9549",
-        "image": "/events/wranglex/7.png",
-        "registrationLink": "https://datawranglers-jbiet.in/pottery/",
-        "category": "Non-Tech"
-      },
-      {
-        "name": "Event 8",
-        "description": "Coming Soon — Stay tuned for more details about this exciting competition!",
-        "image": "/events/wranglex/8.png",
-        "registrationLink": "https://datawranglers-jbiet.in/wranglex/",
-        "category": "Competition"
-      },
-      {
-        "name": "Event 9",
-        "description": "Coming Soon — Stay tuned for more details about this exciting competition!",
-        "image": "/events/wranglex/9.png",
-        "registrationLink": "https://datawranglers-jbiet.in/wranglex/",
-        "category": "Competition"
-      },
-      {
-        "name": "Event 10",
-        "description": "Coming Soon — Stay tuned for more details about this exciting competition!",
-        "image": "/events/wranglex/10.png",
-        "registrationLink": "https://datawranglers-jbiet.in/wranglex/",
-        "category": "Competition"
       }
     ]
   }

@@ -21,8 +21,57 @@ interface SubEvent {
   name: string
   description: string
   image: string
+  images?: string[]
   registrationLink: string
   category: string
+}
+
+// Auto-sliding image component for sub-event posters
+function AutoSlideImage({ images, alt, className }: { images: string[], alt: string, className?: string }) {
+  const [imgIndex, setImgIndex] = useState(0)
+
+  useEffect(() => {
+    if (images.length <= 1) return
+    const timer = setInterval(() => {
+      setImgIndex(prev => (prev + 1) % images.length)
+    }, 3000)
+    return () => clearInterval(timer)
+  }, [images.length])
+
+  return (
+    <>
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={imgIndex}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.6 }}
+          className="absolute inset-0"
+        >
+          <Image
+            src={images[imgIndex]}
+            alt={alt}
+            fill
+            className={className || 'object-cover'}
+          />
+        </motion.div>
+      </AnimatePresence>
+      {/* Image dots */}
+      {images.length > 1 && (
+        <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
+          {images.map((_, i) => (
+            <div
+              key={i}
+              className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
+                i === imgIndex ? 'bg-white w-4' : 'bg-white/50'
+              }`}
+            />
+          ))}
+        </div>
+      )}
+    </>
+  )
 }
 
 export default function WrangleXEventDetail({ event }: { event: any }) {
@@ -47,9 +96,9 @@ export default function WrangleXEventDetail({ event }: { event: any }) {
     setCurrentIndex(prev => (prev - 1 + subEvents.length) % subEvents.length)
   }, [subEvents.length])
 
-  // Auto-play carousel
+  // Auto-play main carousel
   useEffect(() => {
-    autoPlayRef.current = setInterval(goNext, 5000)
+    autoPlayRef.current = setInterval(goNext, 8000)
     return () => {
       if (autoPlayRef.current) clearInterval(autoPlayRef.current)
     }
@@ -57,7 +106,7 @@ export default function WrangleXEventDetail({ event }: { event: any }) {
 
   const resetAutoPlay = useCallback(() => {
     if (autoPlayRef.current) clearInterval(autoPlayRef.current)
-    autoPlayRef.current = setInterval(goNext, 5000)
+    autoPlayRef.current = setInterval(goNext, 8000)
   }, [goNext])
 
   const handlePrev = () => { goPrev(); resetAutoPlay() }
@@ -95,6 +144,7 @@ export default function WrangleXEventDetail({ event }: { event: any }) {
   }
 
   const currentEvent = subEvents[currentIndex]
+  const getImages = (sub: SubEvent) => sub.images && sub.images.length > 0 ? sub.images : [sub.image]
 
   const slideVariants = {
     enter: (dir: number) => ({ x: dir > 0 ? 600 : -600, opacity: 0 }),
@@ -103,18 +153,18 @@ export default function WrangleXEventDetail({ event }: { event: any }) {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#0a0f1c] via-[#0d1529] to-[#0a0f1c]">
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 via-white to-gray-50 dark:from-[#0a0f1c] dark:via-[#0d1529] dark:to-[#0a0f1c]">
       {/* HERO — Main Poster */}
       <section className="relative pt-20 pb-10 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#0a0f1c] via-[#0d1830] to-[#0a0f1c]" />
-        <div className="absolute top-20 left-1/4 w-96 h-96 bg-purple-600/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-20 right-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl" />
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 via-purple-50/30 to-indigo-50/50 dark:from-[#0a0f1c] dark:via-[#0d1830] dark:to-[#0a0f1c]" />
+        <div className="absolute top-20 left-1/4 w-96 h-96 bg-purple-300/20 dark:bg-purple-600/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-20 right-1/4 w-96 h-96 bg-blue-300/20 dark:bg-blue-600/10 rounded-full blur-3xl" />
 
         <div className="container mx-auto px-4 relative z-10">
           {/* Back link */}
           <Link
             href="/events"
-            className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors mb-6 text-sm"
+            className="inline-flex items-center gap-2 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors mb-6 text-sm"
           >
             <FaChevronLeft className="text-xs" /> Back to Events
           </Link>
@@ -128,7 +178,7 @@ export default function WrangleXEventDetail({ event }: { event: any }) {
               transition={{ duration: 0.6 }}
               className="w-full lg:w-1/2 max-w-lg"
             >
-              <div className="relative aspect-[3/4] rounded-2xl overflow-hidden shadow-2xl shadow-purple-900/20 border border-white/10">
+              <div className="relative aspect-[3/4] rounded-2xl overflow-hidden shadow-2xl shadow-purple-500/10 dark:shadow-purple-900/20 border border-gray-200 dark:border-white/10">
                 <Image
                   src={event.images.banner}
                   alt={event.title}
@@ -146,36 +196,36 @@ export default function WrangleXEventDetail({ event }: { event: any }) {
               transition={{ duration: 0.6, delay: 0.2 }}
               className="w-full lg:w-1/2 text-center lg:text-left"
             >
-              <div className="inline-flex items-center gap-2 px-3 py-1 bg-gradient-to-r from-purple-500/20 to-blue-500/20 border border-purple-500/30 rounded-full text-purple-300 text-sm mb-4">
+              <div className="inline-flex items-center gap-2 px-3 py-1 bg-gradient-to-r from-purple-100 to-blue-100 dark:from-purple-500/20 dark:to-blue-500/20 border border-purple-300 dark:border-purple-500/30 rounded-full text-purple-700 dark:text-purple-300 text-sm mb-4">
                 <FaTrophy className="text-xs" /> NATIONAL LEVEL TECH FEST
               </div>
 
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-3">
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white mb-3">
                 {event.title}
               </h1>
 
-              <p className="text-xl sm:text-2xl text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-400 font-semibold mb-6">
+              <p className="text-xl sm:text-2xl text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-blue-600 dark:from-purple-400 dark:to-blue-400 font-semibold mb-6">
                 {event.tagline}
               </p>
 
-              <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start text-gray-300 mb-6">
+              <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start text-gray-600 dark:text-gray-300 mb-6">
                 <div className="flex items-center gap-2">
-                  <FaCalendar className="text-purple-400" />
+                  <FaCalendar className="text-purple-500 dark:text-purple-400" />
                   <span>{format(new Date(event.date), 'MMM d')} – {format(new Date(event.endDate), 'd, yyyy')}</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <FaMapMarkerAlt className="text-purple-400" />
+                  <FaMapMarkerAlt className="text-purple-500 dark:text-purple-400" />
                   <span>{event.location}</span>
                 </div>
               </div>
 
-              <p className="text-gray-400 leading-relaxed mb-8 max-w-xl">
+              <p className="text-gray-500 dark:text-gray-400 leading-relaxed mb-8 max-w-xl">
                 {event.description}
               </p>
 
               <div className="flex flex-wrap gap-2 justify-center lg:justify-start mb-6">
                 {event.tags?.map((tag: string) => (
-                  <span key={tag} className="px-3 py-1 bg-white/5 border border-white/10 rounded-full text-xs text-gray-400">
+                  <span key={tag} className="px-3 py-1 bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-full text-xs text-gray-500 dark:text-gray-400">
                     {tag}
                   </span>
                 ))}
@@ -194,7 +244,7 @@ export default function WrangleXEventDetail({ event }: { event: any }) {
 
       {/* SUB-EVENTS CAROUSEL */}
       <section id="events-carousel" className="py-16 relative">
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-purple-900/5 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-purple-100/30 dark:via-purple-900/5 to-transparent" />
 
         <div className="container mx-auto px-4 relative z-10">
           <motion.div
@@ -203,10 +253,10 @@ export default function WrangleXEventDetail({ event }: { event: any }) {
             viewport={{ once: true }}
             className="text-center mb-12"
           >
-            <h2 className="text-3xl sm:text-4xl font-bold text-white mb-3">
-              All <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-400">Events</span>
+            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-3">
+              All <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-blue-600 dark:from-purple-400 dark:to-blue-400">Events</span>
             </h2>
-            <p className="text-gray-400 max-w-2xl mx-auto">
+            <p className="text-gray-500 dark:text-gray-400 max-w-2xl mx-auto">
               Click on any event poster to see details. Register directly for individual events.
             </p>
           </motion.div>
@@ -219,7 +269,7 @@ export default function WrangleXEventDetail({ event }: { event: any }) {
               onTouchEnd={handleTouchEnd}
             >
               {/* Main Slide */}
-              <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-white/5 to-white/[0.02] border border-white/10 backdrop-blur-sm">
+              <div className="relative overflow-hidden rounded-2xl bg-white/80 dark:bg-gradient-to-br dark:from-white/5 dark:to-white/[0.02] border border-gray-200 dark:border-white/10 backdrop-blur-sm shadow-xl dark:shadow-none">
                 <AnimatePresence mode="wait" custom={direction}>
                   <motion.div
                     key={currentIndex}
@@ -231,17 +281,18 @@ export default function WrangleXEventDetail({ event }: { event: any }) {
                     transition={{ duration: 0.4, ease: 'easeInOut' }}
                     className="flex flex-col md:flex-row"
                   >
-                    {/* Event Poster */}
+                    {/* Event Poster with Auto-Slide */}
                     <div className="w-full md:w-1/2 relative">
                       <div className="relative aspect-[3/4] md:aspect-auto md:h-[500px]">
-                        <Image
-                          src={currentEvent?.image || '/events/wranglex/POSTER.png'}
-                          alt={currentEvent?.name || 'Event'}
-                          fill
-                          className="object-cover"
-                        />
+                        {currentEvent && (
+                          <AutoSlideImage
+                            images={getImages(currentEvent)}
+                            alt={currentEvent.name}
+                            className="object-cover"
+                          />
+                        )}
                         {/* Category Badge */}
-                        <div className={`absolute top-4 left-4 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold text-white bg-gradient-to-r ${getCategoryColor(currentEvent?.category || '')}`}>
+                        <div className={`absolute top-4 left-4 z-10 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold text-white bg-gradient-to-r ${getCategoryColor(currentEvent?.category || '')}`}>
                           {getCategoryIcon(currentEvent?.category || '')}
                           {currentEvent?.category}
                         </div>
@@ -250,15 +301,15 @@ export default function WrangleXEventDetail({ event }: { event: any }) {
 
                     {/* Event Details */}
                     <div className="w-full md:w-1/2 p-6 sm:p-8 flex flex-col justify-center">
-                      <div className="mb-2 text-gray-500 text-sm font-medium">
+                      <div className="mb-2 text-gray-400 dark:text-gray-500 text-sm font-medium">
                         Event {currentIndex + 1} of {subEvents.length}
                       </div>
 
-                      <h3 className="text-2xl sm:text-3xl font-bold text-white mb-4">
+                      <h3 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-4">
                         {currentEvent?.name}
                       </h3>
 
-                      <p className="text-gray-300 leading-relaxed mb-8 text-base">
+                      <p className="text-gray-600 dark:text-gray-300 leading-relaxed mb-8 text-base">
                         {currentEvent?.description}
                       </p>
 
@@ -277,14 +328,14 @@ export default function WrangleXEventDetail({ event }: { event: any }) {
                 {/* Navigation Arrows */}
                 <button
                   onClick={handlePrev}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/50 backdrop-blur-sm border border-white/20 flex items-center justify-center text-white hover:bg-white/20 transition-all z-10"
+                  className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/70 dark:bg-black/50 backdrop-blur-sm border border-gray-300 dark:border-white/20 flex items-center justify-center text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-white/20 transition-all z-10"
                   aria-label="Previous event"
                 >
                   <FaChevronLeft />
                 </button>
                 <button
                   onClick={handleNext}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/50 backdrop-blur-sm border border-white/20 flex items-center justify-center text-white hover:bg-white/20 transition-all z-10"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/70 dark:bg-black/50 backdrop-blur-sm border border-gray-300 dark:border-white/20 flex items-center justify-center text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-white/20 transition-all z-10"
                   aria-label="Next event"
                 >
                   <FaChevronRight />
@@ -300,7 +351,7 @@ export default function WrangleXEventDetail({ event }: { event: any }) {
                     className={`transition-all duration-300 rounded-full ${
                       i === currentIndex
                         ? 'w-8 h-3 bg-gradient-to-r from-purple-500 to-blue-500'
-                        : 'w-3 h-3 bg-white/20 hover:bg-white/40'
+                        : 'w-3 h-3 bg-gray-300 dark:bg-white/20 hover:bg-gray-400 dark:hover:bg-white/40'
                     }`}
                     aria-label={`Go to event ${i + 1}`}
                   />
@@ -311,7 +362,7 @@ export default function WrangleXEventDetail({ event }: { event: any }) {
 
           {/* Thumbnail Grid */}
           <div className="max-w-5xl mx-auto mt-10">
-            <div className="grid grid-cols-5 sm:grid-cols-10 gap-2">
+            <div className="grid grid-cols-5 gap-3">
               {subEvents.map((sub: SubEvent, i: number) => (
                 <button
                   key={i}
@@ -319,11 +370,11 @@ export default function WrangleXEventDetail({ event }: { event: any }) {
                   className={`relative aspect-square rounded-lg overflow-hidden border-2 transition-all duration-300 ${
                     i === currentIndex
                       ? 'border-purple-500 shadow-lg shadow-purple-500/30 scale-105'
-                      : 'border-transparent opacity-60 hover:opacity-100 hover:border-white/30'
+                      : 'border-transparent opacity-60 hover:opacity-100 hover:border-gray-300 dark:hover:border-white/30'
                   }`}
                 >
                   <Image
-                    src={sub.image}
+                    src={getImages(sub)[0]}
                     alt={sub.name}
                     fill
                     className="object-cover"
@@ -344,13 +395,13 @@ export default function WrangleXEventDetail({ event }: { event: any }) {
             viewport={{ once: true }}
             className="text-center mb-10"
           >
-            <h2 className="text-3xl sm:text-4xl font-bold text-white mb-3">
-              Quick <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-400">Register</span>
+            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-3">
+              Quick <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-blue-600 dark:from-purple-400 dark:to-blue-400">Register</span>
             </h2>
-            <p className="text-gray-400">Jump straight to registration for any event</p>
+            <p className="text-gray-500 dark:text-gray-400">Jump straight to registration for any event</p>
           </motion.div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 max-w-7xl mx-auto">
             {subEvents.map((sub: SubEvent, i: number) => (
               <motion.a
                 key={i}
@@ -361,13 +412,12 @@ export default function WrangleXEventDetail({ event }: { event: any }) {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.05 }}
-                className="group relative overflow-hidden rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 transition-all duration-300 hover:border-purple-500/50 hover:shadow-lg hover:shadow-purple-500/10"
+                className="group relative overflow-hidden rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 hover:bg-gray-50 dark:hover:bg-white/10 transition-all duration-300 hover:border-purple-400 dark:hover:border-purple-500/50 hover:shadow-lg hover:shadow-purple-500/10 shadow-sm dark:shadow-none"
               >
                 <div className="relative aspect-[4/3] overflow-hidden">
-                  <Image
-                    src={sub.image}
+                  <AutoSlideImage
+                    images={getImages(sub)}
                     alt={sub.name}
-                    fill
                     className="object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
@@ -377,13 +427,13 @@ export default function WrangleXEventDetail({ event }: { event: any }) {
                   </div>
                 </div>
                 <div className="p-4">
-                  <h4 className="text-white font-semibold text-sm mb-1 group-hover:text-purple-300 transition-colors">
+                  <h4 className="text-gray-900 dark:text-white font-semibold text-sm mb-1 group-hover:text-purple-600 dark:group-hover:text-purple-300 transition-colors">
                     {sub.name}
                   </h4>
                   <p className="text-gray-500 text-xs line-clamp-2 mb-3">
                     {sub.description}
                   </p>
-                  <span className="inline-flex items-center gap-1 text-xs font-medium text-purple-400 group-hover:text-purple-300">
+                  <span className="inline-flex items-center gap-1 text-xs font-medium text-purple-600 dark:text-purple-400 group-hover:text-purple-500 dark:group-hover:text-purple-300">
                     Register <FaExternalLinkAlt className="text-[10px]" />
                   </span>
                 </div>
@@ -402,10 +452,10 @@ export default function WrangleXEventDetail({ event }: { event: any }) {
             viewport={{ once: true }}
             className="max-w-2xl mx-auto"
           >
-            <h2 className="text-2xl sm:text-3xl font-bold text-white mb-4">
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-4">
               Ready to Compete?
             </h2>
-            <p className="text-gray-400 mb-8">
+            <p className="text-gray-500 dark:text-gray-400 mb-8">
               Visit the official WRANGLEX website for complete event details, rules, and registration.
             </p>
             <a

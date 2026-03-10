@@ -247,7 +247,14 @@ export default function Navbar() {
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: 8, scale: 0.96 }}
                       transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
-                      className="absolute top-full right-0 mt-2 w-80 glass-card-elevated overflow-hidden"
+                      className="absolute top-full right-0 mt-2 w-80 overflow-hidden rounded-2xl"
+                      style={{
+                        background: 'rgba(10, 15, 30, 0.88)',
+                        backdropFilter: 'blur(20px)',
+                        WebkitBackdropFilter: 'blur(20px)',
+                        border: '1px solid rgba(255,255,255,0.08)',
+                        boxShadow: '0 24px 64px rgba(0,0,0,0.6), 0 4px 16px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.06)',
+                      }}
                     >
                       {betaLinks.map((link, index) => (
                         <Link

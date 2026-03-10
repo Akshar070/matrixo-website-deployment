@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -151,7 +151,7 @@ function getProfileImageUrl(url?: string, name?: string, employeeId?: string): s
 
 function renderMarkdownClean(md: string): string {
   let html = md
-    // Strip markdown links: [text](url) → text
+    // Strip markdown links: [text](url) â†’ text
     .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
     // Strip bare URLs in parentheses: (https://...)
     .replace(/\(https?:\/\/[^)]+\)/g, '')
@@ -188,7 +188,7 @@ function renderMarkdownClean(md: string): string {
       let content = match![1]
       // Bold
       content = content.replace(/\*\*(.*?)\*\*/g, '<strong class="text-white font-semibold">$1</strong>')
-      result.push(`<li class="text-sm text-neutral-300 leading-relaxed pl-4 relative before:content-['•'] before:absolute before:left-0 before:text-blue-400 before:font-bold">${content}</li>`)
+      result.push(`<li class="text-sm text-neutral-300 leading-relaxed pl-4 relative before:content-['â€¢'] before:absolute before:left-0 before:text-blue-400 before:font-bold">${content}</li>`)
     }
     // Empty line
     else if (trimmed === '') {
@@ -976,7 +976,7 @@ function MeetingDetailModal({
                       <div className="flex items-center gap-2">
                         {att.email && <p className="text-xs text-neutral-500 truncate">{att.email}</p>}
                         {matched?.designation && (
-                          <span className="text-[10px] text-neutral-600">• {matched.designation}</span>
+                          <span className="text-[10px] text-neutral-600">â€¢ {matched.designation}</span>
                         )}
                       </div>
                     </div>
@@ -1242,7 +1242,7 @@ export function Meetings() {
 
       if (newMeetings.length === 0) return
 
-      console.log(`🔔 Found ${newMeetings.length} new meetings to notify about`)
+      console.log(`ðŸ”” Found ${newMeetings.length} new meetings to notify about`)
 
       for (const meeting of newMeetings) {
         // Mark as notified immediately to prevent duplicates
@@ -1268,10 +1268,10 @@ export function Meetings() {
         await createGlobalNotification({
           type: 'meeting',
           action: 'created',
-          title: `📋 Meeting Summary Ready: ${meetingTitle}`,
+          title: `ðŸ“‹ Meeting Summary Ready: ${meetingTitle}`,
           message: `The MoM for "${meetingTitle}" is ready with ${taskCount} action item${taskCount !== 1 ? 's' : ''}. Check your tasks!`,
           relatedEntityId: String(meeting.recording_id),
-          targetUrl: '#meetings',
+          targetUrl: '/employee-portal#meetings',
           createdBy: employee.employeeId,
           createdByName: employee.name,
           createdByRole: employee.role
@@ -1286,7 +1286,7 @@ export function Meetings() {
           recipientCount: matchedEmployeeIds.length
         })
 
-        console.log(`✅ Notified ${matchedEmployeeIds.length} people about: ${meetingTitle}`)
+        console.log(`âœ… Notified ${matchedEmployeeIds.length} people about: ${meetingTitle}`)
       }
     } catch (err) {
       console.error('Error auto-notifying meetings:', err)
@@ -1393,7 +1393,7 @@ export function Meetings() {
             title: 'Meeting Tasks Synced',
             message: `${newTaskCount} new task${newTaskCount > 1 ? 's' : ''} from meetings have been added to Tasks.`,
             relatedEntityId: 'meeting-sync',
-            targetUrl: '#tasks',
+            targetUrl: '/employee-portal#tasks',
             createdBy: employee.employeeId,
             createdByName: employee.name,
             createdByRole: employee.role
@@ -1538,7 +1538,7 @@ export function Meetings() {
         title: `Meeting Task: ${meeting.meeting_title || meeting.title}`,
         message: `${employee.name} assigned you a task: ${actionItem.description || 'Task assigned'}`,
         relatedEntityId: String(meeting.recording_id),
-        targetUrl: '#meetings',
+        targetUrl: '/employee-portal#meetings',
         createdBy: employee.employeeId,
         createdByName: employee.name,
         createdByRole: employee.role
@@ -1614,7 +1614,7 @@ export function Meetings() {
           <p className="text-neutral-500 text-xs mt-0.5">
             {filteredMeetings.length} meeting{filteredMeetings.length !== 1 ? 's' : ''}
             {isAdmin && hiddenMeetingIds.size > 0 && (
-              <span className="text-red-400 ml-1.5">• {hiddenMeetingIds.size} hidden</span>
+              <span className="text-red-400 ml-1.5">â€¢ {hiddenMeetingIds.size} hidden</span>
             )}
           </p>
         </div>

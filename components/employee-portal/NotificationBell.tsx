@@ -225,12 +225,24 @@ export default function NotificationBell({ onNavigate, darkMode = true }: Notifi
     }
     
     if (onNavigate) {
-      switch (notification.type) {
-        case 'task': onNavigate('tasks'); break
-        case 'discussion': onNavigate('discussions'); break
-        case 'calendar': onNavigate('calendar'); break
-        case 'application': onNavigate('job-postings'); break
+      // First try to extract tab from targetUrl (e.g. "/employee-portal#tasks" → "tasks")
+      let tab: string | null = null
+      if (notification.targetUrl) {
+        const hash = notification.targetUrl.split('#')[1]
+        if (hash) tab = hash
       }
+      // Fall back to type-based mapping
+      if (!tab) {
+        switch (notification.type) {
+          case 'task': tab = 'tasks'; break
+          case 'discussion': tab = 'discussions'; break
+          case 'calendar': tab = 'calendar'; break
+          case 'application': tab = 'job-postings'; break
+          case 'attendance': tab = 'attendance'; break
+          case 'meeting': tab = 'meetings'; break
+        }
+      }
+      if (tab) onNavigate(tab)
     }
     
     setIsOpen(false)

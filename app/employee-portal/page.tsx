@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
@@ -178,7 +178,7 @@ function LoginForm() {
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-white transition-colors"
                 >
-                  {showPassword ? '🙈' : '👁️'}
+                  {showPassword ? 'ðŸ™ˆ' : 'ðŸ‘ï¸'}
                 </button>
               </div>
               <p className="text-xs text-neutral-500 mt-2 flex items-start gap-1">
@@ -210,7 +210,7 @@ function LoginForm() {
 
           <div className="mt-6 text-center">
             <Link href="/" className="text-sm text-neutral-400 hover:text-primary-400 transition-colors">
-              ← Back to matriXO Website
+              â† Back to matriXO Website
             </Link>
           </div>
         </div>
@@ -219,7 +219,7 @@ function LoginForm() {
           <span className="flex items-center gap-1">
             <FaLock className="text-green-500" /> Secure Login
           </span>
-          <span>•</span>
+          <span>â€¢</span>
           <span>256-bit Encryption</span>
         </div>
       </motion.div>
@@ -763,7 +763,7 @@ function DashboardOverview({ onTaskClick, onShowMyTasks }: { onTaskClick?: (task
                 Welcome back, {employee?.name?.split(' ')[0]}!
               </h2>
               <p className={`text-sm sm:text-base truncate ${darkMode ? 'text-neutral-400' : 'text-gray-500'}`}>
-                {employee?.department} • {employee?.designation}
+                {employee?.department} â€¢ {employee?.designation}
               </p>
             </div>
         </div>
@@ -1058,7 +1058,7 @@ function HistoryTab() {
                             minute: '2-digit'
                           })
                         })()}
-                        {record.notes && <span className="hidden sm:inline"> • {record.notes}</span>}
+                        {record.notes && <span className="hidden sm:inline"> â€¢ {record.notes}</span>}
                       </p>
                     </div>
                   </div>
@@ -1210,7 +1210,7 @@ function ProfileTab() {
         <ul className={`space-y-0.5 list-disc list-inside text-xs ${darkMode ? 'text-neutral-400' : 'text-gray-500'}`}>
           <li>Accepted formats: JPEG, PNG, WebP</li>
           <li>Maximum file size: 3MB</li>
-          <li>Photos are automatically cropped to a square (512×512) and optimized</li>
+          <li>Photos are automatically cropped to a square (512Ã—512) and optimized</li>
           <li>Your photo appears on the public Team page and in the employee portal</li>
         </ul>
       </div>
@@ -1309,7 +1309,7 @@ function Dashboard() {
     }
   }, [activeTab])
 
-  // 🔔 AUTO-REQUEST NOTIFICATION PERMISSION + REGISTER PUSH ON FIRST LOAD
+  // ðŸ”” AUTO-REQUEST NOTIFICATION PERMISSION + REGISTER PUSH ON FIRST LOAD
   useEffect(() => {
     const setupPushNotifications = async () => {
       if (typeof window === 'undefined' || !('Notification' in window)) return
@@ -1325,7 +1325,7 @@ function Dashboard() {
         if (Notification.permission === 'granted') {
           await registerServiceWorker()
           await subscribeToPush(employee.employeeId)
-          console.log('🔔 Push notifications set up successfully')
+          console.log('ðŸ”” Push notifications set up successfully')
         }
       } catch (error) {
         console.error('Failed to set up push notifications:', error)
@@ -1334,7 +1334,7 @@ function Dashboard() {
     setupPushNotifications()
   }, [employee?.employeeId])
 
-  // 🔄 BACKGROUND SYNC: Meeting tasks → Main Tasks collection
+  // ðŸ”„ BACKGROUND SYNC: Meeting tasks â†’ Main Tasks collection
   // Runs once on portal load so meeting tasks appear on Tasks page regardless of which tab is active
   const meetingSyncRef = useRef(false)
   useEffect(() => {
@@ -1526,7 +1526,7 @@ function Dashboard() {
             title: 'Meeting Tasks Synced',
             message: `${newTaskCount} new task${newTaskCount > 1 ? 's' : ''} from meetings added to Tasks.`,
             relatedEntityId: 'meeting-sync',
-            targetUrl: '#tasks',
+            targetUrl: '/employee-portal#tasks',
             createdBy: employee.employeeId,
             createdByName: employee.name,
             createdByRole: employee.role
@@ -1592,7 +1592,7 @@ function Dashboard() {
         style={{ borderTop: darkMode ? '1px solid rgba(255,255,255,0.06)' : '1px solid rgba(0,0,0,0.08)' }}
       >
         <p className={`text-center text-sm ${darkMode ? 'text-neutral-500' : 'text-gray-400'}`}>
-          © {new Date().getFullYear()} matriXO Employee Portal. All rights reserved.
+          Â© {new Date().getFullYear()} matriXO Employee Portal. All rights reserved.
         </p>
       </footer>
     </div>

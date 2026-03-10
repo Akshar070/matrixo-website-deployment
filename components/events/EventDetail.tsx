@@ -9,11 +9,17 @@ import { FaCalendar, FaMapMarkerAlt, FaClock, FaUsers, FaTag } from 'react-icons
 import EventRegistrationForm from './EventRegistrationForm'
 import Confetti from '../Confetti'
 import VibeCodeEventDetail from './VibeCodeEventDetail'
+import WrangleXEventDetail from './WrangleXEventDetail'
 
 export default function EventDetail({ event }: { event: any }) {
   // Check if this is a VibeCode event - render dedicated component
   if (event.isVibeCodeEvent) {
     return <VibeCodeEventDetail event={event} />
+  }
+
+  // Check if this is a WrangleX event - render dedicated component
+  if (event.isWrangleXEvent) {
+    return <WrangleXEventDetail event={event} />
   }
 
   return <DefaultEventDetail event={event} />

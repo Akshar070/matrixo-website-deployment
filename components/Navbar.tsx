@@ -261,12 +261,12 @@ export default function Navbar() {
                           key={link.name}
                           href={link.href}
                           onClick={() => setShowFeaturesDropdown(false)}
-                          className="block px-6 py-4 hover:bg-white/40 dark:hover:bg-white/[0.06] transition-colors border-b border-gray-200/30 dark:border-white/[0.06] last:border-b-0"
+                          className="block px-6 py-4 hover:bg-white/[0.08] transition-colors border-b border-white/[0.06] last:border-b-0"
                         >
-                          <div className="font-bold text-gray-900 dark:text-white mb-1">
+                          <div className="font-bold text-white mb-1">
                             {link.name}
                           </div>
-                          <div className="text-sm text-gray-600 dark:text-gray-400">
+                          <div className="text-sm text-gray-400">
                             {link.description}
                           </div>
                         </Link>

@@ -1,10 +1,11 @@
 'use client'
 
-import { useState, useRef, useCallback } from 'react'
+import { useState, useRef, useCallback, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { FaCamera, FaTimes, FaUpload, FaTrash, FaCheck, FaExclamationTriangle, FaSpinner } from 'react-icons/fa'
 import { ref, uploadBytesResumable, getDownloadURL, deleteObject } from 'firebase/storage'
-import { doc, updateDoc, serverTimestamp } from 'firebase/firestore'
+import { doc, setDoc, serverTimestamp } from 'firebase/firestore'
 import { storage, db } from '@/lib/firebaseConfig'
 import { toast } from 'sonner'
 
@@ -122,6 +123,16 @@ export default function ProfilePhotoUpload({
 
   const fileInputRef = useRef<HTMLInputElement>(null)
 
+  // ── Lock body scroll while modal is open ────────────────────────────────
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden'
+    }
+    return () => {
+      document.body.style.overflow = ''
+    }
+  }, [isOpen])
+
   // ── Close & reset modal ─────────────────────────────────────────────────
   const closeModal = useCallback(() => {
     setIsOpen(false)
@@ -202,11 +213,15 @@ export default function ProfilePhotoUpload({
 
               // 4. Update Firestore
               const employeeRef = doc(db, 'Employees', employeeId)
-              await updateDoc(employeeRef, {
-                profileImage: downloadUrl,
-                imageUpdatedAt: serverTimestamp(),
-              })
-
+              await setDoc(
+                employeeRef,
+                {
+                  profileImage: downloadUrl,
+                  imageUpdatedAt: serverTimestamp(),
+                },
+                { merge: true }
+              )
+              
               onImageUpdated?.(downloadUrl)
               toast.success('Profile photo updated successfully!')
               closeModal()
@@ -278,21 +293,36 @@ export default function ProfilePhotoUpload({
         Change Photo
       </button>
 
-      {/* Modal */}
+      {/* Modal – rendered in a portal so parent transforms can't break fixed centering */}
       <AnimatePresence>
-        {isOpen && (
+        {isOpen && typeof document !== 'undefined' && createPortal(
           <div
-            className="fixed inset-0 z-[99999] flex items-center justify-center p-4"
-            style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh' }}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Update Profile Photo"
+            style={{
+              position: 'fixed',
+              inset: 0,
+              zIndex: 99999,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '1rem',
+            }}
           >
             {/* Backdrop */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/80 backdrop-blur-2xl"
               onClick={closeModal}
-              style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh' }}
+              style={{
+                position: 'fixed',
+                inset: 0,
+                background: 'rgba(0,0,0,0.80)',
+                backdropFilter: 'blur(12px)',
+                WebkitBackdropFilter: 'blur(12px)',
+              }}
             />
 
             {/* Modal card */}
@@ -498,7 +528,8 @@ export default function ProfilePhotoUpload({
                 </p>
               </div>
             </motion.div>
-          </div>
+          </div>,
+          document.body
         )}
       </AnimatePresence>
     </>

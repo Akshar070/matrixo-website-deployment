@@ -1,8 +1,5 @@
 'use client'
 
-import { useRef } from 'react'
-import { motion } from 'framer-motion'
-import Image from 'next/image'
 import { useState, useRef, useCallback, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Image from 'next/image'
@@ -14,72 +11,9 @@ import {
   FaClock,
   FaExternalLinkAlt,
   FaChevronDown,
-  FaTag
-} from 'react-icons/fa'
-
-export default function WrangleXEventDetail({ event }: { event: any }) {
-  const eventsSectionRef = useRef<HTMLDivElement>(null)
-
-  const scrollToEvents = () => {
-    eventsSectionRef.current?.scrollIntoView({
-      behavior: 'smooth',
-      block: 'start'
-    })
-  }
-
-  const subEvents = event.subEvents || []
-
-  return (
-    <div className="min-h-screen bg-gradient-to-b from-[#0a0f1c] via-[#0d1529] to-[#0a0f1c]">
-      {/* HERO SECTION */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        {/* Animated Background */}
-        <div className="absolute inset-0">
-          <div className="absolute inset-0 bg-gradient-to-br from-[#0a0f1c] via-[#0d1830] to-[#0a0f1c]" />
-
-          {/* Animated grid */}
-          <div className="absolute inset-0 opacity-15">
-            <div className="absolute inset-0" style={{
-              backgroundImage: `linear-gradient(rgba(168, 85, 247, 0.12) 1px, transparent 1px),
-                               linear-gradient(90deg, rgba(168, 85, 247, 0.12) 1px, transparent 1px)`,
-              backgroundSize: '60px 60px',
-            }} />
-          </div>
-
-          {/* Floating particles */}
-          {[...Array(20)].map((_, i) => (
-            <div
-              key={`particle-${i}`}
-              className="absolute w-1 h-1 bg-purple-400 rounded-full animate-float opacity-30"
-              style={{
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-                animationDelay: `${Math.random() * 5}s`,
-                animationDuration: `${10 + Math.random() * 20}s`,
-              }}
-            />
-          ))}
-
-          {/* Glow orbs */}
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-500/15 rounded-full blur-3xl animate-pulse" />
-          <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-blue-600/15 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
-          <div className="absolute top-1/2 right-1/3 w-64 h-64 bg-pink-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }} />
-        </div>
-
-        {/* Hero Content */}
-        <div className="relative z-10 container mx-auto px-6 py-20">
-          <div className="flex flex-col lg:flex-row items-center gap-12">
-            {/* Left - Poster */}
-            <motion.div
-              initial={{ opacity: 0, x: -40 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.7 }}
-              className="w-full lg:w-1/2 max-w-lg"
-            >
-              <div className="relative aspect-[3/4] rounded-2xl overflow-hidden border-2 border-purple-500/30 shadow-2xl shadow-purple-500/20">
+  FaTag,
   FaChevronLeft,
   FaChevronRight,
-  FaExternalLinkAlt,
   FaGamepad,
   FaCode,
   FaPaintBrush,
@@ -149,6 +83,11 @@ export default function WrangleXEventDetail({ event }: { event: any }) {
   const [direction, setDirection] = useState(0)
   const touchStartX = useRef(0)
   const autoPlayRef = useRef<NodeJS.Timeout | null>(null)
+  const eventsSectionRef = useRef<HTMLDivElement>(null)
+
+  const scrollToEvents = () => {
+    eventsSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
 
   const goTo = useCallback((index: number) => {
     setDirection(index > currentIndex ? 1 : -1)
@@ -359,64 +298,8 @@ export default function WrangleXEventDetail({ event }: { event: any }) {
         </div>
       </section>
 
-      {/* SUB-EVENTS SECTION */}
-      <section ref={eventsSectionRef} className="py-16 md:py-24">
-        <div className="container mx-auto px-6 max-w-5xl">
-            {/* Event Info */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="w-full lg:w-1/2 text-center lg:text-left"
-            >
-              <div className="inline-flex items-center gap-2 px-3 py-1 bg-gradient-to-r from-purple-100 to-blue-100 dark:from-purple-500/20 dark:to-blue-500/20 border border-purple-300 dark:border-purple-500/30 rounded-full text-purple-700 dark:text-purple-300 text-sm mb-4">
-                <FaTrophy className="text-xs" /> NATIONAL LEVEL TECH FEST
-              </div>
-
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white mb-3">
-                {event.title}
-              </h1>
-
-              <p className="text-xl sm:text-2xl text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-blue-600 dark:from-purple-400 dark:to-blue-400 font-semibold mb-6">
-                {event.tagline}
-              </p>
-
-              <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start text-gray-600 dark:text-gray-300 mb-6">
-                <div className="flex items-center gap-2">
-                  <FaCalendar className="text-purple-500 dark:text-purple-400" />
-                  <span>{format(new Date(event.date), 'MMM d')} – {format(new Date(event.endDate), 'd, yyyy')}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <FaMapMarkerAlt className="text-purple-500 dark:text-purple-400" />
-                  <span>{event.location}</span>
-                </div>
-              </div>
-
-              <p className="text-gray-500 dark:text-gray-400 leading-relaxed mb-8 max-w-xl">
-                {event.description}
-              </p>
-
-              <div className="flex flex-wrap gap-2 justify-center lg:justify-start mb-6">
-                {event.tags?.map((tag: string) => (
-                  <span key={tag} className="px-3 py-1 bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-full text-xs text-gray-500 dark:text-gray-400">
-                    {tag}
-                  </span>
-                ))}
-              </div>
-
-              <a
-                href="#events-carousel"
-                className="inline-flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white font-semibold rounded-xl transition-all shadow-lg shadow-purple-500/25 hover:shadow-purple-500/40"
-              >
-                Explore Events Below ↓
-              </a>
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
       {/* SUB-EVENTS CAROUSEL */}
-      <section id="events-carousel" className="py-16 relative">
+      <section ref={eventsSectionRef} id="events-carousel" className="py-16 relative">
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-purple-100/30 dark:via-purple-900/5 to-transparent" />
 
         <div className="container mx-auto px-4 relative z-10">
@@ -584,15 +467,14 @@ export default function WrangleXEventDetail({ event }: { event: any }) {
               >
                 {tag}
               </span>
-            className="text-center mb-12"
-          >
-            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-3">
-              All <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-blue-600 dark:from-purple-400 dark:to-blue-400">Events</span>
-            </h2>
-            <p className="text-gray-500 dark:text-gray-400 max-w-2xl mx-auto">
-              Click on any event poster to see details. Register directly for individual events.
-            </p>
-          </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ALL EVENTS CAROUSEL */}
+      <section className="py-16 relative">
+        <div className="container mx-auto px-4 relative z-10">
 
           {/* Carousel Container */}
           <div className="max-w-5xl mx-auto">
@@ -777,31 +659,12 @@ export default function WrangleXEventDetail({ event }: { event: any }) {
       </section>
 
       {/* FINAL CTA */}
-      <section className="py-16 md:py-24">
-        <div className="container mx-auto px-6 text-center">
-      {/* Footer CTA */}
       <section className="py-16 relative">
         <div className="container mx-auto px-4 relative z-10 text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-          >
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Ready to Participate?</h2>
-            <p className="text-gray-400 mb-8 text-lg">Register now for WRANGLEX events</p>
-            <motion.a
-              href={event.externalRegistrationLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="inline-flex items-center gap-2 px-10 py-5 bg-gradient-to-r from-purple-500 to-blue-600 rounded-full
-                       font-bold text-lg text-white shadow-xl shadow-purple-500/30 hover:shadow-purple-500/50 transition-all duration-300"
-            >
-              Register for WRANGLEX
-              <FaExternalLinkAlt />
-            </motion.a>
-            className="max-w-2xl mx-auto"
           >
             <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-4">
               Ready to Compete?

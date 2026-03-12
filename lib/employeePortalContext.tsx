@@ -1117,6 +1117,7 @@ export function EmployeeAuthProvider({ children }: { children: ReactNode }) {
   }
 
   const getEmployeeAttendanceHistory = async (employeeId: string, limit = 100): Promise<AttendanceRecord[]> => {
+    if (!employeeId) return []
     const attendanceRef = collection(db, 'attendance')
     const q = query(attendanceRef, where('employeeId', '==', employeeId))
     const querySnapshot = await getDocs(q)
@@ -1187,7 +1188,9 @@ export function EmployeeAuthProvider({ children }: { children: ReactNode }) {
     console.log('ðŸ” getAllEmployees: Fetching from Firestore...')
     const employeesRef = collection(db, 'Employees')
     const querySnapshot = await getDocs(employeesRef)
-    const allEmployees = querySnapshot.docs.map(doc => doc.data() as EmployeeProfile)
+    const allEmployees = querySnapshot.docs
+      .map(doc => doc.data() as EmployeeProfile)
+      .filter(emp => emp.employeeId && emp.name && emp.email)
     console.log('ðŸ” getAllEmployees: Found', allEmployees.length, 'employees')
     allEmployees.forEach(e => {
       console.log(`   ðŸ“Œ ${e.name} - Role: "${e.role}" - Dept: "${e.department}"`)
@@ -2260,6 +2263,8 @@ export function EmployeeAuthProvider({ children }: { children: ReactNode }) {
       for (const emp of allEmployees) {
         // Skip admins â€” they don't participate in attendance tracking
         if (emp.role === 'admin') continue
+        // Skip corrupt/incomplete employee records
+        if (!emp.employeeId) continue
 
         const attendanceId = `${emp.employeeId}_${dateString}`
         const leaveKey = `${emp.employeeId}_${dateString}`

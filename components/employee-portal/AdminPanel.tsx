@@ -855,9 +855,9 @@ function ExportReportModal({
     if (!employeeSearch.trim()) return employees
     const query = employeeSearch.toLowerCase()
     return employees.filter(e => 
-      e.name.toLowerCase().includes(query) ||
-      e.employeeId.toLowerCase().includes(query) ||
-      e.department?.toLowerCase().includes(query)
+      (e.name || '').toLowerCase().includes(query) ||
+      (e.employeeId || '').toLowerCase().includes(query) ||
+      (e.department || '').toLowerCase().includes(query)
     )
   }, [employees, employeeSearch])
 
@@ -1872,8 +1872,8 @@ export function AdminPanel() {
         const emp = employees.find(e => e.employeeId === record.employeeId)
         const query = searchQuery.toLowerCase()
         const matchesSearch = 
-          emp?.name.toLowerCase().includes(query) ||
-          record.employeeId.toLowerCase().includes(query)
+          (emp?.name || '').toLowerCase().includes(query) ||
+          (record.employeeId || '').toLowerCase().includes(query)
         if (!matchesSearch) return false
       }
       
@@ -1909,8 +1909,8 @@ export function AdminPanel() {
       if (searchQuery) {
         const query = searchQuery.toLowerCase()
         const matches = 
-          emp.name.toLowerCase().includes(query) ||
-          emp.employeeId.toLowerCase().includes(query)
+          (emp.name || '').toLowerCase().includes(query) ||
+          (emp.employeeId || '').toLowerCase().includes(query)
         if (!matches) return false
       }
       

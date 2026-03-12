@@ -79,8 +79,8 @@ function MentionInput({
         // Include everyone else
         if (!query) return true
         // Apply search filter
-        const matchesName = e.name.toLowerCase().includes(query)
-        const matchesId = e.employeeId.toLowerCase().includes(query)
+        const matchesName = (e.name || '').toLowerCase().includes(query)
+        const matchesId = (e.employeeId || '').toLowerCase().includes(query)
         const matchesDept = (e.department || '').toLowerCase().includes(query)
         return matchesName || matchesId || matchesDept
       })
@@ -218,13 +218,13 @@ function MentionInput({
     const mentionIds = userMentions.map(name => {
       const nameLower = name.toLowerCase().replace(/\s/g, '')
       const emp = employees.find(e => 
-        e.name.toLowerCase().replace(/\s/g, '') === nameLower
+        (e.name || '').toLowerCase().replace(/\s/g, '') === nameLower
       ) || employees.find(e =>
-        e.employeeId.toLowerCase() === nameLower
+        (e.employeeId || '').toLowerCase() === nameLower
       ) || employees.find(e =>
-        e.name.split(' ')[0].toLowerCase() === nameLower
+        (e.name || '').split(' ')[0].toLowerCase() === nameLower
       ) || employees.find(e =>
-        e.name.toLowerCase().replace(/\s/g, '').startsWith(nameLower) && nameLower.length >= 3
+        (e.name || '').toLowerCase().replace(/\s/g, '').startsWith(nameLower) && nameLower.length >= 3
       )
       return emp?.employeeId
     }).filter(Boolean) as string[]
@@ -688,16 +688,16 @@ function DiscussionPost({
           // Find employee matching the mention - use strict matching order
           const mentionedEmployee = employees.find(e => 
             // Exact match: full name without spaces
-            e.name.toLowerCase().replace(/\s/g, '') === mentionName
+            (e.name || '').toLowerCase().replace(/\s/g, '') === mentionName
           ) || employees.find(e =>
             // Exact match: employee ID
-            e.employeeId.toLowerCase() === mentionName
+            (e.employeeId || '').toLowerCase() === mentionName
           ) || employees.find(e =>
             // Exact match: first name only
-            e.name.split(' ')[0].toLowerCase() === mentionName
+            (e.name || '').split(' ')[0].toLowerCase() === mentionName
           ) || employees.find(e =>
             // Partial match: full name (without spaces) starts with mentionName
-            e.name.toLowerCase().replace(/\s/g, '').startsWith(mentionName) && mentionName.length >= 3
+            (e.name || '').toLowerCase().replace(/\s/g, '').startsWith(mentionName) && mentionName.length >= 3
           )
           
           if (mentionedEmployee) {

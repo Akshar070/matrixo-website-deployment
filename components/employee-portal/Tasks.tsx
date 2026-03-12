@@ -94,8 +94,8 @@ function MentionInput({
         const name = (e.name || '').toLowerCase().trim()
         if (name === 'admin') return false
         if (!query) return true
-        return e.name.toLowerCase().includes(query) ||
-               e.employeeId.toLowerCase().includes(query) ||
+        return (e.name || '').toLowerCase().includes(query) ||
+               (e.employeeId || '').toLowerCase().includes(query) ||
                (e.department || '').toLowerCase().includes(query)
       })
     } else {
@@ -222,9 +222,9 @@ function MentionInput({
     
     const mentionIds = userMentions.map(name => {
       const emp = employees.find(e => 
-        e.name.toLowerCase() === name.toLowerCase() ||
-        e.name.toLowerCase().replace(/\s/g, '').includes(name.toLowerCase().replace(/\s/g, '')) ||
-        e.employeeId.toLowerCase() === name.toLowerCase()
+        (e.name || '').toLowerCase() === name.toLowerCase() ||
+        (e.name || '').toLowerCase().replace(/\s/g, '').includes(name.toLowerCase().replace(/\s/g, '')) ||
+        (e.employeeId || '').toLowerCase() === name.toLowerCase()
       )
       return emp?.employeeId
     }).filter(Boolean) as string[]
@@ -808,8 +808,8 @@ function TaskDetailModal({
       if (part.startsWith('@')) {
         const mentionName = part.slice(1)
         const emp = employees.find(e => 
-          e.name.toLowerCase().replace(/\s/g, '') === mentionName.toLowerCase() ||
-          e.employeeId.toLowerCase() === mentionName.toLowerCase()
+          (e.name || '').toLowerCase().replace(/\s/g, '') === mentionName.toLowerCase() ||
+          (e.employeeId || '').toLowerCase() === mentionName.toLowerCase()
         )
         if (emp) {
           const displayName = emp.name

@@ -151,6 +151,9 @@ function getProfileImageUrl(url?: string, name?: string, employeeId?: string): s
 
 function renderMarkdownClean(md: string): string {
   let html = md
+    // Normalize bullet characters: Unicode bullet, and corrupted UTF-8 variant
+    .replace(/^[\u2022\u2023\u25e6\u2043\u2219]\s+/gm, '- ')
+    .replace(/^â€¢\s+/gm, '- ')
     // Strip markdown links: [text](url) â†’ text
     .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
     // Strip bare URLs in parentheses: (https://...)
@@ -188,7 +191,7 @@ function renderMarkdownClean(md: string): string {
       let content = match![1]
       // Bold
       content = content.replace(/\*\*(.*?)\*\*/g, '<strong class="text-white font-semibold">$1</strong>')
-      result.push(`<li class="text-sm text-neutral-300 leading-relaxed pl-4 relative before:content-['â€¢'] before:absolute before:left-0 before:text-blue-400 before:font-bold">${content}</li>`)
+      result.push(`<li class="text-sm text-neutral-300 leading-relaxed flex gap-2 items-start"><span class="text-blue-400 font-bold flex-shrink-0 select-none">&#x2022;</span><span>${content}</span></li>`)
     }
     // Empty line
     else if (trimmed === '') {

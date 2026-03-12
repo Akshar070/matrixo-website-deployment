@@ -127,6 +127,9 @@ export async function createGlobalNotification(params: CreateNotificationParams)
       const empData = empDoc.data()
       const recipientId = empData.employeeId
       const recipientRole = empData.role
+
+      // Skip corrupt/incomplete employee records
+      if (!recipientId || !empData.name) return
       
       console.log('🔔 Checking employee:', empData.name, 'ID:', recipientId, 'Role:', recipientRole, 'vs Creator:', params.createdBy)
       

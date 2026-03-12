@@ -218,6 +218,14 @@ service cloud.firestore {
     }
 
     // ================================================
+    // EVENTS COLLECTION (QR scanner event list)
+    // ================================================
+    match /events/{eventId} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated();
+    }
+
+    // ================================================
     // CONTACT SUBMISSIONS COLLECTION
     // ================================================
     match /contactSubmissions/{submissionId} {

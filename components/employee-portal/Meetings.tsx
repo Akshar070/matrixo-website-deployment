@@ -31,7 +31,7 @@ import { useEmployeeAuth } from '@/lib/employeePortalContext'
 import type { EmployeeProfile } from '@/lib/employeePortalContext'
 import { isAdminOrSubAdmin } from '@/lib/employeePortalContext'
 import { createGlobalNotification } from '@/lib/notificationUtils'
-import { Card, Button, Badge, Spinner as SpinnerUI, EmptyState, Modal, getLocalProfileImage } from './ui'
+import { Card, Button, Badge, Spinner as SpinnerUI, EmptyState, Modal, getLocalProfileImage, Avatar } from './ui'
 import { toast } from 'sonner'
 import { db } from '@/lib/firebaseConfig'
 import {
@@ -367,11 +367,13 @@ function EmployeeHoverCard({ name, employees }: { name: string; employees: Emplo
           >
             <div className="bg-neutral-900 border border-neutral-700 rounded-xl p-3 shadow-2xl shadow-black/50">
               <div className="flex items-center gap-3">
-                <img
-                  src={getProfileImageUrl(matched.profileImage, matched.name, matched.employeeId)}
-                  alt={matched.name}
-                  className="w-10 h-10 rounded-full object-cover ring-2 ring-blue-500/30"
-                  onError={(e) => { (e.target as HTMLImageElement).src = getProfileImageUrl(undefined, matched.name, matched.employeeId) }}
+                <Avatar
+                  src={matched.profileImage}
+                  name={matched.name}
+                  employeeId={matched.employeeId}
+                  size="md"
+                  showBorder={false}
+                  className="ring-2 ring-blue-500/30"
                 />
                 <div className="min-w-0 flex-1">
                   <p className="text-sm font-semibold text-white truncate">{matched.name}</p>
@@ -968,11 +970,13 @@ function MeetingDetailModal({
                     key={i}
                     className="flex items-center gap-3 p-3 bg-neutral-800/40 rounded-xl border border-neutral-700/50 hover:border-neutral-600/50 transition-all"
                   >
-                    <img
-                      src={getProfileImageUrl(matched?.profileImage, att.name, matched?.employeeId)}
-                      alt={att.name}
-                      className="w-9 h-9 rounded-full object-cover ring-2 ring-blue-500/20"
-                      onError={(e) => { (e.target as HTMLImageElement).src = getProfileImageUrl(undefined, att.name, matched?.employeeId) }}
+                    <Avatar
+                      src={matched?.profileImage}
+                      name={att.name}
+                      employeeId={matched?.employeeId}
+                      size="sm"
+                      showBorder={false}
+                      className="!w-9 !h-9 ring-2 ring-blue-500/20"
                     />
                     <div className="flex-1 min-w-0">
                       <p className="text-sm text-neutral-200 font-medium truncate">{att.name}</p>
@@ -1617,7 +1621,7 @@ export function Meetings() {
           <p className="text-neutral-500 text-xs mt-0.5">
             {filteredMeetings.length} meeting{filteredMeetings.length !== 1 ? 's' : ''}
             {isAdmin && hiddenMeetingIds.size > 0 && (
-              <span className="text-red-400 ml-1.5">â€¢ {hiddenMeetingIds.size} hidden</span>
+              <span className="text-red-400 ml-1.5">&#x2022; {hiddenMeetingIds.size} hidden</span>
             )}
           </p>
         </div>

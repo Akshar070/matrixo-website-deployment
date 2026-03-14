@@ -1,13 +1,14 @@
 'use client'
 
 import { motion } from 'framer-motion'
+import { useState } from 'react'
 
 const partners = [
-  { letter: 'S', name: 'Smartzy Edu Pvt. Ltd.' },
-  { letter: 'T', name: 'TEDxIARE' },
-  { letter: 'T', name: 'TEDxCMRIT Hyderabad' },
-  { letter: 'K', name: 'Kommuri Pratap Reddy Institute of Technology' },
-  { letter: 'T', name: 'TEDxKPRIT' },
+  { name: 'Smartzy Edu Pvt. Ltd.', logo: '/partners/smartzy.png' },
+  { name: 'TEDxIARE', logo: '/partners/tedx-iare.svg' },
+  { name: 'TEDxCMRIT Hyderabad', logo: '/partners/tedx-cmrit.png' },
+  { name: 'Kommuri Pratap Reddy Institute of Technology', logo: '/partners/kprit.png' },
+  { name: 'TEDxKPRIT', logo: '/events/tedxkprit-logo.png' },
   { name: 'J B Institute of Engineering and Technology', logo: '/logos/jbiet.png' },
 ]
 
@@ -29,7 +30,7 @@ export default function Partners() {
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
           {partners.map((partner, index) => (
             <motion.div
               key={partner.name}
@@ -40,18 +41,8 @@ export default function Partners() {
               whileHover={{ scale: 1.05 }}
               className="group flex flex-col items-center justify-center p-8 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-md transition-all duration-300 hover:border-blue-400 hover:shadow-xl h-full"
             >
-              <div className="w-16 h-16 rounded-full bg-white/10 flex items-center justify-center mb-4 overflow-hidden transition-colors duration-300 group-hover:bg-blue-500/20">
-              {'logo' in partner && partner.logo ? (
-                <img
-                  src={partner.logo}
-                  alt={partner.name}
-                  className="w-full h-full object-contain p-2"
-                />
-              ) : (
-              <span className="text-xl font-semibold text-gray-300 group-hover:text-blue-400">
-                {'letter' in partner ? partner.letter : ''}
-                </span>
-              )}
+              <div className="w-16 h-16 rounded-full bg-white dark:bg-white/90 flex items-center justify-center mb-4 overflow-hidden transition-colors duration-300 group-hover:bg-blue-500/20 p-1">
+                <PartnerLogo name={partner.name} logo={partner.logo} />
               </div>
               <p className="text-sm text-gray-300 text-center">
                 {partner.name}
@@ -82,5 +73,20 @@ export default function Partners() {
         </motion.div>
       </div>
     </section>
+  )
+}
+
+function PartnerLogo({ name, logo }: { name: string; logo: string }) {
+  const [failed, setFailed] = useState(false)
+  if (failed) {
+    return <span className="text-2xl font-bold text-gray-700">{name.charAt(0)}</span>
+  }
+  return (
+    <img
+      src={logo}
+      alt={name}
+      onError={() => setFailed(true)}
+      className="w-full h-full object-contain"
+    />
   )
 }

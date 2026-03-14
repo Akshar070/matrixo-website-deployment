@@ -100,6 +100,8 @@ export default function TeamContent() {
           const data = doc.data()
           // Skip the Admin account from the team page
           if (data.name === 'Admin' || data.employeeId === 'Admin' || data.role === 'admin' && !data.designation) return
+          // Skip generic employees/interns without a specific designation (prevents "Team Member" cards on public page)
+          if ((data.role === 'employee' || data.role === 'Intern') && !data.designation) return
           const name = data.name || ''
           members.push({
             employeeId: data.employeeId || doc.id,

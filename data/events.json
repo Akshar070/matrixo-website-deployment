@@ -98,9 +98,9 @@
     "slug": "vibecoding-irl-kprit",
     "title": "VibeCode IRL",
     "tagline": "Where Coding Meets the Vibe",
-    "description": "VibeCode IRL is a 2-day interactive event on AI-assisted coding organized by matriXO at KPRIT. Two sessions across March 24 & 25, 2026 — exclusively for 1st Year students. Learn to leverage cutting-edge AI tools, participate in team-based coding challenges, and win exciting prizes. This isn't your typical workshop — it's hands-on, competitive, and built for developers who want to level up.",
-    "date": "2026-03-24T10:00:00",
-    "endDate": "2026-03-25T17:00:00",
+    "description": "VibeCode IRL is a 2-day interactive event on AI-assisted coding organized by matriXO at KPRIT. Two separate sessions across Feb 12 & 13. Learn how to leverage cutting-edge AI tools, participate in quiz competitions, showcase your skills in coding competitions, and win exciting prizes. This isn't your typical workshop — it's hands-on, competitive, and built for developers who want to level up.",
+    "date": "2026-02-12T10:00:00",
+    "endDate": "2026-02-13T16:00:00",
     "venue": "Auditorium, D-Block, KPRIT",
     "location": "Kommuri Pratap Reddy Institute of Technology, Hyderabad",
     "totalCapacity": 288,
@@ -109,8 +109,6 @@
     "status": "upcoming",
     "category": "Workshop",
     "isVibeCodeEvent": true,
-    "firstYearOnly": true,
-    "googleFormLink": "PASTE_GOOGLE_FORM_LINK_HERE",
     "images": {
       "banner": "/events/vibecoding cover page.jpeg",
       "thumbnail": "/events/vibecoding cover page.jpeg",
@@ -141,28 +139,28 @@
     "sponsors": [],
     "agenda": [
       {
-        "time": "Mar 24 - 10:00 AM - 1:00 PM",
-        "title": "Session 1: Interactive Vibe Coding Workshop"
+        "time": "Feb 12 - 10:00 AM - 1:00 PM",
+        "title": "Session 1: Workshop + Quiz Competition"
       },
       {
-        "time": "Mar 24 - 1:00 PM - 2:00 PM",
+        "time": "Feb 12 - 1:00 PM - 2:00 PM",
         "title": "Lunch Break"
       },
       {
-        "time": "Mar 24 - 2:00 PM - 5:00 PM",
-        "title": "Session 1: Team-Based Coding Challenge & Certificates"
+        "time": "Feb 12 - 2:00 PM - 4:00 PM",
+        "title": "Session 1: Coding Competition & Certificates"
       },
       {
-        "time": "Mar 25 - 10:00 AM - 1:00 PM",
-        "title": "Session 2: Interactive Vibe Coding Workshop"
+        "time": "Feb 13 - 10:00 AM - 1:00 PM",
+        "title": "Session 2: Workshop + Quiz Competition"
       },
       {
-        "time": "Mar 25 - 1:00 PM - 2:00 PM",
+        "time": "Feb 13 - 1:00 PM - 2:00 PM",
         "title": "Lunch Break"
       },
       {
-        "time": "Mar 25 - 2:00 PM - 5:00 PM",
-        "title": "Session 2: Team-Based Coding Challenge & Certificates"
+        "time": "Feb 13 - 2:00 PM - 4:00 PM",
+        "title": "Session 2: Coding Competition & Certificates"
       }
     ],
     "tags": [
@@ -181,10 +179,13 @@
       "linkedin": "https://www.linkedin.com/company/matrixo/"
     },
     "highlights": [
-      "Interactive Vibe Coding Workshop",
-      "Team-Based Coding Challenge",
-      "Participation Certificates",
-      "Swags & Prizes"
+      "Full-day event with workshop & competitions",
+      "Quiz competition with exciting swags",
+      "Coding competition with merit certificates",
+      "AI tools & techniques masterclass",
+      "Participation certificates for all",
+      "Lunch included",
+      "Network with peers & mentors"
     ],
     "benefits": [
       {
@@ -243,6 +244,123 @@
       "currency": "INR",
       "note": "Payment is mandatory to confirm registration. After form submission, you'll be redirected to your UPI app to complete payment."
     }
+  },
+  {
+    "id": "vibecoding-irl-march-2026",
+    "slug": "vibecoding-irl-march-2026",
+    "title": "VibeCode IRL",
+    "tagline": "Where Coding Meets the Vibe",
+    "description": "VibeCode IRL is back — a 2-day interactive event on AI-assisted coding organized by matriXO at KPRIT, exclusively for 1st Year students. Two sessions across March 24 & 25, 2026. Participate in hands-on workshops, team-based coding challenges, win exciting prizes and walk away with participation certificates.",
+    "date": "2026-03-24T10:00:00",
+    "endDate": "2026-03-25T17:00:00",
+    "venue": "Auditorium, D-Block, KPRIT",
+    "location": "Kommuri Pratap Reddy Institute of Technology, Hyderabad",
+    "totalCapacity": 288,
+    "ticketsSold": 0,
+    "featured": true,
+    "status": "upcoming",
+    "category": "Workshop",
+    "isVibeCodeEvent": true,
+    "firstYearOnly": true,
+    "googleFormLink": "PASTE_GOOGLE_FORM_LINK_HERE",
+    "images": {
+      "banner": "/events/vibecoding cover page.jpeg",
+      "thumbnail": "/events/vibecoding cover page.jpeg",
+      "gallery": []
+    },
+    "tickets": [
+      {
+        "id": "google-form-pass",
+        "name": "Register Now",
+        "price": 0,
+        "available": 288,
+        "description": "Register via Google Form",
+        "perks": [
+          "Interactive Vibe Coding Workshop",
+          "Team-Based Coding Challenge",
+          "Participation Certificate",
+          "Swags & Prizes"
+        ]
+      }
+    ],
+    "partners": ["matriXO"],
+    "sponsors": [],
+    "agenda": [
+      {
+        "time": "Mar 24 - 10:00 AM - 1:00 PM",
+        "title": "Session 1: Interactive Vibe Coding Workshop"
+      },
+      {
+        "time": "Mar 24 - 1:00 PM - 2:00 PM",
+        "title": "Lunch Break"
+      },
+      {
+        "time": "Mar 24 - 2:00 PM - 5:00 PM",
+        "title": "Session 1: Team-Based Coding Challenge & Certificates"
+      },
+      {
+        "time": "Mar 25 - 10:00 AM - 1:00 PM",
+        "title": "Session 2: Interactive Vibe Coding Workshop"
+      },
+      {
+        "time": "Mar 25 - 1:00 PM - 2:00 PM",
+        "title": "Lunch Break"
+      },
+      {
+        "time": "Mar 25 - 2:00 PM - 5:00 PM",
+        "title": "Session 2: Team-Based Coding Challenge & Certificates"
+      }
+    ],
+    "tags": ["Workshop", "AI Coding", "1st Year", "matriXO"],
+    "organizer": "matriXO",
+    "ticketingPartner": "matriXO",
+    "contactEmail": "events@matrixo.in",
+    "socialLinks": {
+      "website": "https://matrixo.in",
+      "instagram": "https://www.instagram.com/matrixo.in/",
+      "linkedin": "https://www.linkedin.com/company/matrixo/"
+    },
+    "highlights": [
+      "Interactive Vibe Coding Workshop",
+      "Team-Based Coding Challenge",
+      "Participation Certificates",
+      "Swags & Prizes"
+    ],
+    "benefits": [
+      {
+        "title": "Participation Certificate",
+        "description": "Physical certificate for everyone who participated (distributed at the venue)",
+        "icon": "certificate"
+      },
+      {
+        "title": "Swags & Prizes",
+        "description": "Exciting swags and prizes for top performers",
+        "icon": "gift"
+      },
+      {
+        "title": "Team Challenge",
+        "description": "Compete in teams and showcase your coding skills",
+        "icon": "trophy"
+      }
+    ],
+    "faqs": [
+      {
+        "question": "Who can attend VibeCode IRL – March 2026?",
+        "answer": "This event is exclusively for 1st Year students at KPRIT."
+      },
+      {
+        "question": "How do I register?",
+        "answer": "Click the Register Now button to fill out the Google Form. Registration is free."
+      },
+      {
+        "question": "What will I need to bring?",
+        "answer": "Bring your laptop and charger. We will provide internet access and workspace."
+      },
+      {
+        "question": "Is this a team event?",
+        "answer": "There will be team-based coding challenges. Details will be shared at the venue."
+      }
+    ]
   },
   {
     "id": "tedxkprit-2025",

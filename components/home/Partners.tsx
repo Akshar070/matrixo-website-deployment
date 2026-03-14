@@ -1,11 +1,11 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import Image from 'next/image'
+import { useState } from 'react'
 
 const partners = [
   { name: 'Smartzy Edu Pvt. Ltd.', logo: '/partners/smartzy.png' },
-  { name: 'TEDxIARE', logo: '/partners/tedx-iare.png' },
+  { name: 'TEDxIARE', logo: '/partners/tedx-iare.svg' },
   { name: 'TEDxCMRIT Hyderabad', logo: '/partners/tedx-cmrit.png' },
   { name: 'Kommuri Pratap Reddy Institute of Technology', logo: '/partners/kprit.png' },
   { name: 'TEDxKPRIT', logo: '/events/tedxkprit-logo.png' },
@@ -41,8 +41,8 @@ export default function Partners() {
               className="flex items-center justify-center p-6 glass-card hover-lift transition-all duration-300"
             >
               <div className="text-center">
-                <div className="w-20 h-20 mx-auto mb-3 bg-white/60 dark:bg-white/[0.06] backdrop-blur-sm rounded-full flex items-center justify-center text-3xl font-bold text-gray-900 dark:text-white">
-                  {partner.name.charAt(0)}
+                <div className="w-20 h-20 mx-auto mb-3 bg-white dark:bg-white/90 rounded-full flex items-center justify-center overflow-hidden p-1">
+                  <PartnerLogo name={partner.name} logo={partner.logo} />
                 </div>
                 <p className="text-xs font-medium text-gray-700 dark:text-gray-300 leading-tight">
                   {partner.name}
@@ -74,5 +74,20 @@ export default function Partners() {
         </motion.div>
       </div>
     </section>
+  )
+}
+
+function PartnerLogo({ name, logo }: { name: string; logo: string }) {
+  const [failed, setFailed] = useState(false)
+  if (failed) {
+    return <span className="text-3xl font-bold text-gray-700">{name.charAt(0)}</span>
+  }
+  return (
+    <img
+      src={logo}
+      alt={name}
+      onError={() => setFailed(true)}
+      className="w-full h-full object-contain"
+    />
   )
 }

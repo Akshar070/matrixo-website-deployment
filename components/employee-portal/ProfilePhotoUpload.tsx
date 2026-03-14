@@ -5,7 +5,7 @@ import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { FaCamera, FaTimes, FaUpload, FaTrash, FaCheck, FaExclamationTriangle, FaSpinner } from 'react-icons/fa'
 import { ref, uploadBytesResumable, getDownloadURL, deleteObject } from 'firebase/storage'
-import { doc, setDoc, updateDoc, serverTimestamp } from 'firebase/firestore'
+import { collection, query, where, getDocs, updateDoc, serverTimestamp } from 'firebase/firestore'
 import { storage, db } from '@/lib/firebaseConfig'
 import { toast } from 'sonner'
 
@@ -215,16 +215,19 @@ export default function ProfilePhotoUpload({
             try {
               const downloadUrl = await getDownloadURL(uploadTask.snapshot.ref)
 
-              // 4. Update Firestore
-              const employeeRef = doc(db, 'Employees', employeeId)
-              await setDoc(
-                employeeRef,
-                {
-                  profileImage: downloadUrl,
-                  imageUpdatedAt: serverTimestamp(),
-                },
-                { merge: true }
-              )
+              // 4. Update Firestore – query by employeeId field to find the actual document
+              const employeesRef = collection(db, 'Employees')
+              const q = query(employeesRef, where('employeeId', '==', employeeId))
+              const querySnapshot = await getDocs(q)
+
+              if (querySnapshot.empty) {
+                throw new Error('Employee record not found')
+              }
+
+              await updateDoc(querySnapshot.docs[0].ref, {
+                profileImage: downloadUrl,
+                imageUpdatedAt: serverTimestamp(),
+              })
 
               onImageUpdated?.(downloadUrl)
               toast.success('Profile photo updated successfully!')
@@ -252,9 +255,17 @@ export default function ProfilePhotoUpload({
 
     setUploading(true)
     try {
+      // Query for the actual Firestore document by employeeId field
+      const employeesRef = collection(db, 'Employees')
+      const q = query(employeesRef, where('employeeId', '==', employeeId))
+      const querySnapshot = await getDocs(q)
+
+      if (querySnapshot.empty) {
+        throw new Error('Employee record not found')
+      }
+
       // Remove from Firestore first so the UI updates immediately
-      const employeeRef = doc(db, 'Employees', employeeId)
-      await updateDoc(employeeRef, {
+      await updateDoc(querySnapshot.docs[0].ref, {
         profileImage: '',
         imageUpdatedAt: serverTimestamp(),
       })

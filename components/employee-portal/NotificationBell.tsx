@@ -252,9 +252,20 @@ export default function NotificationBell({ onNavigate, darkMode = true }: Notifi
   }
 
   // Strip leading mojibake characters (corrupted emoji stored as Latin-1 sequences)
-  const sanitizeTitle = (title: string) =>
-    title.replace(/^[\u0080-\u00ff\u00c0-\u00ff\u2018-\u201f\u2039\u203a\u0152\u0153\u0160\u0161\u0178]+\s*/g, '').trim() || title.trim()
+  const sanitizeTitle = (title: string) => {
+  if (!title) return ''
 
+  // Remove common mojibake sequences like Â, Ã, â€
+  return title
+    .replace(/Â/g, '')
+    .replace(/Ã/g, '')
+    .replace(/â€™/g, "'")
+    .replace(/â€œ/g, '"')
+    .replace(/â€/g, '"')
+    .replace(/â€“/g, '-')
+    .replace(/â€”/g, '-')
+    .trim()
+}
   const getIcon = (type: string) => {
     switch (type) {
       case 'task': return <FaTasks className="text-blue-400" />

@@ -19,6 +19,7 @@ import HeadingHighlight from '@/components/HeadingHighlight'
 interface BetaShellProps {
   /** Tailwind gradient tokens for this product's accent, e.g. "from-indigo-500 to-purple-500". */
   accent: string
+  backgroundClassName?: string
   badgeIcon: React.ReactNode
   badgeLabel: string
   title: string
@@ -30,6 +31,7 @@ interface BetaShellProps {
 
 export function BetaShell({
   accent,
+  backgroundClassName = 'bg-gradient-to-br from-gray-50 via-white to-blue-50 dark:from-gray-950 dark:via-purple-950/10 dark:to-blue-950/20',
   badgeIcon,
   badgeLabel,
   title,
@@ -39,8 +41,8 @@ export function BetaShell({
   children,
 }: BetaShellProps) {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50 dark:from-gray-950 dark:via-purple-950/10 dark:to-blue-950/20 py-20 sm:py-24">
-      <div className="container-custom px-4 sm:px-6 max-w-7xl mx-auto">
+    <div className={`min-h-screen ${backgroundClassName} py-20`}>
+      <div className="container-custom px-6 max-w-7xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

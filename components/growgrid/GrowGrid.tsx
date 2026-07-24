@@ -172,6 +172,7 @@ export default function GrowGrid() {
   return (
     <BetaShell
       accent="from-indigo-500 to-purple-500"
+      backgroundClassName="bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 dark:from-gray-950 dark:via-purple-950/20 dark:to-blue-950/20"
       badgeIcon={<FaRocket className="animate-bounce" />}
       badgeLabel="GrowGrid™ Learning Paths"
       title="Your Adaptive Learning Journey"

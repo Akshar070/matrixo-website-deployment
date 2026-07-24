@@ -123,6 +123,7 @@ export default function PlayCred() {
   return (
     <BetaShell
       accent="from-yellow-500 to-orange-500"
+      backgroundClassName="bg-gradient-to-br from-yellow-50 via-orange-50 to-pink-50 dark:from-gray-950 dark:via-yellow-950/10 dark:to-orange-950/10"
       badgeIcon={<FaTrophy className="animate-bounce" />}
       badgeLabel="PlayCred™ Verified Credentials"
       title="Your Verified Achievements"

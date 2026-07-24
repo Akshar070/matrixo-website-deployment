@@ -104,6 +104,7 @@ export default function MentorMatrix() {
   return (
     <BetaShell
       accent="from-blue-500 to-indigo-500"
+      backgroundClassName="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-950 dark:via-blue-950/10 dark:to-indigo-950/10"
       badgeIcon={<FaUserTie className="animate-bounce" />}
       badgeLabel="MentorMatrix™ Network"
       title="Find Your Perfect Mentor"

@@ -27,11 +27,9 @@ rules_version = '2';
 // every Employees doc ID must equal its user's auth UID. Re-key mismatches
 // (or provision via the Admin SDK) first.
 //
-// KNOWN GAP (not fixed here on purpose): the send-otp route writes an
-// `EmailOTPs` collection via the client SDK. There is deliberately NO rule
-// for it — a client-readable rule would let anyone read OTP codes and
-// bypass verification. Move OTP issuance/verification to an Admin-SDK
-// server route instead (do not add a permissive EmailOTPs rule).
+// OTP issuance/verification now runs through a server route using the
+// Firebase Admin SDK (bypasses client rules). Keep EmailOTPs inaccessible
+// from clients and do not add a permissive Firestore rule for that collection.
 // ============================================================================
 
 service cloud.firestore {

@@ -1,16 +1,41 @@
 import { NextResponse } from 'next/server'
 import { Resend } from 'resend'
-import { db } from '@/lib/firebaseConfig'
-import { doc, setDoc, getDoc, deleteDoc } from 'firebase/firestore'
 import { randomInt } from 'crypto'
+import { cert, getApps, initializeApp } from 'firebase-admin/app'
+import { getFirestore } from 'firebase-admin/firestore'
 import { isValidEmail } from '@/lib/security/sanitize'
 import { rateLimit, clientKey } from '@/lib/security/rateLimit'
 
 export const dynamic = 'force-dynamic'
 
+interface EmailOtpData {
+  otp: string
+  email: string
+  createdAt: number
+  attempts: number
+}
+
 function generateOTP(): string {
   // Cryptographically secure 6-digit code (avoid Math.random for secrets)
   return randomInt(100000, 1000000).toString()
+}
+
+function getAdminDb() {
+  if (getApps().length === 0) {
+    const projectId = process.env.FIREBASE_PROJECT_ID
+    const clientEmail = process.env.FIREBASE_CLIENT_EMAIL
+    const privateKey = process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n')
+
+    if (projectId && clientEmail && privateKey) {
+      initializeApp({
+        credential: cert({ projectId, clientEmail, privateKey }),
+      })
+    } else {
+      initializeApp()
+    }
+  }
+
+  return getFirestore()
 }
 
 export async function POST(request: Request) {
@@ -49,36 +74,36 @@ export async function POST(request: Request) {
     // action can be 'send' or 'verify'
     if (action === 'verify') {
       // Get stored OTP from Firestore
-      const otpRef = doc(db, 'EmailOTPs', email.toLowerCase())
-      const otpDoc = await getDoc(otpRef)
+      const otpRef = getAdminDb().collection('EmailOTPs').doc(email.toLowerCase())
+      const otpDoc = await otpRef.get()
       
       if (!otpDoc.exists()) {
         return NextResponse.json({ error: 'OTP expired or not found. Please request a new one.' }, { status: 400 })
       }
 
-      const storedData = otpDoc.data()
+      const storedData = otpDoc.data() as EmailOtpData
       const now = Date.now()
 
       // Check expiry (10 minutes)
       if (now - storedData.createdAt > 10 * 60 * 1000) {
-        await deleteDoc(otpRef)
+        await otpRef.delete()
         return NextResponse.json({ error: 'OTP has expired. Please request a new one.' }, { status: 400 })
       }
 
       // Check attempts (max 5)
       if (storedData.attempts >= 5) {
-        await deleteDoc(otpRef)
+        await otpRef.delete()
         return NextResponse.json({ error: 'Too many failed attempts. Please request a new OTP.' }, { status: 400 })
       }
 
       if (storedData.otp !== inputOtp) {
         // Increment attempts
-        await setDoc(otpRef, { ...storedData, attempts: storedData.attempts + 1 })
+        await otpRef.set({ ...storedData, attempts: storedData.attempts + 1 })
         return NextResponse.json({ error: 'Invalid OTP. Please try again.' }, { status: 400 })
       }
 
       // OTP verified - delete it
-      await deleteDoc(otpRef)
+      await otpRef.delete()
       return NextResponse.json({ success: true, verified: true })
     }
 
@@ -94,8 +119,8 @@ export async function POST(request: Request) {
     const otp = generateOTP()
 
     // Store OTP in Firestore
-    const otpRef = doc(db, 'EmailOTPs', email.toLowerCase())
-    await setDoc(otpRef, {
+    const otpRef = getAdminDb().collection('EmailOTPs').doc(email.toLowerCase())
+    await otpRef.set({
       otp,
       email: email.toLowerCase(),
       createdAt: Date.now(),

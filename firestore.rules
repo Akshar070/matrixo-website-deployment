@@ -382,10 +382,10 @@ service cloud.firestore {
 
     // ================================================
     // CONTACT SUBMISSIONS COLLECTION
-    // Public create (contact form); only staff read; immutable.
+    // Server-only (via API route / Admin SDK); immutable from clients.
     // ================================================
     match /contactSubmissions/{submissionId} {
-      allow create: if true;
+      allow create: if false;
       allow read: if isEmployee();
       allow update, delete: if false;
     }

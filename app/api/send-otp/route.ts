@@ -77,7 +77,7 @@ export async function POST(request: Request) {
       const otpRef = getAdminDb().collection('EmailOTPs').doc(email.toLowerCase())
       const otpDoc = await otpRef.get()
       
-      if (!otpDoc.exists()) {
+      if (!otpDoc.exists) {
         return NextResponse.json({ error: 'OTP expired or not found. Please request a new one.' }, { status: 400 })
       }
 

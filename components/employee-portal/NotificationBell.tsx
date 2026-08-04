@@ -3,17 +3,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { createPortal } from 'react-dom'
 import { motion } from 'framer-motion'
-import { 
-  FaBell, 
-  FaTasks, 
-  FaComments, 
-  FaCalendarAlt, 
-  FaCheckDouble,
-  FaTrash,
-  FaBriefcase,
-  FaVideo,
-  FaClipboardCheck
-} from 'react-icons/fa'
+
 import { 
   collection, 
   query, 
@@ -30,6 +20,7 @@ import {
 import { db } from '@/lib/firebaseConfig'
 import { useEmployeeAuth } from '@/lib/employeePortalContext'
 import { formatDistanceToNow } from 'date-fns'
+import { Bell, Briefcase, CalendarDays, CheckCheck, ClipboardCheck, ListTodo, MessageCircle, Trash2, Video } from 'lucide-react'
 
 // Notification type
 interface Notification {
@@ -268,13 +259,13 @@ export default function NotificationBell({ onNavigate, darkMode = true }: Notifi
 }
   const getIcon = (type: string) => {
     switch (type) {
-      case 'task': return <FaTasks className="text-blue-400" />
-      case 'discussion': return <FaComments className="text-green-400" />
-      case 'calendar': return <FaCalendarAlt className="text-purple-400" />
-      case 'application': return <FaBriefcase className="text-cyan-400" />
-      case 'meeting': return <FaVideo className="text-amber-400" />
-      case 'attendance': return <FaClipboardCheck className="text-emerald-400" />
-      default: return <FaBell className="text-neutral-400" />
+      case 'task': return <ListTodo className="text-blue-400" />
+      case 'discussion': return <MessageCircle className="text-green-400" />
+      case 'calendar': return <CalendarDays className="text-blue-400" />
+      case 'application': return <Briefcase className="text-blue-400" />
+      case 'meeting': return <Video className="text-amber-400" />
+      case 'attendance': return <ClipboardCheck className="text-emerald-400" />
+      default: return <Bell className="text-slate-400" />
     }
   }
 
@@ -284,10 +275,10 @@ export default function NotificationBell({ onNavigate, darkMode = true }: Notifi
       created: 'bg-green-500/20 text-green-400',
       updated: 'bg-blue-500/20 text-blue-400',
       deleted: 'bg-red-500/20 text-red-400',
-      assigned: 'bg-purple-500/20 text-purple-400',
-      mentioned: 'bg-amber-500/20 text-amber-400',
-      status_changed: 'bg-cyan-500/20 text-cyan-400',
-      replied: 'bg-indigo-500/20 text-indigo-400'
+      assigned: 'bg-blue-500/15 text-blue-400',
+      mentioned: 'bg-amber-500/15 text-amber-400',
+      status_changed: 'bg-sky-500/15 text-sky-400',
+      replied: 'bg-primary-500/15 text-primary-400'
     }
     const labels: Record<string, string> = {
       created: 'New',
@@ -299,7 +290,7 @@ export default function NotificationBell({ onNavigate, darkMode = true }: Notifi
       replied: 'Reply'
     }
     return (
-      <span className={`text-[10px] px-1.5 py-0.5 rounded ${colors[action] || 'bg-neutral-500/20 text-neutral-400'}`}>
+      <span className={`text-[10px] px-1.5 py-0.5 rounded ${colors[action] || 'bg-slate-500/15 text-slate-400'}`}>
         {labels[action] || action}
       </span>
     )
@@ -322,16 +313,13 @@ export default function NotificationBell({ onNavigate, darkMode = true }: Notifi
         type="button"
         className="relative p-1.5 sm:p-2.5 rounded-xl transition-all group cursor-pointer"
         style={{
-          background: darkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)',
-          border: darkMode ? '1px solid rgba(255,255,255,0.12)' : '1px solid rgba(0,0,0,0.1)',
-          boxShadow: darkMode
-            ? '0 2px 12px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1)'
-            : '0 2px 10px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.8)',
+          background: darkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)',
+          border: darkMode ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(0,0,0,0.08)',
         }}
         aria-label="Notifications"
         aria-expanded={isOpen}
       >
-        <FaBell className={`text-base sm:text-lg transition-colors ${darkMode ? 'text-neutral-300 group-hover:text-white' : 'text-gray-500 group-hover:text-gray-800'}`} />
+        <Bell className={`text-base sm:text-lg transition-colors ${darkMode ? 'text-slate-300 group-hover:text-white' : 'text-gray-500 group-hover:text-gray-800'}`} />
         
         {unreadCount > 0 && (
           <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center shadow-lg">
@@ -358,21 +346,21 @@ export default function NotificationBell({ onNavigate, darkMode = true }: Notifi
             transition={{ duration: 0.15 }}
             className={`rounded-2xl shadow-2xl ${position.isMobile ? 'w-auto' : 'w-96 max-w-[calc(100vw-2rem)]'}`}
             style={{
-              background: darkMode ? 'rgba(15,15,22,0.88)' : 'rgba(255,255,255,0.88)',
-              backdropFilter: 'blur(40px) saturate(180%)',
-              WebkitBackdropFilter: 'blur(40px) saturate(180%)',
-              border: darkMode ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.08)',
-              boxShadow: darkMode ? '0 24px 48px rgba(0,0,0,0.7)' : '0 24px 48px rgba(0,0,0,0.12)',
+              background: darkMode ? 'rgba(10,15,30,0.95)' : 'rgba(255,255,255,0.95)',
+              backdropFilter: 'blur(20px) saturate(1.5)',
+              WebkitBackdropFilter: 'blur(20px) saturate(1.5)',
+              border: darkMode ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(0,0,0,0.06)',
+              boxShadow: darkMode ? '0 20px 40px rgba(0,0,0,0.5)' : '0 20px 40px rgba(0,0,0,0.1)',
             }}
           >
             {/* Header */}
             <div
               className="px-4 py-3 rounded-t-2xl"
-              style={{ borderBottom: darkMode ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(0,0,0,0.07)', background: 'linear-gradient(135deg, rgba(124,58,237,0.12) 0%, transparent 100%)' }}
+              style={{ borderBottom: darkMode ? '1px solid rgba(255,255,255,0.06)' : '1px solid rgba(0,0,0,0.06)' }}
             >
               <div className="flex items-center justify-between">
                 <h3 className={`font-semibold flex items-center gap-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                  <FaBell className="text-primary-500" />
+                  <Bell className="text-primary-500" />
                   Notifications
                   {unreadCount > 0 && (
                     <span className="text-xs bg-red-500/20 text-red-400 px-2 py-0.5 rounded-full">
@@ -385,7 +373,7 @@ export default function NotificationBell({ onNavigate, darkMode = true }: Notifi
                     onClick={markAllAsRead}
                     className="text-xs text-primary-500 hover:text-primary-400 flex items-center gap-1 transition-colors"
                   >
-                    <FaCheckDouble size={12} />
+                    <CheckCheck size={12} />
                     Mark all read
                   </button>
                 )}
@@ -395,13 +383,13 @@ export default function NotificationBell({ onNavigate, darkMode = true }: Notifi
             {/* Notification List */}
             <div className="max-h-80 overflow-y-auto">
               {loading ? (
-                <div className="px-4 py-8 text-center text-neutral-500">
-                  <div className="animate-spin w-6 h-6 border-2 border-neutral-600 border-t-primary-400 rounded-full mx-auto mb-2"></div>
+                <div className="px-4 py-8 text-center text-slate-500">
+                  <div className="animate-spin w-6 h-6 border-2 border-slate-600 border-t-primary-400 rounded-full mx-auto mb-2"></div>
                   Loading...
                 </div>
               ) : notifications.length === 0 ? (
-                <div className={`px-4 py-8 text-center ${darkMode ? 'text-neutral-500' : 'text-gray-400'}`}>
-                  <FaBell className="text-3xl mx-auto mb-2 opacity-50" />
+                <div className={`px-4 py-8 text-center ${darkMode ? 'text-slate-500' : 'text-gray-400'}`}>
+                  <Bell className="text-3xl mx-auto mb-2 opacity-50" />
                   <p>No notifications yet</p>
                 </div>
               ) : (
@@ -422,7 +410,7 @@ export default function NotificationBell({ onNavigate, darkMode = true }: Notifi
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
-                          <p className={`text-sm font-medium truncate ${!notification.read ? (darkMode ? 'text-white' : 'text-gray-900') : (darkMode ? 'text-neutral-300' : 'text-gray-600')}`}>
+                          <p className={`text-sm font-medium truncate ${!notification.read ? (darkMode ? 'text-white' : 'text-gray-900') : (darkMode ? 'text-slate-300' : 'text-gray-600')}`}>
                             {sanitizeTitle(notification.title)}
                           </p>
                           {getActionBadge(notification.action)}
@@ -430,15 +418,15 @@ export default function NotificationBell({ onNavigate, darkMode = true }: Notifi
                             <span className="w-2 h-2 bg-primary-500 rounded-full flex-shrink-0"></span>
                           )}
                         </div>
-                        <p className={`text-xs line-clamp-2 ${darkMode ? 'text-neutral-400' : 'text-gray-500'}`}>
+                        <p className={`text-xs line-clamp-2 ${darkMode ? 'text-slate-400' : 'text-gray-500'}`}>
                           {notification.message}
                         </p>
                         <div className="flex items-center gap-2 mt-1">
-                          <span className={`text-[10px] ${darkMode ? 'text-neutral-500' : 'text-gray-400'}`}>
+                          <span className={`text-[10px] ${darkMode ? 'text-slate-500' : 'text-gray-400'}`}>
                             {formatTime(notification.createdAt)}
                           </span>
                           {notification.createdByName && (
-                            <span className={`text-[10px] ${darkMode ? 'text-neutral-500' : 'text-gray-400'}`}>
+                            <span className={`text-[10px] ${darkMode ? 'text-slate-500' : 'text-gray-400'}`}>
                               by {notification.createdByName}
                             </span>
                           )}
@@ -458,12 +446,12 @@ export default function NotificationBell({ onNavigate, darkMode = true }: Notifi
               >
                 {showClearConfirm ? (
                   <div className="flex items-center justify-between">
-                    <span className={`text-xs ${darkMode ? 'text-neutral-400' : 'text-gray-500'}`}>Clear all notifications?</span>
+                    <span className={`text-xs ${darkMode ? 'text-slate-400' : 'text-gray-500'}`}>Clear all notifications?</span>
                     <div className="flex gap-2">
                       <button
                         onClick={() => setShowClearConfirm(false)}
                         disabled={clearing}
-                        className={`text-xs px-2.5 py-1 rounded-lg transition-colors ${darkMode ? 'bg-neutral-700 text-neutral-300 hover:bg-neutral-600' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+                        className={`text-xs px-2.5 py-1 rounded-lg transition-colors ${darkMode ? 'bg-slate-700/50 text-slate-300 hover:bg-slate-600/50' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
                       >
                         Cancel
                       </button>
@@ -488,7 +476,7 @@ export default function NotificationBell({ onNavigate, darkMode = true }: Notifi
                     onClick={() => setShowClearConfirm(true)}
                     className="w-full text-xs text-red-400 hover:text-red-300 flex items-center justify-center gap-1.5 py-1 transition-colors"
                   >
-                    <FaTrash size={10} />
+                    <Trash2 size={10} />
                     Clear all notifications
                   </button>
                 )}

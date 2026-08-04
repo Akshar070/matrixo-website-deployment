@@ -2,25 +2,12 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
-import { 
-  FaQrcode, 
-  FaCheckCircle, 
-  FaTimesCircle, 
-  FaSpinner,
-  FaUser,
-  FaUniversity,
-  FaCodeBranch,
-  FaRedo,
-  FaCamera,
-  FaStop,
-  FaKeyboard,
-  FaCalendarAlt,
-  FaChevronLeft
-} from 'react-icons/fa'
+
 import { toast } from 'sonner'
 import { db } from '@/lib/firebaseConfig'
 import { collection, getDocs, addDoc, Timestamp, query, orderBy } from 'firebase/firestore'
 import { useEmployeeAuth } from '@/lib/employeePortalContext'
+import { CalendarDays, Camera, CheckCircle, ChevronLeft, GitBranch, Keyboard, Landmark, Loader2, QrCode, RotateCw, Square, User, XCircle } from 'lucide-react'
 
 interface EventOption {
   id: string
@@ -261,17 +248,17 @@ export default function EventQRScanner() {
           className="max-w-md mx-auto"
         >
           <div className="text-center mb-6">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-cyan-500/20 rounded-full mb-3">
-              <FaCalendarAlt className="text-3xl text-cyan-400" />
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-sky-500/15 rounded-full mb-3">
+              <CalendarDays className="text-3xl text-sky-400" />
             </div>
             <h1 className="text-2xl font-bold text-white mb-1">Event Check-In</h1>
             <p className="text-gray-400 text-sm">Select an event to start scanning</p>
           </div>
 
-          <div className="bg-white/5 border border-cyan-500/30 rounded-2xl p-5 backdrop-blur-sm">
+          <div className="bg-white/5 border border-sky-500/30 rounded-2xl p-5 backdrop-blur-sm">
             {eventsLoading ? (
               <div className="text-center py-8">
-                <FaSpinner className="animate-spin text-3xl text-cyan-400 mx-auto mb-3" />
+                <Loader2 className="animate-spin text-3xl text-sky-400 mx-auto mb-3" />
                 <p className="text-gray-400">Loading events...</p>
               </div>
             ) : (
@@ -280,7 +267,7 @@ export default function EventQRScanner() {
                   <button
                     key={event.id}
                     onClick={() => setSelectedEvent(event)}
-                    className="w-full text-left p-4 bg-white/5 hover:bg-cyan-500/10 border border-white/10 hover:border-cyan-500/40 rounded-xl transition-all group"
+                    className="w-full text-left p-4 bg-white/5 hover:bg-sky-500/10 border border-white/10 hover:border-sky-500/40 rounded-xl transition-all group"
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
@@ -291,10 +278,10 @@ export default function EventQRScanner() {
                           </p>
                         )}
                         {event.isVibeCodeEvent && (
-                          <span className="inline-block mt-2 px-2 py-0.5 bg-cyan-500/20 text-cyan-400 text-xs rounded-full">VibeCode Event</span>
+                          <span className="inline-block mt-2 px-2 py-0.5 bg-sky-500/15 text-sky-400 text-xs rounded-full">VibeCode Event</span>
                         )}
                       </div>
-                      <FaQrcode className="text-gray-600 group-hover:text-cyan-400 transition-colors shrink-0 mt-1" />
+                      <QrCode className="text-gray-600 group-hover:text-sky-400 transition-colors shrink-0 mt-1" />
                     </div>
                   </button>
                 ))}
@@ -319,21 +306,21 @@ export default function EventQRScanner() {
       >
         {/* Header */}
         <div className="text-center mb-6">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-cyan-500/20 rounded-full mb-3">
-            <FaQrcode className="text-3xl text-cyan-400" />
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-sky-500/15 rounded-full mb-3">
+            <QrCode className="text-3xl text-sky-400" />
           </div>
           <h1 className="text-2xl font-bold text-white mb-1">{selectedEvent.title} Check-In</h1>
           <button
             onClick={handleChangeEvent}
-            className="inline-flex items-center gap-1.5 text-cyan-400 text-sm hover:text-cyan-300 transition-colors"
+            className="inline-flex items-center gap-1.5 text-sky-400 text-sm hover:text-cyan-300 transition-colors"
           >
-            <FaChevronLeft className="text-xs" />
+            <ChevronLeft className="text-xs" />
             Change Event
           </button>
         </div>
 
         {/* Main Card */}
-        <div className="bg-white/5 border border-cyan-500/30 rounded-2xl p-5 backdrop-blur-sm">
+        <div className="bg-white/5 border border-sky-500/30 rounded-2xl p-5 backdrop-blur-sm">
 
           {/* IDLE State */}
           {mode === 'idle' && (
@@ -342,12 +329,12 @@ export default function EventQRScanner() {
                 <button
                   onClick={startScanner}
                   disabled={!scannerReady}
-                  className="w-full flex items-center justify-center gap-3 px-6 py-4 bg-gradient-to-r from-cyan-500 to-blue-600 
-                           text-white font-bold text-lg rounded-xl hover:from-cyan-600 hover:to-blue-700 
+                  className="w-full flex items-center justify-center gap-3 px-6 py-4 bg-gradient-to-r from-sky-500 to-blue-600 
+                           text-white font-bold text-lg rounded-xl hover:from-sky-600 hover:to-blue-700 
                            disabled:opacity-50 disabled:cursor-not-allowed
-                           transition-all active:scale-95 shadow-lg shadow-cyan-500/30"
+                           transition-all active:scale-95 shadow-lg shadow-sky-500/30"
                 >
-                  <FaCamera className="text-xl" />
+                  <Camera className="text-xl" />
                   {scannerReady ? 'Scan QR Code' : 'Loading Scanner...'}
                 </button>
 
@@ -357,7 +344,7 @@ export default function EventQRScanner() {
                            text-white font-semibold rounded-xl hover:bg-white/20 
                            transition-all active:scale-95 border border-white/20"
                 >
-                  <FaKeyboard className="text-xl" />
+                  <Keyboard className="text-xl" />
                   Enter Code Manually
                 </button>
               </div>
@@ -373,13 +360,13 @@ export default function EventQRScanner() {
                 style={{ minHeight: '280px' }}
               />
               <div className="text-center">
-                <p className="text-cyan-400 animate-pulse mb-4">Point camera at QR code...</p>
+                <p className="text-sky-400 animate-pulse mb-4">Point camera at QR code...</p>
                 <button
                   onClick={() => { stopScanner(); setMode('idle') }}
                   className="inline-flex items-center gap-2 px-5 py-2.5 bg-red-500/20 text-red-400 
                            border border-red-500/30 rounded-xl hover:bg-red-500/30 transition-all"
                 >
-                  <FaStop />
+                  <Square />
                   Stop
                 </button>
               </div>
@@ -392,10 +379,10 @@ export default function EventQRScanner() {
                     value={manualCode}
                     onChange={(e) => setManualCode(e.target.value.toUpperCase())}
                     placeholder={selectedEvent.isVibeCodeEvent ? 'VIBECODE-XXXXXXXXXX' : 'Enter code'}
-                    className="w-full px-4 py-3 bg-white/10 border border-cyan-500/30 rounded-xl text-white 
-                             placeholder:text-gray-500 focus:outline-none focus:border-cyan-400 text-center"
+                    className="w-full px-4 py-3 bg-white/10 border border-sky-500/30 rounded-xl text-white 
+                             placeholder:text-gray-500 focus:outline-none focus:border-sky-400 text-center"
                   />
-                  <button type="submit" className="w-full py-3 bg-cyan-500 hover:bg-cyan-600 text-white font-semibold rounded-xl transition-all">
+                  <button type="submit" className="w-full py-3 bg-sky-500 hover:bg-sky-600 text-white font-semibold rounded-xl transition-all">
                     Check
                   </button>
                 </form>
@@ -416,8 +403,8 @@ export default function EventQRScanner() {
                   onChange={(e) => setManualCode(e.target.value.toUpperCase())}
                   placeholder={selectedEvent.isVibeCodeEvent ? 'VIBECODE-XXXXXXXXXX' : 'Enter code'}
                   autoFocus
-                  className="w-full px-4 py-4 bg-white/10 border border-cyan-500/30 rounded-xl text-white text-lg
-                           placeholder:text-gray-500 focus:outline-none focus:border-cyan-400 text-center font-mono"
+                  className="w-full px-4 py-4 bg-white/10 border border-sky-500/30 rounded-xl text-white text-lg
+                           placeholder:text-gray-500 focus:outline-none focus:border-sky-400 text-center font-mono"
                 />
                 <div className="flex gap-3">
                   <button
@@ -427,7 +414,7 @@ export default function EventQRScanner() {
                   >
                     Back
                   </button>
-                  <button type="submit" className="flex-1 py-3 bg-cyan-500 hover:bg-cyan-600 text-white font-semibold rounded-xl transition-all">
+                  <button type="submit" className="flex-1 py-3 bg-sky-500 hover:bg-sky-600 text-white font-semibold rounded-xl transition-all">
                     Check
                   </button>
                 </div>
@@ -438,7 +425,7 @@ export default function EventQRScanner() {
           {/* LOADING State */}
           {mode === 'loading' && (
             <div className="text-center py-12">
-              <FaSpinner className="animate-spin text-5xl text-cyan-400 mx-auto mb-4" />
+              <Loader2 className="animate-spin text-5xl text-sky-400 mx-auto mb-4" />
               <p className="text-gray-400">Processing...</p>
             </div>
           )}
@@ -451,16 +438,16 @@ export default function EventQRScanner() {
               className="text-center py-8"
             >
               <div className="inline-flex items-center justify-center w-20 h-20 bg-red-500/20 rounded-full mb-4">
-                <FaTimesCircle className="text-4xl text-red-400" />
+                <XCircle className="text-4xl text-red-400" />
               </div>
               <h3 className="text-xl font-bold text-red-400 mb-2">Not Found</h3>
               <p className="text-gray-400 mb-6">{errorMessage}</p>
               <button
                 onClick={handleScanAgain}
-                className="inline-flex items-center gap-2 px-6 py-3 bg-cyan-500 hover:bg-cyan-600
+                className="inline-flex items-center gap-2 px-6 py-3 bg-sky-500 hover:bg-sky-600
                          text-white font-semibold rounded-xl transition-all"
               >
-                <FaRedo />
+                <RotateCw />
                 Try Again
               </button>
             </motion.div>
@@ -475,19 +462,19 @@ export default function EventQRScanner() {
             >
               <div className="text-center mb-5">
                 <div className="inline-flex items-center justify-center w-16 h-16 bg-green-500/20 rounded-full mb-3">
-                  <FaCheckCircle className="text-3xl text-green-400" />
+                  <CheckCircle className="text-3xl text-green-400" />
                 </div>
                 <h3 className="text-xl font-bold text-green-400">Attendance Marked!</h3>
               </div>
 
-              <div className="bg-gradient-to-br from-cyan-500/10 to-blue-500/10 border border-cyan-500/30 rounded-xl p-4 mb-5">
+              <div className="bg-gradient-to-br from-sky-500/10 to-blue-500/10 border border-sky-500/30 rounded-xl p-4 mb-5">
                 <div className="text-center mb-4">
-                  <div className="inline-flex items-center justify-center w-12 h-12 bg-cyan-500/20 rounded-full mb-2">
-                    <FaUser className="text-xl text-cyan-400" />
+                  <div className="inline-flex items-center justify-center w-12 h-12 bg-sky-500/15 rounded-full mb-2">
+                    <User className="text-xl text-sky-400" />
                   </div>
                   <h2 className="text-2xl font-bold text-white">{attendeeInfo.name}</h2>
                   {attendeeInfo.rollNumber && (
-                    <p className="text-cyan-400 text-sm">{attendeeInfo.rollNumber}</p>
+                    <p className="text-sky-400 text-sm">{attendeeInfo.rollNumber}</p>
                   )}
                 </div>
 
@@ -496,7 +483,7 @@ export default function EventQRScanner() {
                     {attendeeInfo.college && (
                       <div className="bg-white/5 rounded-lg p-3">
                         <div className="flex items-center gap-1.5 text-gray-400 text-xs mb-1">
-                          <FaUniversity className="text-[10px]" />
+                          <Landmark className="text-[10px]" />
                           College
                         </div>
                         <p className="text-white text-sm font-medium truncate">{attendeeInfo.college}</p>
@@ -505,7 +492,7 @@ export default function EventQRScanner() {
                     {attendeeInfo.branch && (
                       <div className="bg-white/5 rounded-lg p-3">
                         <div className="flex items-center gap-1.5 text-gray-400 text-xs mb-1">
-                          <FaCodeBranch className="text-[10px]" />
+                          <GitBranch className="text-[10px]" />
                           Branch
                         </div>
                         <p className="text-white text-sm font-medium truncate">{attendeeInfo.branch}</p>
@@ -516,18 +503,18 @@ export default function EventQRScanner() {
 
                 <div className="mt-3 bg-white/5 rounded-lg p-3 text-center">
                   <p className="text-gray-400 text-xs mb-1">Code</p>
-                  <p className="text-cyan-400 font-mono text-sm break-all">{attendeeInfo.transactionCode}</p>
+                  <p className="text-sky-400 font-mono text-sm break-all">{attendeeInfo.transactionCode}</p>
                 </div>
               </div>
 
               <button
                 onClick={handleScanAgain}
-                className="w-full py-4 bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-bold 
-                         rounded-xl hover:from-cyan-600 hover:to-blue-700 transition-all active:scale-[0.98] 
-                         shadow-lg shadow-cyan-500/30"
+                className="w-full py-4 bg-gradient-to-r from-sky-500 to-blue-600 text-white font-bold 
+                         rounded-xl hover:from-sky-600 hover:to-blue-700 transition-all active:scale-[0.98] 
+                         shadow-lg shadow-sky-500/30"
               >
                 <span className="flex items-center justify-center gap-2">
-                  <FaRedo />
+                  <RotateCw />
                   Scan Next Attendee
                 </span>
               </button>

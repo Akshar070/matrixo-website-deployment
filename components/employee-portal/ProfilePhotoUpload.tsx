@@ -3,11 +3,12 @@
 import { useState, useRef, useCallback, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { FaCamera, FaTimes, FaUpload, FaTrash, FaCheck, FaExclamationTriangle, FaSpinner } from 'react-icons/fa'
+
 import { ref, uploadBytesResumable, getDownloadURL, deleteObject } from 'firebase/storage'
 import { collection, query, where, getDocs, updateDoc, serverTimestamp } from 'firebase/firestore'
 import { storage, db } from '@/lib/firebaseConfig'
 import { toast } from 'sonner'
+import { AlertTriangle, Camera, Check, Loader2, Trash2, Upload, X } from 'lucide-react'
 
 // ============================================
 // CONSTANTS & TYPES
@@ -94,7 +95,7 @@ function InitialsAvatar({ name, size = 128 }: { name: string; size?: number }) {
 
   return (
     <div
-      className="flex items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-purple-600 text-white font-bold select-none"
+      className="flex items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-blue-600 text-white font-bold select-none"
       style={{ width: size, height: size, fontSize: size * 0.33 }}
     >
       {initials}
@@ -304,7 +305,7 @@ export default function ProfilePhotoUpload({
             : 'bg-black/8 text-gray-800 hover:bg-black/15 border border-black/10'}
         `}
       >
-        <FaCamera size={14} />
+        <Camera size={14} />
         Change Photo
       </button>
 
@@ -358,7 +359,7 @@ export default function ProfilePhotoUpload({
               }}
             >
               {/* Gradient accent */}
-              <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-blue-500/10 via-transparent to-purple-600/10 pointer-events-none" />
+              <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-blue-500/10 via-transparent to-blue-600/10 pointer-events-none" />
 
               {/* Header */}
               <div
@@ -373,9 +374,9 @@ export default function ProfilePhotoUpload({
                 <button
                   onClick={closeModal}
                   disabled={uploading}
-                  className={`p-2 rounded-xl transition-all ${darkMode ? 'text-neutral-400 hover:text-white hover:bg-white/10' : 'text-gray-500 hover:text-gray-800 hover:bg-black/8'}`}
+                  className={`p-2 rounded-xl transition-all ${darkMode ? 'text-slate-400 hover:text-white hover:bg-white/10' : 'text-gray-500 hover:text-gray-800 hover:bg-black/8'}`}
                 >
-                  <FaTimes />
+                  <X />
                 </button>
               </div>
 
@@ -421,14 +422,14 @@ export default function ProfilePhotoUpload({
                     ${uploading ? 'pointer-events-none opacity-50' : ''}
                   `}
                 >
-                  <FaUpload
-                    className={`mx-auto mb-3 ${darkMode ? 'text-neutral-400' : 'text-gray-400'}`}
+                  <Upload
+                    className={`mx-auto mb-3 ${darkMode ? 'text-slate-400' : 'text-gray-400'}`}
                     size={22}
                   />
-                  <p className={`text-sm font-medium ${darkMode ? 'text-neutral-300' : 'text-gray-700'}`}>
+                  <p className={`text-sm font-medium ${darkMode ? 'text-slate-300' : 'text-gray-700'}`}>
                     {dragActive ? 'Drop to select' : 'Click or drag & drop an image'}
                   </p>
-                  <p className={`text-xs mt-1 ${darkMode ? 'text-neutral-500' : 'text-gray-400'}`}>
+                  <p className={`text-xs mt-1 ${darkMode ? 'text-slate-500' : 'text-gray-400'}`}>
                     JPEG · PNG · WebP · Max 3MB
                   </p>
                 </div>
@@ -451,7 +452,7 @@ export default function ProfilePhotoUpload({
                       exit={{ opacity: 0, y: -6 }}
                       className="flex items-start gap-3 px-4 py-3 bg-red-500/12 border border-red-500/30 rounded-xl text-red-400 text-sm"
                     >
-                      <FaExclamationTriangle className="flex-shrink-0 mt-0.5" />
+                      <AlertTriangle className="flex-shrink-0 mt-0.5" />
                       <span>{validationError}</span>
                     </motion.div>
                   )}
@@ -467,10 +468,10 @@ export default function ProfilePhotoUpload({
                       className="space-y-2"
                     >
                       <div className="flex items-center justify-between text-xs">
-                        <span className={darkMode ? 'text-neutral-400' : 'text-gray-500'}>
+                        <span className={darkMode ? 'text-slate-400' : 'text-gray-500'}>
                           {progress < 100 ? 'Uploading…' : 'Processing…'}
                         </span>
-                        <span className={darkMode ? 'text-neutral-300' : 'text-gray-700'}>
+                        <span className={darkMode ? 'text-slate-300' : 'text-gray-700'}>
                           {progress}%
                         </span>
                       </div>
@@ -481,7 +482,7 @@ export default function ProfilePhotoUpload({
                         }}
                       >
                         <motion.div
-                          className="h-full bg-gradient-to-r from-blue-500 to-purple-600 rounded-full"
+                          className="h-full bg-gradient-to-r from-blue-500 to-blue-600 rounded-full"
                           initial={{ width: 0 }}
                           animate={{ width: `${progress}%` }}
                           transition={{ duration: 0.3 }}
@@ -500,20 +501,20 @@ export default function ProfilePhotoUpload({
                     className={`
                       w-full flex items-center justify-center gap-2.5 py-3 px-4 rounded-xl font-medium text-sm transition-all duration-200
                       ${selectedFile && !uploading
-                        ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white hover:from-blue-400 hover:to-purple-500 shadow-lg shadow-blue-500/25'
+                        ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:from-blue-400 hover:to-blue-500 shadow-lg shadow-blue-500/25'
                         : darkMode
-                          ? 'bg-white/5 text-neutral-500 cursor-not-allowed'
+                          ? 'bg-white/5 text-slate-500 cursor-not-allowed'
                           : 'bg-black/5 text-gray-400 cursor-not-allowed'}
                     `}
                   >
                     {uploading ? (
                       <>
-                        <FaSpinner className="animate-spin" size={14} />
+                        <Loader2 className="animate-spin" size={14} />
                         Uploading…
                       </>
                     ) : (
                       <>
-                        <FaCheck size={13} />
+                        <Check size={13} />
                         Save Photo
                       </>
                     )}
@@ -530,14 +531,14 @@ export default function ProfilePhotoUpload({
                         ${darkMode ? 'hover:bg-red-500/10 border border-red-500/20' : 'hover:bg-red-50 border border-red-200'}
                       `}
                     >
-                      <FaTrash size={12} />
+                      <Trash2 size={12} />
                       Remove Photo
                     </button>
                   )}
                 </div>
 
                 {/* Info note */}
-                <p className={`text-xs text-center ${darkMode ? 'text-neutral-600' : 'text-gray-400'}`}>
+                <p className={`text-xs text-center ${darkMode ? 'text-slate-600' : 'text-gray-400'}`}>
                   Photos are resized to 512×512 and stored securely.
                   <br />
                   Only you and admins can change this photo.

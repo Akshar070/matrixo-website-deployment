@@ -2,31 +2,6 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import {
-  FaVideo,
-  FaCalendarAlt,
-  FaClipboardList,
-  FaTasks,
-  FaChevronDown,
-  FaChevronRight,
-  FaExternalLinkAlt,
-  FaEyeSlash,
-  FaEye,
-  FaSpinner,
-  FaSearch,
-  FaBell,
-  FaUserTag,
-  FaCheckCircle,
-  FaCircle,
-  FaClock,
-  FaPlay,
-  FaSyncAlt,
-  FaLock,
-  FaTrashAlt,
-  FaCheck,
-  FaEdit,
-  FaPlus
-} from 'react-icons/fa'
 import { useEmployeeAuth } from '@/lib/employeePortalContext'
 import type { EmployeeProfile } from '@/lib/employeePortalContext'
 import { isAdminOrSubAdmin } from '@/lib/employeePortalContext'
@@ -34,6 +9,7 @@ import { createGlobalNotification } from '@/lib/notificationUtils'
 import { Card, Button, Badge, Spinner as SpinnerUI, EmptyState, Modal, getLocalProfileImage, Avatar } from './ui'
 import { toast } from 'sonner'
 import { db } from '@/lib/firebaseConfig'
+import { Bell, CalendarDays, Check, CheckCircle, ChevronDown, ChevronRight, Circle, ClipboardList, Clock, Edit2, ExternalLink, Eye, EyeOff, ListTodo, Loader2, Lock, Play, Plus, RefreshCw, Search, Trash2, Users, Video } from 'lucide-react'
 import {
   collection,
   doc,
@@ -47,10 +23,6 @@ import {
   where,
   Timestamp
 } from 'firebase/firestore'
-
-// ============================================
-// LOCAL PROFILE IMAGE FALLBACKS (use centralized getLocalProfileImage from ui)
-// ============================================
 
 // ============================================
 // TYPES
@@ -184,7 +156,7 @@ function renderMarkdownClean(md: string): string {
     else if (/^### (.+)/.test(trimmed)) {
       if (inList) { result.push('</ul>'); inList = false }
       const match = trimmed.match(/^### (.+)/)
-      result.push(`<h4 class="text-sm font-semibold text-neutral-200 mt-4 mb-1.5">${match![1]}</h4>`)
+      result.push(`<h4 class="text-sm font-semibold text-slate-200 mt-4 mb-1.5">${match![1]}</h4>`)
     }
     // List item
     else if (/^[-*] (.+)/.test(trimmed)) {
@@ -193,7 +165,7 @@ function renderMarkdownClean(md: string): string {
       let content = match![1]
       // Bold
       content = content.replace(/\*\*(.*?)\*\*/g, '<strong class="text-white font-semibold">$1</strong>')
-      result.push(`<li class="text-sm text-neutral-300 leading-relaxed flex gap-2 items-start"><span class="text-blue-400 font-bold flex-shrink-0 select-none">&#x2022;</span><span>${content}</span></li>`)
+      result.push(`<li class="text-sm text-slate-300 leading-relaxed flex gap-2 items-start"><span class="text-blue-400 font-bold flex-shrink-0 select-none">&#x2022;</span><span>${content}</span></li>`)
     }
     // Empty line
     else if (trimmed === '') {
@@ -205,7 +177,7 @@ function renderMarkdownClean(md: string): string {
       if (inList) { result.push('</ul>'); inList = false }
       let content = trimmed
       content = content.replace(/\*\*(.*?)\*\*/g, '<strong class="text-white font-semibold">$1</strong>')
-      result.push(`<p class="text-sm text-neutral-300 leading-relaxed">${content}</p>`)
+      result.push(`<p class="text-sm text-slate-300 leading-relaxed">${content}</p>`)
     }
   }
   if (inList) result.push('</ul>')
@@ -350,7 +322,7 @@ function EmployeeHoverCard({ name, employees }: { name: string; employees: Emplo
       <span className={`text-xs px-2 py-0.5 rounded-full cursor-pointer transition-all ${
         matched
           ? 'bg-blue-500/15 text-blue-400 border border-blue-500/25 hover:bg-blue-500/25'
-          : 'bg-neutral-700/50 text-neutral-400 border border-neutral-600/30'
+          : 'bg-slate-700/50 text-slate-400 border border-slate-600/30'
       }`}>
         @{name}
       </span>
@@ -367,7 +339,7 @@ function EmployeeHoverCard({ name, employees }: { name: string; employees: Emplo
             onMouseEnter={handleEnter}
             onMouseLeave={handleLeave}
           >
-            <div className="bg-neutral-900 border border-neutral-700 rounded-xl p-3 shadow-2xl shadow-black/50">
+            <div className="bg-slate-900 border border-slate-700 rounded-xl p-3 shadow-2xl shadow-black/50">
               <div className="flex items-center gap-3">
                 <Avatar
                   src={matched.profileImage}
@@ -380,10 +352,10 @@ function EmployeeHoverCard({ name, employees }: { name: string; employees: Emplo
                 <div className="min-w-0 flex-1">
                   <p className="text-sm font-semibold text-white truncate">{matched.name}</p>
                   {matched.designation && (
-                    <p className="text-xs text-neutral-400 truncate">{matched.designation}</p>
+                    <p className="text-xs text-slate-400 truncate">{matched.designation}</p>
                   )}
                   {matched.department && (
-                    <p className="text-xs text-neutral-500 truncate">{matched.department}</p>
+                    <p className="text-xs text-slate-500 truncate">{matched.department}</p>
                   )}
                 </div>
               </div>
@@ -393,13 +365,13 @@ function EmployeeHoverCard({ name, employees }: { name: string; employees: Emplo
                     isAdminOrSubAdmin(matched.role)
                       ? 'bg-amber-500/15 text-amber-400'
                       : (matched.role || '').toLowerCase().includes('intern')
-                        ? 'bg-purple-500/15 text-purple-400'
+                        ? 'bg-blue-500/15 text-blue-400'
                         : 'bg-blue-500/15 text-blue-400'
                   }`}>
                     {isAdminOrSubAdmin(matched.role) ? 'Admin' : matched.role}
                   </span>
                   {matched.email && (
-                    <span className="text-[10px] text-neutral-600 truncate">{matched.email}</span>
+                    <span className="text-[10px] text-slate-600 truncate">{matched.email}</span>
                   )}
                 </div>
               )}
@@ -447,8 +419,8 @@ function MeetingCard({
       exit={{ opacity: 0, y: -8 }}
       layout
     >
-      <div className={`bg-neutral-900/70 border rounded-xl transition-all hover:border-neutral-600 ${
-        isHidden ? 'opacity-60 border-l-4 border-l-red-500/50 border-neutral-700/50' : 'border-neutral-800'
+      <div className={`bg-slate-900/70 border rounded-xl transition-all hover:border-slate-600 ${
+        isHidden ? 'opacity-60 border-l-4 border-l-red-500/50 border-slate-700/50' : 'border-slate-800'
       }`}>
         <div className="p-3 sm:p-4">
           {/* Row 1: Title + actions */}
@@ -458,25 +430,25 @@ function MeetingCard({
               onClick={() => onViewDetails(meeting)}
             >
               <div className="w-9 h-9 rounded-lg bg-blue-500/15 flex items-center justify-center flex-shrink-0">
-                <FaVideo className="text-blue-400 text-sm" />
+                <Video className="text-blue-400 text-sm" />
               </div>
               <div className="min-w-0">
                 <h3 className="text-sm font-semibold text-white truncate group-hover:text-blue-400 transition-colors">
                   {meeting.meeting_title || meeting.title}
                 </h3>
-                <div className="flex items-center gap-2 text-[11px] text-neutral-500 mt-0.5">
+                <div className="flex items-center gap-2 text-[11px] text-slate-500 mt-0.5">
                   <span className="flex items-center gap-1">
-                    <FaCalendarAlt className="text-[9px]" />
+                    <CalendarDays className="text-[9px]" />
                     {new Date(meeting.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
                   </span>
                   {duration && (
                     <span className="flex items-center gap-1">
-                      <FaClock className="text-[9px]" />
+                      <Clock className="text-[9px]" />
                       {duration}
                     </span>
                   )}
                   {meeting.recorded_by && (
-                    <span className="text-neutral-600 hidden sm:inline">by {meeting.recorded_by.name}</span>
+                    <span className="text-slate-600 hidden sm:inline">by {meeting.recorded_by.name}</span>
                   )}
                 </div>
               </div>
@@ -492,28 +464,28 @@ function MeetingCard({
                   className={`p-1.5 rounded-lg transition-all text-xs ${
                     isHidden
                       ? 'text-emerald-400 hover:bg-emerald-500/15'
-                      : 'text-neutral-500 hover:bg-red-500/10 hover:text-red-400'
+                      : 'text-slate-500 hover:bg-red-500/10 hover:text-red-400'
                   }`}
                   title={isHidden ? 'Show to all' : 'Hide from interns'}
                 >
-                  {isHidden ? <FaEye /> : <FaEyeSlash />}
+                  {isHidden ? <Eye /> : <EyeOff />}
                 </button>
               )}
               <button
                 onClick={() => onRemove(meeting.recording_id)}
-                className="p-1.5 rounded-lg text-neutral-600 hover:bg-red-500/10 hover:text-red-400 transition-all text-xs"
+                className="p-1.5 rounded-lg text-slate-600 hover:bg-red-500/10 hover:text-red-400 transition-all text-xs"
                 title="Remove from portal"
               >
-                <FaTrashAlt />
+                <Trash2 />
               </button>
               <a
                 href={meeting.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-1.5 rounded-lg text-neutral-500 hover:bg-blue-500/10 hover:text-blue-400 transition-all text-xs"
+                className="p-1.5 rounded-lg text-slate-500 hover:bg-blue-500/10 hover:text-blue-400 transition-all text-xs"
                 title="Open in Fathom"
               >
-                <FaExternalLinkAlt />
+                <ExternalLink />
               </a>
             </div>
           </div>
@@ -525,7 +497,7 @@ function MeetingCard({
                 <EmployeeHoverCard key={i} name={att.name} employees={employees} />
               ))}
               {allAttendees.length > 5 && (
-                <span className="text-[11px] text-neutral-500 self-center">+{allAttendees.length - 5} more</span>
+                <span className="text-[11px] text-slate-500 self-center">+{allAttendees.length - 5} more</span>
               )}
             </div>
           )}
@@ -535,13 +507,13 @@ function MeetingCard({
             <div className="flex items-center gap-3 text-[11px]">
               {pendingCount > 0 && (
                 <span className="flex items-center gap-1 text-amber-400">
-                  <FaCircle className="text-[6px]" />
+                  <Circle className="text-[6px]" />
                   {pendingCount} pending
                 </span>
               )}
               {completedCount > 0 && (
                 <span className="flex items-center gap-1 text-emerald-400">
-                  <FaCheckCircle className="text-[9px]" />
+                  <CheckCircle className="text-[9px]" />
                   {completedCount} done
                 </span>
               )}
@@ -551,7 +523,7 @@ function MeetingCard({
               className="text-xs text-blue-400 hover:text-blue-300 transition-colors flex items-center gap-1 px-2 py-1 rounded hover:bg-blue-500/10"
             >
               View MoM
-              <FaChevronRight className="text-[9px]" />
+              <ChevronRight className="text-[9px]" />
             </button>
           </div>
         </div>
@@ -623,28 +595,28 @@ function MeetingDetailModal({
         {/* Header */}
         <div className="flex items-start gap-3 mb-5">
           <div className="w-11 h-11 rounded-xl bg-blue-500/15 flex items-center justify-center flex-shrink-0">
-            <FaVideo className="text-lg text-blue-400" />
+            <Video className="text-lg text-blue-400" />
           </div>
           <div className="flex-1 min-w-0">
             <h2 className="text-lg font-bold text-white leading-tight">
               {meeting.meeting_title || meeting.title}
             </h2>
-            <div className="flex flex-wrap items-center gap-2 mt-1 text-xs text-neutral-400">
+            <div className="flex flex-wrap items-center gap-2 mt-1 text-xs text-slate-400">
               <span className="flex items-center gap-1">
-                <FaCalendarAlt className="text-[10px]" />
+                <CalendarDays className="text-[10px]" />
                 {new Date(meeting.created_at).toLocaleDateString('en-IN', {
                   weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
                 })}
               </span>
               {duration && (
                 <span className="flex items-center gap-1">
-                  <FaClock className="text-[10px]" />
+                  <Clock className="text-[10px]" />
                   {duration}
                 </span>
               )}
             </div>
             {meeting.recorded_by && (
-              <p className="text-[11px] text-neutral-500 mt-0.5">
+              <p className="text-[11px] text-slate-500 mt-0.5">
                 Recorded by {meeting.recorded_by.name}
               </p>
             )}
@@ -655,17 +627,17 @@ function MeetingDetailModal({
             rel="noopener noreferrer"
             className="px-3 py-1.5 rounded-lg bg-blue-500/15 text-blue-400 hover:bg-blue-500/25 transition-all text-xs flex items-center gap-1.5 flex-shrink-0 font-medium"
           >
-            <FaPlay className="text-[10px]" />
+            <Play className="text-[10px]" />
             Watch
           </a>
         </div>
 
         {/* Tabs */}
-        <div className="flex border-b border-neutral-700/50 mb-4">
+        <div className="flex border-b border-slate-700/50 mb-4">
           {[
-            { id: 'summary' as const, label: 'Summary & Next Steps', icon: FaClipboardList },
-            { id: 'actions' as const, label: `Tasks (${allItems.length})`, icon: FaTasks },
-            { id: 'attendees' as const, label: `Attendees (${allAttendees.length})`, icon: FaUserTag },
+            { id: 'summary' as const, label: 'Summary & Next Steps', icon: ClipboardList },
+            { id: 'actions' as const, label: `Tasks (${allItems.length})`, icon: ListTodo },
+            { id: 'attendees' as const, label: `Attendees (${allAttendees.length})`, icon: Users },
           ].map(tab => (
             <button
               key={tab.id}
@@ -673,7 +645,7 @@ function MeetingDetailModal({
               className={`flex items-center gap-1.5 px-3 py-2 text-xs font-medium border-b-2 transition-all ${
                 activeSection === tab.id
                   ? 'text-blue-400 border-blue-400'
-                  : 'text-neutral-500 border-transparent hover:text-neutral-300'
+                  : 'text-slate-500 border-transparent hover:text-slate-300'
               }`}
             >
               <tab.icon className="text-[10px]" />
@@ -694,8 +666,8 @@ function MeetingDetailModal({
               />
             ) : (
               <div className="text-center py-8">
-                <p className="text-neutral-500 text-sm">Summary is being generated...</p>
-                <p className="text-neutral-600 text-xs mt-1">Check back in a few minutes.</p>
+                <p className="text-slate-500 text-sm">Summary is being generated...</p>
+                <p className="text-slate-600 text-xs mt-1">Check back in a few minutes.</p>
               </div>
             )}
           </div>
@@ -714,13 +686,13 @@ function MeetingDetailModal({
                       placeholder="Task description..."
                       value={newTaskDesc}
                       onChange={(e) => setNewTaskDesc(e.target.value)}
-                      className="w-full px-3 py-2 bg-neutral-900 border border-neutral-700 rounded-lg text-white text-sm placeholder:text-neutral-500 focus:border-blue-500/40 outline-none"
+                      className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm placeholder:text-slate-500 focus:border-blue-500/40 outline-none"
                     />
                     <div className="flex gap-2">
                       <select
                         value={newTaskAssignee}
                         onChange={(e) => setNewTaskAssignee(e.target.value)}
-                        className="flex-1 px-3 py-2 bg-neutral-900 border border-neutral-700 rounded-lg text-white text-sm focus:border-blue-500/40 outline-none"
+                        className="flex-1 px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm focus:border-blue-500/40 outline-none"
                       >
                         <option value="">Assign to...</option>
                         {employees.map(emp => (
@@ -750,7 +722,7 @@ function MeetingDetailModal({
                       </button>
                       <button
                         onClick={() => { setShowAddTask(false); setNewTaskDesc(''); setNewTaskAssignee('') }}
-                        className="px-3 py-2 bg-neutral-800 text-neutral-400 text-sm rounded-lg hover:bg-neutral-700 transition-colors"
+                        className="px-3 py-2 bg-slate-800 text-slate-400 text-sm rounded-lg hover:bg-slate-700 transition-colors"
                       >
                         Cancel
                       </button>
@@ -761,7 +733,7 @@ function MeetingDetailModal({
                     onClick={() => setShowAddTask(true)}
                     className="flex items-center gap-2 text-xs text-blue-400 hover:text-blue-300 px-3 py-2 rounded-lg bg-blue-500/10 hover:bg-blue-500/15 border border-blue-500/20 transition-all w-full justify-center"
                   >
-                    <FaPlus className="text-[9px]" />
+                    <Plus className="text-[9px]" />
                     Add New Task
                   </button>
                 )}
@@ -793,13 +765,13 @@ function MeetingDetailModal({
                             type="text"
                             value={editTaskDesc}
                             onChange={(e) => setEditTaskDesc(e.target.value)}
-                            className="w-full px-3 py-2 bg-neutral-900 border border-neutral-700 rounded-lg text-white text-sm focus:border-blue-500/40 outline-none"
+                            className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm focus:border-blue-500/40 outline-none"
                           />
                           <div className="flex gap-2">
                             <select
                               value={editTaskAssignee}
                               onChange={(e) => setEditTaskAssignee(e.target.value)}
-                              className="flex-1 px-3 py-2 bg-neutral-900 border border-neutral-700 rounded-lg text-white text-sm focus:border-blue-500/40 outline-none"
+                              className="flex-1 px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm focus:border-blue-500/40 outline-none"
                             >
                               <option value="">Assign to...</option>
                               {employees.map(emp => (
@@ -825,7 +797,7 @@ function MeetingDetailModal({
                             </button>
                             <button
                               onClick={() => setEditingTaskIndex(null)}
-                              className="px-3 py-2 bg-neutral-800 text-neutral-400 text-sm rounded-lg hover:bg-neutral-700 transition-colors"
+                              className="px-3 py-2 bg-slate-800 text-slate-400 text-sm rounded-lg hover:bg-slate-700 transition-colors"
                             >
                               Cancel
                             </button>
@@ -837,19 +809,19 @@ function MeetingDetailModal({
                     return (
                       <div
                         key={originalIndex}
-                        className="group flex items-start gap-3 p-3 bg-neutral-800/40 rounded-xl border border-neutral-700/60 hover:border-amber-500/30 transition-all"
+                        className="group flex items-start gap-3 p-3 bg-slate-800/40 rounded-xl border border-slate-700/60 hover:border-amber-500/30 transition-all"
                       >
                         {/* Complete button */}
                         <button
                           onClick={() => onToggleTaskComplete(meeting.recording_id, originalIndex, true)}
-                          className="mt-0.5 w-5 h-5 rounded-full border-2 border-neutral-600 hover:border-emerald-400 hover:bg-emerald-500/15 transition-all flex-shrink-0 flex items-center justify-center group/btn"
+                          className="mt-0.5 w-5 h-5 rounded-full border-2 border-slate-600 hover:border-emerald-400 hover:bg-emerald-500/15 transition-all flex-shrink-0 flex items-center justify-center group/btn"
                           title="Mark as complete"
                         >
-                          <FaCheck className="text-[8px] text-transparent group-hover/btn:text-emerald-400 transition-colors" />
+                          <Check className="text-[8px] text-transparent group-hover/btn:text-emerald-400 transition-colors" />
                         </button>
 
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm text-neutral-200 leading-relaxed">{item?.description || 'No description'}</p>
+                          <p className="text-sm text-slate-200 leading-relaxed">{item?.description || 'No description'}</p>
                           <div className="flex flex-wrap items-center gap-2 mt-1.5">
                             {assignee?.name && (
                               <EmployeeHoverCard name={assignee.name} employees={employees} />
@@ -859,9 +831,9 @@ function MeetingDetailModal({
                                 href={item.recording_playback_url}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="text-[11px] text-neutral-500 hover:text-blue-400 transition-colors flex items-center gap-1"
+                                className="text-[11px] text-slate-500 hover:text-blue-400 transition-colors flex items-center gap-1"
                               >
-                                <FaPlay className="text-[7px]" />
+                                <Play className="text-[7px]" />
                                 Jump to moment
                               </a>
                             )}
@@ -881,17 +853,17 @@ function MeetingDetailModal({
                                   setEditTaskDesc(item?.description || '')
                                   setEditTaskAssignee(item?.assignee?.name || '')
                                 }}
-                                className="p-1.5 rounded-lg text-neutral-500 hover:bg-blue-500/10 hover:text-blue-400 transition-all"
+                                className="p-1.5 rounded-lg text-slate-500 hover:bg-blue-500/10 hover:text-blue-400 transition-all"
                                 title="Edit task"
                               >
-                                <FaEdit className="text-[10px]" />
+                                <Edit2 className="text-[10px]" />
                               </button>
                               <button
                                 onClick={() => onDeleteCustomTask(meeting.recording_id, customIndex)}
-                                className="p-1.5 rounded-lg text-neutral-500 hover:bg-red-500/10 hover:text-red-400 transition-all"
+                                className="p-1.5 rounded-lg text-slate-500 hover:bg-red-500/10 hover:text-red-400 transition-all"
                                 title="Delete task"
                               >
-                                <FaTrashAlt className="text-[10px]" />
+                                <Trash2 className="text-[10px]" />
                               </button>
                             </>
                           )}
@@ -902,7 +874,7 @@ function MeetingDetailModal({
                               className="p-1.5 rounded-lg bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 transition-all flex-shrink-0"
                               title={`Notify ${assignee?.name || 'assignee'}`}
                             >
-                              <FaBell className="text-[10px]" />
+                              <Bell className="text-[10px]" />
                             </button>
                           )}
                         </div>
@@ -917,7 +889,7 @@ function MeetingDetailModal({
             {completedActions.length > 0 && (
               <div>
                 <div className="flex items-center gap-2 mb-3">
-                  <FaCheckCircle className="text-emerald-400 text-xs" />
+                  <CheckCircle className="text-emerald-400 text-xs" />
                   <h4 className="text-sm font-semibold text-emerald-400">
                     Completed ({completedActions.length})
                   </h4>
@@ -929,7 +901,7 @@ function MeetingDetailModal({
                     return (
                       <div
                         key={originalIndex}
-                        className="flex items-start gap-3 p-2.5 bg-neutral-800/20 rounded-lg border border-neutral-800/50"
+                        className="flex items-start gap-3 p-2.5 bg-slate-800/20 rounded-lg border border-slate-800/50"
                       >
                         <button
                           onClick={() => isLocalComplete ? onToggleTaskComplete(meeting.recording_id, originalIndex, false) : undefined}
@@ -937,12 +909,12 @@ function MeetingDetailModal({
                           title={isLocalComplete ? 'Undo' : 'Completed'}
                           disabled={!isLocalComplete}
                         >
-                          <FaCheck className="text-[8px] text-emerald-400" />
+                          <Check className="text-[8px] text-emerald-400" />
                         </button>
                         <div className="flex-1">
-                          <p className="text-sm text-neutral-500 line-through">{item?.description || 'No description'}</p>
+                          <p className="text-sm text-slate-500 line-through">{item?.description || 'No description'}</p>
                           {item?.assignee?.name && (
-                            <span className="text-[11px] text-neutral-600 mt-0.5 inline-block">@{item.assignee.name}</span>
+                            <span className="text-[11px] text-slate-600 mt-0.5 inline-block">@{item.assignee.name}</span>
                           )}
                         </div>
                       </div>
@@ -954,8 +926,8 @@ function MeetingDetailModal({
 
             {allItems.length === 0 && (
               <div className="text-center py-8">
-                <FaTasks className="text-2xl text-neutral-600 mx-auto mb-2" />
-                <p className="text-neutral-500 text-sm">No action items from this meeting</p>
+                <ListTodo className="text-2xl text-slate-600 mx-auto mb-2" />
+                <p className="text-slate-500 text-sm">No action items from this meeting</p>
               </div>
             )}
           </div>
@@ -970,7 +942,7 @@ function MeetingDetailModal({
                 return (
                   <div
                     key={i}
-                    className="flex items-center gap-3 p-3 bg-neutral-800/40 rounded-xl border border-neutral-700/50 hover:border-neutral-600/50 transition-all"
+                    className="flex items-center gap-3 p-3 bg-slate-800/40 rounded-xl border border-slate-700/50 hover:border-slate-600/50 transition-all"
                   >
                     <Avatar
                       src={matched?.profileImage}
@@ -981,11 +953,11 @@ function MeetingDetailModal({
                       className="!w-9 !h-9 ring-2 ring-blue-500/20"
                     />
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm text-neutral-200 font-medium truncate">{att.name}</p>
+                      <p className="text-sm text-slate-200 font-medium truncate">{att.name}</p>
                       <div className="flex items-center gap-2">
-                        {att.email && <p className="text-xs text-neutral-500 truncate">{att.email}</p>}
+                        {att.email && <p className="text-xs text-slate-500 truncate">{att.email}</p>}
                         {matched?.designation && (
-                          <span className="text-[10px] text-neutral-600">&#x2022; {matched.designation}</span>
+                          <span className="text-[10px] text-slate-600">&#x2022; {matched.designation}</span>
                         )}
                       </div>
                     </div>
@@ -994,7 +966,7 @@ function MeetingDetailModal({
                         isAdminOrSubAdmin(matched.role)
                           ? 'bg-amber-500/15 text-amber-400'
                           : (matched.role || '').toLowerCase().includes('intern')
-                            ? 'bg-purple-500/15 text-purple-400'
+                            ? 'bg-blue-500/15 text-blue-400'
                             : 'bg-blue-500/15 text-blue-400'
                       }`}>
                         {isAdminOrSubAdmin(matched.role) ? 'Admin' : matched.role}
@@ -1008,7 +980,7 @@ function MeetingDetailModal({
               })
             ) : (
               <div className="text-center py-8">
-                <p className="text-neutral-500 text-sm">No attendee information available</p>
+                <p className="text-slate-500 text-sm">No attendee information available</p>
               </div>
             )}
           </div>
@@ -1590,7 +1562,7 @@ export function Meetings() {
       <Card padding="lg" glow>
         <div className="flex flex-col items-center justify-center py-16">
           <SpinnerUI size="lg" />
-          <p className="text-neutral-400 mt-4 text-sm">Loading meetings from Fathom...</p>
+          <p className="text-slate-400 mt-4 text-sm">Loading meetings from Fathom...</p>
         </div>
       </Card>
     )
@@ -1600,11 +1572,11 @@ export function Meetings() {
     return (
       <Card padding="lg">
         <div className="text-center py-12">
-          <FaVideo className="text-4xl text-red-400 mx-auto mb-3" />
+          <Video className="text-4xl text-red-400 mx-auto mb-3" />
           <h3 className="text-lg font-semibold text-white mb-2">Failed to Load Meetings</h3>
-          <p className="text-neutral-400 text-sm mb-4">{error}</p>
+          <p className="text-slate-400 text-sm mb-4">{error}</p>
           <Button onClick={handleRefresh} variant="primary" size="sm">
-            <FaSyncAlt className="mr-2" /> Retry
+            <RefreshCw className="mr-2" /> Retry
           </Button>
         </div>
       </Card>
@@ -1617,10 +1589,10 @@ export function Meetings() {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-lg sm:text-xl font-bold text-white flex items-center gap-2">
-            <FaVideo className="text-blue-400" />
+            <Video className="text-blue-400" />
             Recent Meetings
           </h2>
-          <p className="text-neutral-500 text-xs mt-0.5">
+          <p className="text-slate-500 text-xs mt-0.5">
             {filteredMeetings.length} meeting{filteredMeetings.length !== 1 ? 's' : ''}
             {isAdmin && hiddenMeetingIds.size > 0 && (
               <span className="text-red-400 ml-1.5">&#x2022; {hiddenMeetingIds.size} hidden</span>
@@ -1630,22 +1602,22 @@ export function Meetings() {
         <button
           onClick={handleRefresh}
           disabled={refreshing}
-          className="flex items-center gap-1.5 px-3 py-1.5 bg-neutral-800 hover:bg-neutral-700 text-neutral-300 rounded-lg transition-all text-xs disabled:opacity-50"
+          className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg transition-all text-xs disabled:opacity-50"
         >
-          <FaSyncAlt className={`text-[10px] ${refreshing ? 'animate-spin' : ''}`} />
+          <RefreshCw className={`text-[10px] ${refreshing ? 'animate-spin' : ''}`} />
           Refresh
         </button>
       </div>
 
       {/* Search */}
       <div className="relative">
-        <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-500 text-xs" />
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-500 text-xs" />
         <input
           type="text"
           placeholder="Search meetings, people, or tasks..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full pl-9 pr-4 py-2 bg-neutral-800/50 border border-neutral-700/50 rounded-lg text-neutral-200 text-sm placeholder:text-neutral-600 focus:border-blue-500/40 focus:ring-1 focus:ring-blue-500/20 transition-all outline-none"
+          className="w-full pl-9 pr-4 py-2 bg-slate-800/50 border border-slate-700/50 rounded-lg text-slate-200 text-sm placeholder:text-slate-600 focus:border-blue-500/40 focus:ring-1 focus:ring-blue-500/20 transition-all outline-none"
         />
       </div>
 
@@ -1653,7 +1625,7 @@ export function Meetings() {
       {filteredMeetings.length === 0 ? (
         <Card padding="lg">
           <EmptyState
-            icon={<FaVideo className="text-3xl text-neutral-600" />}
+            icon={<Video className="text-3xl text-slate-600" />}
             title={searchQuery ? 'No meetings match your search' : 'No meetings found'}
             description={searchQuery ? 'Try different keywords' : 'Meetings will appear here after being recorded via Fathom.'}
           />
@@ -1681,12 +1653,12 @@ export function Meetings() {
               <button
                 onClick={() => fetchMeetings(nextCursor)}
                 disabled={loadingMore}
-                className="px-5 py-2 bg-neutral-800 hover:bg-neutral-700 text-neutral-300 rounded-lg transition-all text-xs disabled:opacity-50 flex items-center gap-2 mx-auto"
+                className="px-5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg transition-all text-xs disabled:opacity-50 flex items-center gap-2 mx-auto"
               >
                 {loadingMore ? (
-                  <><FaSpinner className="animate-spin" /> Loading...</>
+                  <><Loader2 className="animate-spin" /> Loading...</>
                 ) : (
-                  <><FaChevronDown /> Load More</>
+                  <><ChevronDown /> Load More</>
                 )}
               </button>
             </div>

@@ -3,7 +3,7 @@
 import { ReactNode, forwardRef, useState, useRef, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { FaSpinner, FaChevronDown, FaTimes, FaCheck, FaExclamationTriangle, FaInfoCircle } from 'react-icons/fa'
+import { AlertTriangle, Briefcase, Calendar, CalendarDays, Check, ChevronDown, Circle, Clock, Edit2, Eye, IdCard, Info, LineChart, Loader2, Mail, X } from 'lucide-react'
 
 // ============================================
 // DESIGN TOKENS - Professional Color Palette
@@ -11,33 +11,33 @@ import { FaSpinner, FaChevronDown, FaTimes, FaCheck, FaExclamationTriangle, FaIn
 export const colors = {
   // Primary brand colors
   primary: {
-    50: '#f0f4ff',
-    100: '#e0e7ff',
-    200: '#c7d2fe',
-    300: '#a5b4fc',
-    400: '#818cf8',
-    500: '#6366f1', // Main primary
-    600: '#4f46e5',
-    700: '#4338ca',
-    800: '#3730a3',
-    900: '#312e81',
+    50: '#eff6ff',
+    100: '#dbeafe',
+    200: '#bfdbfe',
+    300: '#93c5fd',
+    400: '#60a5fa',
+    500: '#3B82F6',
+    600: '#2563eb',
+    700: '#1d4ed8',
+    800: '#1e40af',
+    900: '#1e3a5f',
   },
   // Neutral grays
   neutral: {
-    50: '#fafafa',
-    100: '#f4f4f5',
-    200: '#e4e4e7',
-    300: '#d4d4d8',
-    400: '#a1a1aa',
-    500: '#71717a',
-    600: '#52525b',
-    700: '#3f3f46',
-    800: '#27272a',
-    900: '#18181b',
-    950: '#0f0f11',
+    50: '#f8fafc',
+    100: '#f1f5f9',
+    200: '#e2e8f0',
+    300: '#cbd5e1',
+    400: '#94a3b8',
+    500: '#64748b',
+    600: '#475569',
+    700: '#334155',
+    800: '#1e293b',
+    900: '#0f172a',
+    950: '#050816',
   },
   // Semantic colors
-  success: '#10b981',
+  success: '#22c55e',
   warning: '#f59e0b',
   error: '#ef4444',
   info: '#3b82f6',
@@ -73,20 +73,20 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(({
   type = 'button',
   className = '',
 }, ref) => {
-  const baseStyles = 'inline-flex items-center justify-center font-medium rounded-xl transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-neutral-900 backdrop-blur-sm'
+  const baseStyles = 'inline-flex items-center justify-center font-medium rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#050816]'
   
   const variants = {
-    primary: 'bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-500 hover:to-primary-400 text-white focus:ring-primary-500 shadow-lg shadow-primary-500/25 border border-primary-400/20',
-    secondary: 'bg-white/5 hover:bg-white/10 text-white focus:ring-neutral-500 border border-white/10 backdrop-blur-xl',
-    ghost: 'bg-transparent hover:bg-white/5 text-neutral-300 hover:text-white focus:ring-neutral-500',
-    danger: 'bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-400 text-white focus:ring-red-500 shadow-lg shadow-red-500/25 border border-red-400/20',
-    success: 'bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white focus:ring-emerald-500 shadow-lg shadow-emerald-500/25 border border-emerald-400/20',
+    primary: 'bg-primary-600 hover:bg-primary-500 text-white focus:ring-primary-500 shadow-sm',
+    secondary: 'bg-transparent hover:bg-slate-800 text-slate-300 focus:ring-slate-500 border border-slate-700',
+    ghost: 'bg-transparent hover:bg-white/5 text-slate-400 hover:text-slate-200 focus:ring-slate-500',
+    danger: 'bg-red-600 hover:bg-red-500 text-white focus:ring-red-500 shadow-sm',
+    success: 'bg-emerald-600 hover:bg-emerald-500 text-white focus:ring-emerald-500 shadow-sm',
   }
   
   const sizes = {
-    sm: 'px-3 py-1.5 text-sm gap-1.5',
-    md: 'px-4 py-2 text-sm gap-2',
-    lg: 'px-6 py-3 text-base gap-2.5',
+    sm: 'h-9 px-4 text-sm gap-1.5 rounded-full',
+    md: 'h-12 px-6 text-sm gap-2 rounded-full',
+    lg: 'h-14 px-8 text-base gap-2.5 rounded-full',
   }
   
   return (
@@ -106,7 +106,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(({
         ${className}
       `}
     >
-      {loading && <FaSpinner className="animate-spin" />}
+      {loading && <Loader2 className="animate-spin w-4 h-4" />}
       {!loading && icon && iconPosition === 'left' && icon}
       {children}
       {!loading && icon && iconPosition === 'right' && icon}
@@ -152,14 +152,14 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(({
   return (
     <div className={`space-y-1.5 ${className}`}>
       {label && (
-        <label className="block text-sm font-medium text-neutral-300">
+        <label className="block text-sm font-medium text-slate-400">
           {label}
           {required && <span className="text-red-400 ml-1">*</span>}
         </label>
       )}
       <div className="relative">
         {icon && (
-          <div className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400">
+          <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500">
             {icon}
           </div>
         )}
@@ -175,18 +175,18 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(({
           max={max}
           name={name}
           className={`
-            w-full px-4 py-3 bg-white/5 backdrop-blur-xl border rounded-xl text-white placeholder-neutral-500
-            focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500/50 focus:bg-white/10
-            transition-all duration-300
+            w-full px-4 py-3 bg-white/[0.04] border rounded-xl text-slate-100 placeholder-slate-500
+            focus:outline-none focus:ring-2 focus:ring-primary-500/40 focus:border-primary-500/40
+            transition-all duration-200
             ${icon ? 'pl-10' : ''}
-            ${error ? 'border-red-500/50 bg-red-500/5' : 'border-white/10 hover:border-white/20'}
+            ${error ? 'border-red-500/40 bg-red-500/5' : 'border-white/[0.08] hover:border-white/[0.12]'}
             ${disabled ? 'opacity-50 cursor-not-allowed' : ''}
           `}
         />
       </div>
       {error && (
         <p className="text-sm text-red-400 flex items-center gap-1">
-          <FaExclamationTriangle className="text-xs" />
+          <AlertTriangle className="text-xs" />
           {error}
         </p>
       )}
@@ -228,7 +228,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(({
   return (
     <div className={`space-y-1.5 ${className}`}>
       {label && (
-        <label className="block text-sm font-medium text-neutral-300">
+        <label className="block text-sm font-medium text-slate-400">
           {label}
           {required && <span className="text-red-400 ml-1">*</span>}
         </label>
@@ -244,16 +244,16 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(({
         rows={rows}
         name={name}
         className={`
-          w-full px-4 py-3 bg-white/5 backdrop-blur-xl border rounded-xl text-white placeholder-neutral-500
-          focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500/50 focus:bg-white/10
-          transition-all duration-300 resize-none
-          ${error ? 'border-red-500/50 bg-red-500/5' : 'border-white/10 hover:border-white/20'}
+          w-full px-4 py-3 bg-white/[0.04] border rounded-xl text-slate-100 placeholder-slate-500
+          focus:outline-none focus:ring-2 focus:ring-primary-500/40 focus:border-primary-500/40
+          transition-all duration-200 resize-none
+          ${error ? 'border-red-500/40 bg-red-500/5' : 'border-white/[0.08] hover:border-white/[0.12]'}
           ${disabled ? 'opacity-50 cursor-not-allowed' : ''}
         `}
       />
       {error && (
         <p className="text-sm text-red-400 flex items-center gap-1">
-          <FaExclamationTriangle className="text-xs" />
+          <AlertTriangle className="text-xs" />
           {error}
         </p>
       )}
@@ -368,7 +368,7 @@ export const Select = ({
   return (
     <div className={`space-y-1.5 ${className}`}>
       {label && (
-        <label className="block text-sm font-medium text-neutral-300">{label}</label>
+        <label className="block text-sm font-medium text-slate-400">{label}</label>
       )}
       <div className="relative">
         <button
@@ -377,16 +377,16 @@ export const Select = ({
           onClick={handleToggle}
           disabled={disabled}
           className={`
-            w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-left
-            flex items-center justify-between transition-all duration-300
-            focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500/50 focus:bg-white/10
-            ${disabled ? 'opacity-50 cursor-not-allowed' : 'hover:border-white/20 hover:bg-white/10'}
+            w-full px-4 py-3 bg-white/[0.04] border border-white/[0.08] rounded-xl text-left
+            flex items-center justify-between transition-all duration-200
+            focus:outline-none focus:ring-2 focus:ring-primary-500/40 focus:border-primary-500/40
+            ${disabled ? 'opacity-50 cursor-not-allowed' : 'hover:border-white/[0.12]'}
           `}
         >
-          <span className={selectedOption ? 'text-white' : 'text-neutral-500'}>
+          <span className={selectedOption ? 'text-slate-100' : 'text-slate-500'}>
             {selectedOption?.label || placeholder}
           </span>
-          <FaChevronDown className={`text-neutral-400 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
+          <ChevronDown className={`text-slate-500 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
         </button>
         
         {/* Dropdown rendered via Portal to escape parent stacking contexts */}
@@ -398,7 +398,7 @@ export const Select = ({
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: openAbove ? 10 : -10, scale: 0.95 }}
               transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-              className="bg-neutral-900 border border-white/10 rounded-xl shadow-2xl shadow-black/50 overflow-hidden"
+              className="bg-[rgba(15,23,42,0.95)] border border-white/[0.08] rounded-xl shadow-2xl shadow-black/40 overflow-hidden"
               style={{
                 position: 'fixed',
                 top: dropdownPosition.top,
@@ -419,8 +419,8 @@ export const Select = ({
                     className={`
                       w-full px-4 py-3 text-left transition-all duration-200
                       ${value === option.value 
-                        ? 'bg-primary-500/20 text-primary-400 border-l-2 border-primary-500' 
-                        : 'text-neutral-300 hover:bg-white/10 hover:text-white border-l-2 border-transparent'
+                        ? 'bg-primary-500/15 text-primary-400 border-l-2 border-primary-500' 
+                        : 'text-slate-300 hover:bg-white/[0.06] hover:text-white border-l-2 border-transparent'
                       }
                     `}
                   >
@@ -449,12 +449,12 @@ interface BadgeProps {
 
 export const Badge = ({ children, variant = 'default', size = 'md', className = '' }: BadgeProps) => {
   const variants = {
-    default: 'bg-neutral-700 text-neutral-300',
-    success: 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30',
-    warning: 'bg-amber-500/20 text-amber-400 border border-amber-500/30',
-    error: 'bg-red-500/20 text-red-400 border border-red-500/30',
-    info: 'bg-blue-500/20 text-blue-400 border border-blue-500/30',
-    primary: 'bg-primary-500/20 text-primary-400 border border-primary-500/30',
+    default: 'bg-slate-700/50 text-slate-300',
+    success: 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/20',
+    warning: 'bg-amber-500/15 text-amber-400 border border-amber-500/20',
+    error: 'bg-red-500/15 text-red-400 border border-red-500/20',
+    info: 'bg-blue-500/15 text-blue-400 border border-blue-500/20',
+    primary: 'bg-primary-500/15 text-primary-400 border border-primary-500/20',
   }
   
   const sizes = {
@@ -490,12 +490,12 @@ export const Card = ({ children, className = '', padding = 'md', hover = false, 
   
   return (
     <motion.div
-      whileHover={hover ? { y: -4, scale: 1.01 } : undefined}
+      whileHover={hover ? { y: -2, scale: 1.01 } : undefined}
       className={`
-        bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl sm:rounded-2xl
+        bg-[rgba(15,23,42,0.60)] backdrop-blur-xl border border-white/[0.08] rounded-2xl
         ${paddings[padding]}
-        ${hover ? 'transition-all duration-300 hover:shadow-xl hover:shadow-primary-500/10 hover:border-white/20' : ''}
-        ${glow ? 'shadow-lg shadow-primary-500/10' : ''}
+        ${hover ? 'transition-all duration-200 hover:shadow-lg hover:shadow-primary-500/5 hover:border-white/[0.12]' : ''}
+        ${glow ? 'shadow-sm shadow-primary-500/5' : ''}
         ${className}
       `}
     >
@@ -556,21 +556,21 @@ export const Modal = ({ isOpen, onClose, title, children, size = 'md', className
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={onClose}
-              className="fixed inset-0 bg-black/90 backdrop-blur-2xl"
+              className="fixed inset-0 bg-black/80 backdrop-blur-xl"
             />
             <motion.div
               initial={{ opacity: 0, scale: 0.9, y: 30 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 30 }}
               transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-              className={`relative w-full ${sizes[size]} bg-neutral-900/95 backdrop-blur-3xl border border-white/20 rounded-2xl sm:rounded-3xl shadow-2xl shadow-black/60 ring-1 ring-white/10 max-h-[90vh] flex flex-col ${className}`}
+              className={`relative w-full ${sizes[size]} bg-[rgba(10,15,30,0.96)] backdrop-blur-2xl border border-white/[0.1] rounded-2xl sm:rounded-3xl shadow-2xl shadow-black/50 max-h-[90vh] flex flex-col ${className}`}
             >
-              <div className="absolute inset-0 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-primary-500/10 via-transparent to-transparent pointer-events-none" />
+              <div className="absolute inset-0 rounded-2xl sm:rounded-3xl pointer-events-none" />
               {title && (
                 <div className="relative flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-white/10 flex-shrink-0">
                   <h3 className="text-lg sm:text-xl font-bold text-white truncate pr-2">{title}</h3>
-                  <button onClick={onClose} className="p-1.5 sm:p-2 text-neutral-400 hover:text-white hover:bg-white/10 rounded-lg sm:rounded-xl transition-all duration-200 flex-shrink-0">
-                    <FaTimes />
+                  <button onClick={onClose} className="p-1.5 sm:p-2 text-slate-400 hover:text-white hover:bg-white/10 rounded-lg sm:rounded-xl transition-all duration-200 flex-shrink-0">
+                    <X />
                   </button>
                 </div>
               )}
@@ -592,7 +592,7 @@ export const Modal = ({ isOpen, onClose, title, children, size = 'md', className
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/90 backdrop-blur-2xl"
+            className="fixed inset-0 bg-black/80 backdrop-blur-xl"
             style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh' }}
           />
           
@@ -602,10 +602,10 @@ export const Modal = ({ isOpen, onClose, title, children, size = 'md', className
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 30 }}
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            className={`relative w-full ${sizes[size]} bg-neutral-900/95 backdrop-blur-3xl border border-white/20 rounded-2xl sm:rounded-3xl shadow-2xl shadow-black/60 ring-1 ring-white/10 max-h-[90vh] flex flex-col ${className}`}
+            className={`relative w-full ${sizes[size]} bg-[#0b101d]/95 backdrop-blur-2xl border border-white/[0.1] rounded-2xl sm:rounded-3xl shadow-2xl shadow-black/50 max-h-[90vh] flex flex-col ${className}`}
           >
-            {/* Gradient accent */}
-            <div className="absolute inset-0 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-primary-500/10 via-transparent to-transparent pointer-events-none" />
+            {/* Clean surface */}
+            <div className="absolute inset-0 rounded-2xl sm:rounded-3xl pointer-events-none" />
             
             {/* Header */}
             {title && (
@@ -613,9 +613,9 @@ export const Modal = ({ isOpen, onClose, title, children, size = 'md', className
                 <h3 className="text-lg sm:text-xl font-bold text-white truncate pr-2">{title}</h3>
                 <button
                   onClick={onClose}
-                  className="p-1.5 sm:p-2 text-neutral-400 hover:text-white hover:bg-white/10 rounded-lg sm:rounded-xl transition-all duration-200 flex-shrink-0"
+                  className="p-1.5 sm:p-2 text-slate-400 hover:text-white hover:bg-white/10 rounded-lg sm:rounded-xl transition-all duration-200 flex-shrink-0"
                 >
-                  <FaTimes />
+                  <X />
                 </button>
               </div>
             )}
@@ -644,21 +644,21 @@ interface AlertProps {
 
 export const Alert = ({ children, variant = 'info', icon, className = '' }: AlertProps) => {
   const variants = {
-    info: 'bg-blue-500/10 border-blue-500/30 text-blue-400',
-    success: 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400',
-    warning: 'bg-amber-500/10 border-amber-500/30 text-amber-400',
-    error: 'bg-red-500/10 border-red-500/30 text-red-400',
+    info: 'bg-blue-500/[0.08] border-blue-500/20 text-blue-400',
+    success: 'bg-emerald-500/[0.08] border-emerald-500/20 text-emerald-400',
+    warning: 'bg-amber-500/[0.08] border-amber-500/20 text-amber-400',
+    error: 'bg-red-500/[0.08] border-red-500/20 text-red-400',
   }
   
   const defaultIcons = {
-    info: <FaInfoCircle />,
-    success: <FaCheck />,
-    warning: <FaExclamationTriangle />,
-    error: <FaExclamationTriangle />,
+    info: <Info />,
+    success: <Check />,
+    warning: <AlertTriangle />,
+    error: <AlertTriangle />,
   }
   
   return (
-    <div className={`flex items-start gap-3 p-4 border rounded-lg ${variants[variant]} ${className}`}>
+    <div className={`flex items-start gap-3 p-4 border rounded-xl ${variants[variant]} ${className}`}>
       <span className="flex-shrink-0 mt-0.5">{icon || defaultIcons[variant]}</span>
       <div className="text-sm">{children}</div>
     </div>
@@ -708,14 +708,14 @@ export const Avatar = ({ src, name = 'User', size = 'md', className = '', showBo
   
   const initials = name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()
   
-  const fallbackUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(initials)}&background=4f46e5&color=fff&size=200`
+  const fallbackUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(initials)}&background=3B82F6&color=fff&size=200`
   const resolvedSrc = getLocalProfileImage(src, employeeId) || fallbackUrl
   
   return (
     <div 
       className={`
         ${sizes[size]} rounded-full overflow-hidden flex-shrink-0
-        ${showBorder ? 'ring-2 ring-primary-500 ring-offset-2 ring-offset-neutral-900' : ''}
+        ${showBorder ? 'ring-2 ring-primary-500/50 ring-offset-2 ring-offset-[#050816]' : ''}
         ${className}
       `}
     >
@@ -749,7 +749,7 @@ export const Skeleton = ({ width = '100%', height = '1rem', rounded = 'md', clas
   
   return (
     <div
-      className={`animate-pulse bg-neutral-800 ${roundedStyles[rounded]} ${className}`}
+      className={`animate-pulse bg-slate-800/50 ${roundedStyles[rounded]} ${className}`}
       style={{ width, height }}
     />
   )
@@ -774,7 +774,7 @@ interface TabsProps {
 
 export const Tabs = ({ tabs, activeTab, onChange, className = '' }: TabsProps) => {
   return (
-    <div className={`flex items-center gap-1 p-1 bg-neutral-900 rounded-lg ${className}`}>
+    <div className={`flex items-center gap-1 p-1 bg-[rgba(15,23,42,0.60)] rounded-lg border border-white/[0.06] ${className}`}>
       {tabs.map((tab) => (
         <button
           key={tab.id}
@@ -783,7 +783,7 @@ export const Tabs = ({ tabs, activeTab, onChange, className = '' }: TabsProps) =
             flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all
             ${activeTab === tab.id 
               ? 'bg-primary-600 text-white shadow-sm' 
-              : 'text-neutral-400 hover:text-white hover:bg-neutral-800'
+              : 'text-slate-400 hover:text-slate-200 hover:bg-white/[0.06]'
             }
           `}
         >
@@ -792,7 +792,7 @@ export const Tabs = ({ tabs, activeTab, onChange, className = '' }: TabsProps) =
           {tab.badge !== undefined && (
             <span className={`
               px-1.5 py-0.5 rounded-full text-xs font-bold
-              ${activeTab === tab.id ? 'bg-white/20' : 'bg-neutral-700'}
+              ${activeTab === tab.id ? 'bg-white/20' : 'bg-slate-700/50'}
             `}>
               {tab.badge}
             </span>
@@ -818,12 +818,12 @@ export const EmptyState = ({ icon, title, description, action, className = '' }:
   return (
     <div className={`flex flex-col items-center justify-center py-12 text-center ${className}`}>
       {icon && (
-        <div className="w-16 h-16 rounded-full bg-neutral-800 flex items-center justify-center text-neutral-500 mb-4">
+        <div className="w-16 h-16 rounded-full bg-slate-800/50 flex items-center justify-center text-slate-500 mb-4">
           {icon}
         </div>
       )}
-      <h3 className="text-lg font-semibold text-white mb-1">{title}</h3>
-      {description && <p className="text-neutral-400 text-sm max-w-sm">{description}</p>}
+      <h3 className="text-lg font-semibold text-slate-100 mb-1">{title}</h3>
+      {description && <p className="text-slate-400 text-sm max-w-sm">{description}</p>}
       {action && <div className="mt-4">{action}</div>}
     </div>
   )
@@ -846,7 +846,7 @@ export const Spinner = ({ size = 'md', className = '' }: SpinnerProps) => {
   
   return (
     <div className={`flex items-center justify-center ${className}`}>
-      <FaSpinner className={`animate-spin text-primary-500 ${sizes[size]}`} />
+      <Loader2 className={`animate-spin text-primary-500 ${sizes[size]}`} />
     </div>
   )
 }
@@ -855,7 +855,7 @@ export const Spinner = ({ size = 'md', className = '' }: SpinnerProps) => {
 // PROFILE INFO SYSTEM - REUSABLE OVERLAY COMPONENT
 // ============================================
 
-import { FaEnvelope, FaCalendarAlt as FaCalendar2, FaChartLine, FaCircle, FaIdCard, FaBriefcase, FaEye, FaEdit, FaClock } from 'react-icons/fa'
+
 
 // Profile Data Contract
 export interface ProfileInfoData {
@@ -1038,7 +1038,7 @@ export const ProfileInfo = ({
   }, [])
 
   const resolvedProfileImage = getLocalProfileImage(data.profileImage, data.employeeId)
-  const fallbackUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(data.name?.split(' ').map(n => n[0]).join('') || 'U')}&background=4f46e5&color=fff&size=200`
+  const fallbackUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(data.name?.split(' ').map(n => n[0]).join('') || 'U')}&background=3B82F6&color=fff&size=200`
   
   const getRoleBadgeVariant = (role: string) => {
     if (role === 'admin' || role === 'sub-admin') return 'warning'
@@ -1049,7 +1049,7 @@ export const ProfileInfo = ({
   const getStatusColor = (status?: string) => {
     if (status === 'Active') return 'text-emerald-400'
     if (status === 'On Leave') return 'text-amber-400'
-    return 'text-neutral-400'
+    return 'text-slate-400'
   }
 
   return (
@@ -1093,11 +1093,11 @@ export const ProfileInfo = ({
             top: position.y,
             zIndex: 99980,
           }}
-          className="bg-neutral-900/98 backdrop-blur-2xl border border-white/15 rounded-xl shadow-2xl shadow-black/40 p-4 w-[280px] max-w-[calc(100vw-32px)]"
+          className="bg-[rgba(10,15,30,0.97)] backdrop-blur-2xl border border-white/[0.1] rounded-xl shadow-2xl shadow-black/40 p-4 w-[280px] max-w-[calc(100vw-32px)]"
         >
           {/* Arrow - positioned dynamically based on whether hover opens above or below */}
           <div 
-            className={`absolute w-4 h-4 bg-neutral-900 border-white/15 ${
+            className={`absolute w-4 h-4 bg-[rgba(10,15,30,1)] border-white/[0.1] ${
               arrowPosition === 'top' 
                 ? '-top-2 border-l border-t' 
                 : '-bottom-2 border-r border-b'
@@ -1116,11 +1116,11 @@ export const ProfileInfo = ({
                 className="w-12 h-12 rounded-full object-cover"
                 onError={(e) => { (e.target as HTMLImageElement).src = fallbackUrl }}
               />
-              <div className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-neutral-900 ${data.status === 'Active' ? 'bg-emerald-500' : data.status === 'On Leave' ? 'bg-amber-500' : 'bg-neutral-500'}`} />
+              <div className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-slate-900 ${data.status === 'Active' ? 'bg-emerald-500' : data.status === 'On Leave' ? 'bg-amber-500' : 'bg-slate-500'}`} />
             </div>
             <div className="flex-1 min-w-0">
               <p className="font-semibold text-white truncate">{data.name}</p>
-              <p className="text-xs text-neutral-400 truncate">{data.designation || data.department}</p>
+              <p className="text-xs text-slate-400 truncate">{data.designation || data.department}</p>
               <p className="text-xs text-primary-400 font-mono">{data.employeeId}</p>
             </div>
           </div>
@@ -1130,14 +1130,14 @@ export const ProfileInfo = ({
               {data.role === 'admin' ? '👑 Admin' : data.role === 'sub-admin' ? '⭐ Sub-Admin' : data.role}
             </Badge>
             {!inline && data.attendancePercentage !== undefined && (
-              <span className="text-neutral-400 flex items-center gap-1">
-                <FaChartLine className="text-primary-400" />
+              <span className="text-slate-400 flex items-center gap-1">
+                <LineChart className="text-primary-400" />
                 {data.attendancePercentage.toFixed(0)}% attendance
               </span>
             )}
           </div>
           
-          {!inline && <p className="text-xs text-neutral-500 text-center mt-2">Click for more details</p>}
+          {!inline && <p className="text-xs text-slate-500 text-center mt-2">Click for more details</p>}
         </motion.div>,
         document.body
       )}
@@ -1168,18 +1168,18 @@ export const ProfileInfo = ({
               top: position.y,
               zIndex: 99996,
             }}
-            className="bg-neutral-900/98 backdrop-blur-2xl border border-white/15 rounded-2xl shadow-2xl shadow-black/50 w-[360px] max-w-[calc(100vw-32px)] max-h-[80vh] overflow-auto"
+            className="bg-[rgba(10,15,30,0.97)] backdrop-blur-2xl border border-white/[0.1] rounded-2xl shadow-2xl shadow-black/50 w-[360px] max-w-[calc(100vw-32px)] max-h-[80vh] overflow-auto"
           >
             {/* Close Button */}
             <button
               onClick={() => setShowExpanded(false)}
-              className="absolute top-3 right-3 p-1.5 text-neutral-400 hover:text-white hover:bg-white/10 rounded-lg transition-all z-10"
+              className="absolute top-3 right-3 p-1.5 text-slate-400 hover:text-white hover:bg-white/10 rounded-lg transition-all z-10"
             >
-              <FaTimes className="text-sm" />
+              <X className="text-sm" />
             </button>
 
             {/* Header with Gradient */}
-            <div className="p-5 bg-gradient-to-br from-primary-600/20 via-primary-500/10 to-transparent border-b border-white/5">
+            <div className="p-5 bg-gradient-to-br from-primary-600/10 via-transparent to-transparent border-b border-white/[0.06]">
               <div className="flex items-center gap-4">
                 <div className="relative">
                   <img
@@ -1188,11 +1188,11 @@ export const ProfileInfo = ({
                     className="relative w-16 h-16 rounded-full object-cover"
                     onError={(e) => { (e.target as HTMLImageElement).src = fallbackUrl }}
                   />
-                  <div className={`absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full border-2 border-neutral-900 ${data.status === 'Active' ? 'bg-emerald-500' : data.status === 'On Leave' ? 'bg-amber-500' : 'bg-neutral-500'}`} />
+                  <div className={`absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full border-2 border-[#0b101d] ${data.status === 'Active' ? 'bg-emerald-500' : data.status === 'On Leave' ? 'bg-amber-500' : 'bg-slate-500'}`} />
                 </div>
                 <div className="flex-1 min-w-0">
                   <h3 className="text-xl font-bold text-white truncate">{data.name}</h3>
-                  <p className="text-sm text-neutral-400 truncate">{data.designation || 'Employee'}</p>
+                  <p className="text-sm text-slate-400 truncate">{data.designation || 'Employee'}</p>
                   <div className="flex flex-wrap items-center gap-1.5 mt-2">
                     <Badge variant="primary" size="sm">{data.employeeId}</Badge>
                     <Badge variant={getRoleBadgeVariant(data.role)} size="sm">
@@ -1204,49 +1204,49 @@ export const ProfileInfo = ({
             </div>
 
             {/* Primary Info */}
-            <div className="p-4 space-y-3 border-b border-white/5">
+            <div className="p-4 space-y-3 border-b border-white/[0.06]">
               {data.department && (
                 <div className="flex items-center gap-3 text-sm">
-                  <FaBriefcase className="text-primary-400 flex-shrink-0" />
-                  <span className="text-neutral-400">Department:</span>
+                  <Briefcase className="text-primary-400 flex-shrink-0" />
+                  <span className="text-slate-400">Department:</span>
                   <span className="text-white">{data.department}</span>
                 </div>
               )}
               {data.specialization && (
                 <div className="flex items-center gap-3 text-sm">
-                  <FaIdCard className="text-cyan-400 flex-shrink-0" />
-                  <span className="text-neutral-400">Specialization:</span>
+                  <IdCard className="text-blue-400 flex-shrink-0" />
+                  <span className="text-slate-400">Specialization:</span>
                   <span className="text-white">{data.specialization}</span>
                 </div>
               )}
               {data.email && (
                 <div className="flex items-center gap-3 text-sm">
-                  <FaEnvelope className="text-primary-400 flex-shrink-0" />
-                  <span className="text-neutral-400">Email:</span>
+                  <Mail className="text-primary-400 flex-shrink-0" />
+                  <span className="text-slate-400">Email:</span>
                   <span className="text-white truncate">{data.email}</span>
                 </div>
               )}
               {data.joiningDate && (
                 <div className="flex items-center gap-3 text-sm">
-                  <FaCalendar2 className="text-emerald-400 flex-shrink-0" />
-                  <span className="text-neutral-400">Joined:</span>
+                  <Calendar className="text-emerald-400 flex-shrink-0" />
+                  <span className="text-slate-400">Joined:</span>
                   <span className="text-white">{data.joiningDate}</span>
                 </div>
               )}
             </div>
 
             {/* Secondary Info */}
-            <div className="p-4 space-y-3 border-b border-white/5">
+            <div className="p-4 space-y-3 border-b border-white/[0.06]">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3 text-sm">
-                  <FaCircle className={`text-xs flex-shrink-0 ${getStatusColor(data.status)}`} />
-                  <span className="text-neutral-400">Status:</span>
+                  <Circle className={`text-xs flex-shrink-0 ${getStatusColor(data.status)}`} />
+                  <span className="text-slate-400">Status:</span>
                   <span className={`font-medium ${getStatusColor(data.status)}`}>{data.status || 'Unknown'}</span>
                 </div>
                 {data.attendancePercentage !== undefined && (
                   <div className="flex items-center gap-2 px-3 py-1.5 bg-white/5 rounded-lg">
-                    <FaChartLine className="text-primary-400 text-sm" />
-                    <span className="text-lg font-bold bg-gradient-to-r from-primary-400 to-cyan-400 bg-clip-text text-transparent">
+                    <LineChart className="text-primary-400 text-sm" />
+                    <span className="text-lg font-bold text-primary-400">
                       {data.attendancePercentage.toFixed(1)}%
                     </span>
                   </div>
@@ -1258,11 +1258,11 @@ export const ProfileInfo = ({
             {isAdmin && (data.presentCount !== undefined || data.lastAttendanceDate) && (
               <div className="p-4 bg-amber-500/5 border-b border-amber-500/10">
                 <p className="text-xs text-amber-400 font-medium mb-3 flex items-center gap-1">
-                  <FaClock /> Admin View
+                  <Clock /> Admin View
                 </p>
                 {data.lastAttendanceDate && (
                   <div className="flex items-center gap-3 text-sm mb-2">
-                    <span className="text-neutral-400">Last marked:</span>
+                    <span className="text-slate-400">Last marked:</span>
                     <span className="text-white">{data.lastAttendanceDate}</span>
                   </div>
                 )}
@@ -1270,15 +1270,15 @@ export const ProfileInfo = ({
                   <div className="grid grid-cols-3 gap-2 mt-2">
                     <div className="text-center p-2 bg-emerald-500/10 rounded-lg border border-emerald-500/20">
                       <div className="text-lg font-bold text-emerald-400">{data.presentCount}</div>
-                      <div className="text-xs text-neutral-400">Present</div>
+                      <div className="text-xs text-slate-400">Present</div>
                     </div>
                     <div className="text-center p-2 bg-red-500/10 rounded-lg border border-red-500/20">
                       <div className="text-lg font-bold text-red-400">{data.absentCount || 0}</div>
-                      <div className="text-xs text-neutral-400">Absent</div>
+                      <div className="text-xs text-slate-400">Absent</div>
                     </div>
                     <div className="text-center p-2 bg-amber-500/10 rounded-lg border border-amber-500/20">
                       <div className="text-lg font-bold text-amber-400">{data.leaveCount || 0}</div>
-                      <div className="text-xs text-neutral-400">Leave</div>
+                      <div className="text-xs text-slate-400">Leave</div>
                     </div>
                   </div>
                 )}
@@ -1296,7 +1296,7 @@ export const ProfileInfo = ({
                     }}
                     className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-primary-600 hover:bg-primary-500 text-white rounded-xl transition-colors font-medium text-sm"
                   >
-                    <FaEye /> View Full Profile
+                    <Eye /> View Full Profile
                   </button>
                 )}
                 {isAdmin && onEditProfile && (
@@ -1307,7 +1307,7 @@ export const ProfileInfo = ({
                     }}
                     className="flex items-center justify-center gap-2 px-4 py-2.5 bg-white/5 hover:bg-white/10 text-white rounded-xl transition-colors border border-white/10"
                   >
-                    <FaEdit />
+                    <Edit2 />
                   </button>
                 )}
               </div>

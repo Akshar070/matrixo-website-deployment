@@ -2,26 +2,11 @@
 
 import { useState, useMemo, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { 
-  FaCalendarAlt, 
-  FaPlus, 
-  FaChevronLeft, 
-  FaChevronRight,
-  FaTimes,
-  FaUmbrellaBeach,
-  FaBuilding,
-  FaStar,
-  FaBullhorn,
-  FaClock,
-  FaFlag,
-  FaUsers,
-  FaEdit,
-  FaTrash,
-  FaBriefcase
-} from 'react-icons/fa'
+
 import { useEmployeeAuth, Holiday, CalendarEvent, isAdminOrSubAdmin } from '@/lib/employeePortalContext'
 import { Card, Button, Input, Textarea, Select, Modal, Badge, Alert } from './ui'
 import { toast } from 'sonner'
+import { Briefcase, Building, CalendarDays, ChevronLeft, ChevronRight, Clock, Edit2, Flag, Megaphone, Plus, Star, Trash2, Umbrella, Users, X } from 'lucide-react'
 
 // ============================================
 // CALENDAR TYPES
@@ -228,10 +213,10 @@ function AddEventModal({
   }
 
   const eventTypeIcons = {
-    event: <FaStar />,
-    deadline: <FaFlag />,
-    meeting: <FaUsers />,
-    announcement: <FaBullhorn />
+    event: <Star />,
+    deadline: <Flag />,
+    meeting: <Users />,
+    announcement: <Megaphone />
   }
 
   return (
@@ -527,19 +512,19 @@ export function Calendar() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h2 className="text-xl sm:text-2xl font-bold text-white flex items-center gap-2">
-            <FaCalendarAlt className="text-primary-500" />
+            <CalendarDays className="text-primary-500" />
             Calendar
           </h2>
-          <p className="text-neutral-400 text-sm sm:text-base mt-1">View holidays, events, and deadlines</p>
+          <p className="text-slate-400 text-sm sm:text-base mt-1">View holidays, events, and deadlines</p>
         </div>
         
         <div className="flex flex-wrap items-center gap-2 sm:gap-3">
           {/* View Toggle */}
-          <div className="flex items-center bg-neutral-800 rounded-lg p-1">
+          <div className="flex items-center bg-slate-800 rounded-lg p-1">
             <button
               onClick={() => setViewMode('month')}
               className={`px-3 py-1.5 rounded text-sm font-medium transition-colors ${
-                viewMode === 'month' ? 'bg-primary-600 text-white' : 'text-neutral-400 hover:text-white'
+                viewMode === 'month' ? 'bg-primary-600 text-white' : 'text-slate-400 hover:text-white'
               }`}
             >
               Month
@@ -547,7 +532,7 @@ export function Calendar() {
             <button
               onClick={() => setViewMode('list')}
               className={`px-3 py-1.5 rounded text-sm font-medium transition-colors ${
-                viewMode === 'list' ? 'bg-primary-600 text-white' : 'text-neutral-400 hover:text-white'
+                viewMode === 'list' ? 'bg-primary-600 text-white' : 'text-slate-400 hover:text-white'
               }`}
             >
               Upcoming
@@ -556,10 +541,10 @@ export function Calendar() {
           
           {isAdmin && (
             <>
-              <Button variant="secondary" size="sm" icon={<FaUmbrellaBeach />} onClick={() => setShowAddHoliday(true)} className="text-xs sm:text-sm">
+              <Button variant="secondary" size="sm" icon={<Umbrella />} onClick={() => setShowAddHoliday(true)} className="text-xs sm:text-sm">
                 <span className="hidden sm:inline">Add </span>Holiday
               </Button>
-              <Button size="sm" icon={<FaPlus />} onClick={() => setShowAddEvent(true)} className="text-xs sm:text-sm">
+              <Button size="sm" icon={<Plus />} onClick={() => setShowAddEvent(true)} className="text-xs sm:text-sm">
                 <span className="hidden sm:inline">Add </span>Event
               </Button>
             </>
@@ -578,22 +563,22 @@ export function Calendar() {
               </h3>
               <div className="flex items-center gap-0.5 sm:gap-1">
                 <Button variant="ghost" size="sm" onClick={goToPreviousMonth} className="p-1.5 sm:p-2">
-                  <FaChevronLeft className="text-xs sm:text-sm" />
+                  <ChevronLeft className="text-xs sm:text-sm" />
                 </Button>
                 <Button variant="secondary" size="sm" onClick={goToToday} className="px-2 py-1 text-xs sm:text-sm">
                   Today
                 </Button>
                 <Button variant="ghost" size="sm" onClick={goToNextMonth} className="p-1.5 sm:p-2">
-                  <FaChevronRight className="text-xs sm:text-sm" />
+                  <ChevronRight className="text-xs sm:text-sm" />
                 </Button>
               </div>
             </div>
 
             {/* Calendar Grid */}
-            <div className="grid grid-cols-7 gap-px bg-neutral-800 rounded-lg overflow-hidden">
+            <div className="grid grid-cols-7 gap-px bg-slate-800 rounded-lg overflow-hidden">
               {/* Weekday Headers */}
               {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-                <div key={day} className="bg-neutral-900 py-2 text-center text-xs font-medium text-neutral-400">
+                <div key={day} className="bg-slate-900 py-2 text-center text-xs font-medium text-slate-400">
                   {day}
                 </div>
               ))}
@@ -606,18 +591,18 @@ export function Calendar() {
                   whileHover={{ scale: 1.02 }}
                   className={`
                     min-h-[50px] sm:min-h-[70px] p-1 sm:p-1.5 text-left transition-colors relative
-                    ${day.isCurrentMonth ? 'bg-neutral-900' : 'bg-neutral-900/50'}
+                    ${day.isCurrentMonth ? 'bg-slate-900' : 'bg-slate-900/50'}
                     ${day.isToday ? 'ring-2 ring-primary-500 ring-inset' : ''}
                     ${day.holiday ? 'bg-amber-500/10' : ''}
                     ${panelSelectedDay?.dateString === day.dateString ? 'bg-primary-500/20' : ''}
-                    hover:bg-neutral-800
+                    hover:bg-slate-800
                   `}
                 >
                   <span className={`
                     inline-flex items-center justify-center w-5 h-5 sm:w-6 sm:h-6 rounded-full text-[10px] sm:text-xs font-medium
                     ${day.isToday ? 'bg-primary-600 text-white' : ''}
-                    ${day.isWeekend && !day.isToday ? 'text-neutral-500' : ''}
-                    ${!day.isCurrentMonth ? 'text-neutral-600' : 'text-neutral-300'}
+                    ${day.isWeekend && !day.isToday ? 'text-slate-500' : ''}
+                    ${!day.isCurrentMonth ? 'text-slate-600' : 'text-slate-300'}
                   `}>
                     {day.date.getDate()}
                   </span>
@@ -626,7 +611,7 @@ export function Calendar() {
                   {day.holiday && (
                     <div className="mt-0.5">
                       <div className="flex items-center gap-0.5 text-[8px] sm:text-[10px] text-amber-400 bg-amber-500/20 px-0.5 sm:px-1 py-0.5 rounded truncate">
-                        <FaUmbrellaBeach className="flex-shrink-0 text-[7px] sm:text-[8px]" />
+                        <Umbrella className="flex-shrink-0 text-[7px] sm:text-[8px]" />
                         <span className="truncate hidden sm:inline">{day.holiday.name}</span>
                       </div>
                     </div>
@@ -645,7 +630,7 @@ export function Calendar() {
                   ))}
                   
                   {day.events.length > 1 && (
-                    <div className="mt-0.5 text-[8px] sm:text-[10px] text-neutral-400">
+                    <div className="mt-0.5 text-[8px] sm:text-[10px] text-slate-400">
                       +{day.events.length - 1}
                     </div>
                   )}
@@ -654,7 +639,7 @@ export function Calendar() {
             </div>
 
             {/* Legend */}
-            <div className="flex flex-wrap items-center gap-3 mt-3 pt-3 border-t border-neutral-800 text-xs text-neutral-400">
+            <div className="flex flex-wrap items-center gap-3 mt-3 pt-3 border-t border-slate-800 text-xs text-slate-400">
               <div className="flex items-center gap-1.5">
                 <div className="w-2.5 h-2.5 bg-amber-500/50 rounded" />
                 <span>Holiday</span>
@@ -675,7 +660,7 @@ export function Calendar() {
             {panelDisplayDay ? (
               <div className="h-full flex flex-col">
                 {/* Panel Header */}
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-3 pb-3 border-b border-neutral-800 gap-2">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-3 pb-3 border-b border-slate-800 gap-2">
                   <div>
                     <h3 className="text-base sm:text-lg font-semibold text-white">
                       <span className="hidden sm:inline">{panelDisplayDay.date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}</span>
@@ -686,7 +671,7 @@ export function Calendar() {
                     )}
                   </div>
                   {isAdmin && (
-                    <Button size="sm" variant="secondary" icon={<FaPlus />} onClick={() => handleAddEventForDate(panelDisplayDay.dateString)} className="text-xs sm:text-sm">
+                    <Button size="sm" variant="secondary" icon={<Plus />} onClick={() => handleAddEventForDate(panelDisplayDay.dateString)} className="text-xs sm:text-sm">
                       <span className="hidden sm:inline">Add Event</span>
                       <span className="sm:hidden">Add</span>
                     </Button>
@@ -698,10 +683,10 @@ export function Calendar() {
                   {/* Holiday Section */}
                   {panelDisplayDay.holiday && (
                     <div className="mb-4">
-                      <h4 className="text-sm font-medium text-neutral-400 mb-2">Holiday</h4>
+                      <h4 className="text-sm font-medium text-slate-400 mb-2">Holiday</h4>
                       <div className="flex items-start gap-3 p-3 bg-amber-500/10 border border-amber-500/30 rounded-lg">
                         <div className="p-2 bg-amber-500/20 rounded-lg">
-                          <FaUmbrellaBeach className="text-amber-400" />
+                          <Umbrella className="text-amber-400" />
                         </div>
                         <div className="flex-1">
                           <h5 className="font-semibold text-white">{panelDisplayDay.holiday.name}</h5>
@@ -710,7 +695,7 @@ export function Calendar() {
                              panelDisplayDay.holiday.type === 'company' ? 'Company Holiday' : 'Optional'}
                           </Badge>
                           {panelDisplayDay.holiday.description && (
-                            <p className="text-neutral-400 text-sm mt-2">{panelDisplayDay.holiday.description}</p>
+                            <p className="text-slate-400 text-sm mt-2">{panelDisplayDay.holiday.description}</p>
                           )}
                         </div>
                         {isAdmin && panelDisplayDay.holiday.id && !panelDisplayDay.holiday.isAutoHoliday && (
@@ -723,14 +708,14 @@ export function Calendar() {
                               className="p-2 text-blue-400 hover:bg-blue-500/20 rounded-lg transition-colors"
                               title="Edit holiday"
                             >
-                              <FaEdit />
+                              <Edit2 />
                             </button>
                             <button
                               onClick={() => handleDeleteHoliday(panelDisplayDay.holiday!.id!, panelDisplayDay.holiday!.name)}
                               className="p-2 text-red-400 hover:bg-red-500/20 rounded-lg transition-colors"
                               title="Delete holiday"
                             >
-                              <FaTrash />
+                              <Trash2 />
                             </button>
                           </div>
                         )}
@@ -741,12 +726,12 @@ export function Calendar() {
                   {/* Events Section */}
                   {panelDisplayDay.events.length > 0 && (
                     <div className="mb-4">
-                      <h4 className="text-sm font-medium text-neutral-400 mb-2">Events & Tasks</h4>
+                      <h4 className="text-sm font-medium text-slate-400 mb-2">Events & Tasks</h4>
                       <div className="space-y-2">
                         {panelDisplayDay.events.map(event => (
                           <div
                             key={event.id}
-                            className="p-3 bg-neutral-800/50 border border-neutral-700 rounded-lg"
+                            className="p-3 bg-slate-800/50 border border-slate-700 rounded-lg"
                             style={{ borderLeftWidth: '4px', borderLeftColor: event.color || '#6366f1' }}
                           >
                             <div className="flex items-start justify-between">
@@ -759,8 +744,8 @@ export function Calendar() {
                                   </Badge>
                                 </div>
                                 {(event.startTime || event.endTime) && (
-                                  <p className="text-neutral-400 text-xs mt-1.5 flex items-center gap-1">
-                                    <FaClock className="text-neutral-500 text-[10px]" />
+                                  <p className="text-slate-400 text-xs mt-1.5 flex items-center gap-1">
+                                    <Clock className="text-slate-500 text-[10px]" />
                                     {event.startTime && event.endTime
                                       ? `${event.startTime} - ${event.endTime}`
                                       : event.startTime
@@ -770,15 +755,15 @@ export function Calendar() {
                                   </p>
                                 )}
                                 {event.description && (
-                                  <p className="text-neutral-400 text-sm mt-2">{event.description}</p>
+                                  <p className="text-slate-400 text-sm mt-2">{event.description}</p>
                                 )}
                                 {event.endDate && event.endDate !== event.date && (
-                                  <p className="text-neutral-500 text-xs mt-2 flex items-center gap-1">
-                                    <FaClock className="text-neutral-600" />
+                                  <p className="text-slate-500 text-xs mt-2 flex items-center gap-1">
+                                    <Clock className="text-slate-600" />
                                     Until {new Date(event.endDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                                   </p>
                                 )}
-                                <p className="text-neutral-500 text-xs mt-1">
+                                <p className="text-slate-500 text-xs mt-1">
                                   By {event.createdByName}
                                 </p>
                               </div>
@@ -792,14 +777,14 @@ export function Calendar() {
                                     className="p-2 text-blue-400 hover:bg-blue-500/20 rounded-lg transition-colors"
                                     title="Edit event"
                                   >
-                                    <FaEdit />
+                                    <Edit2 />
                                   </button>
                                   <button
                                     onClick={() => handleDeleteEvent(event.id!, event.title)}
                                     className="p-2 text-red-400 hover:bg-red-500/20 rounded-lg transition-colors"
                                     title="Delete event"
                                   >
-                                    <FaTrash />
+                                    <Trash2 />
                                   </button>
                                 </div>
                               )}
@@ -813,8 +798,8 @@ export function Calendar() {
                   {/* Empty State */}
                   {!panelDisplayDay.holiday && panelDisplayDay.events.length === 0 && (
                     <div className="flex flex-col items-center justify-center py-12 text-center">
-                      <FaCalendarAlt className="text-4xl text-neutral-600 mb-4" />
-                      <p className="text-neutral-300 font-medium">
+                      <CalendarDays className="text-4xl text-slate-600 mb-4" />
+                      <p className="text-slate-300 font-medium">
                         No extra tasks for today, all the best for your work.
                       </p>
                     </div>
@@ -823,8 +808,8 @@ export function Calendar() {
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center py-12 text-center h-full">
-                <FaCalendarAlt className="text-4xl text-neutral-600 mb-4" />
-                <p className="text-neutral-300 font-medium">
+                <CalendarDays className="text-4xl text-slate-600 mb-4" />
+                <p className="text-slate-300 font-medium">
                   No extra tasks for today, all the best for your work.
                 </p>
               </div>
@@ -837,8 +822,8 @@ export function Calendar() {
           <h3 className="text-lg font-semibold text-white mb-4">Upcoming Events & Holidays</h3>
           
           {upcomingEvents.length === 0 ? (
-            <div className="text-center py-8 text-neutral-400">
-              <FaCalendarAlt className="text-3xl mx-auto mb-2 opacity-50" />
+            <div className="text-center py-8 text-slate-400">
+              <CalendarDays className="text-3xl mx-auto mb-2 opacity-50" />
               <p>No upcoming events or holidays</p>
             </div>
           ) : (
@@ -853,7 +838,7 @@ export function Calendar() {
                     flex items-start gap-4 p-4 rounded-lg border
                     ${item.type === 'holiday' 
                       ? 'bg-amber-500/10 border-amber-500/30' 
-                      : 'bg-neutral-800/50 border-neutral-700'
+                      : 'bg-slate-800/50 border-slate-700'
                     }
                   `}
                 >
@@ -862,9 +847,9 @@ export function Calendar() {
                     ${item.type === 'holiday' ? 'bg-amber-500/20' : 'bg-primary-500/20'}
                   `}>
                     {item.type === 'holiday' ? (
-                      <FaUmbrellaBeach className="text-amber-400" />
+                      <Umbrella className="text-amber-400" />
                     ) : (
-                      <FaStar className="text-primary-400" />
+                      <Star className="text-primary-400" />
                     )}
                   </div>
                   
@@ -877,7 +862,7 @@ export function Calendar() {
                             : (item.item as CalendarEvent).title
                           }
                         </h4>
-                        <p className="text-sm text-neutral-400 mt-0.5">
+                        <p className="text-sm text-slate-400 mt-0.5">
                           {new Date(item.date).toLocaleDateString('en-US', { 
                             weekday: 'long',
                             month: 'long', 
@@ -905,7 +890,7 @@ export function Calendar() {
                     </div>
                     
                     {item.type === 'event' && (item.item as CalendarEvent).description && (
-                      <p className="text-sm text-neutral-500 mt-2">
+                      <p className="text-sm text-slate-500 mt-2">
                         {(item.item as CalendarEvent).description}
                       </p>
                     )}

@@ -1,12 +1,17 @@
 'use client'
-import { Bold, Italic, Underline as UnderlineIcon, List, ListOrdered, Link as LinkIcon } from 'lucide-react'
 
 import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import Link from '@tiptap/extension-link'
 import Underline from '@tiptap/extension-underline'
 import Placeholder from '@tiptap/extension-placeholder'
-
+import { 
+  FaBold, 
+  FaItalic, 
+  FaUnderline, 
+  FaListUl, 
+  FaListOl
+} from 'react-icons/fa'
 import { useCallback, useEffect, useState } from 'react'
 
 // ============================================
@@ -42,7 +47,7 @@ const ToolbarButton = ({
       p-2 rounded-lg transition-colors
       ${isActive 
         ? 'bg-primary-500 text-white' 
-        : 'bg-slate-700 text-slate-300 hover:bg-slate-600 hover:text-white'
+        : 'bg-neutral-700 text-neutral-300 hover:bg-neutral-600 hover:text-white'
       }
     `}
   >
@@ -139,11 +144,11 @@ export default function RichTextEditor({
   if (!mounted || !editor) {
     return (
       <div 
-        className="bg-slate-800 border border-slate-700 rounded-xl p-4 animate-pulse"
+        className="bg-neutral-800 border border-neutral-700 rounded-xl p-4 animate-pulse"
         style={{ minHeight }}
       >
-        <div className="h-4 bg-slate-700 rounded w-3/4 mb-2" />
-        <div className="h-4 bg-slate-700 rounded w-1/2" />
+        <div className="h-4 bg-neutral-700 rounded w-3/4 mb-2" />
+        <div className="h-4 bg-neutral-700 rounded w-1/2" />
       </div>
     )
   }
@@ -152,38 +157,38 @@ export default function RichTextEditor({
     <div className="rich-text-editor">
       {/* Toolbar - Only shown when editable */}
       {editable && (
-        <div className="flex items-center gap-1 p-2 bg-slate-800 border border-slate-700 rounded-t-xl border-b-0">
+        <div className="flex items-center gap-1 p-2 bg-neutral-800 border border-neutral-700 rounded-t-xl border-b-0">
           <ToolbarButton
             onClick={() => editor.chain().focus().toggleBold().run()}
             isActive={editor.isActive('bold')}
-            icon={Bold}
+            icon={FaBold}
             title="Bold (Ctrl+B)"
           />
           <ToolbarButton
             onClick={() => editor.chain().focus().toggleItalic().run()}
             isActive={editor.isActive('italic')}
-            icon={Italic}
+            icon={FaItalic}
             title="Italic (Ctrl+I)"
           />
           <ToolbarButton
             onClick={() => editor.chain().focus().toggleUnderline().run()}
             isActive={editor.isActive('underline')}
-            icon={UnderlineIcon}
+            icon={FaUnderline}
             title="Underline (Ctrl+U)"
           />
           
-          <div className="w-px h-6 bg-slate-600 mx-1" />
+          <div className="w-px h-6 bg-neutral-600 mx-1" />
           
           <ToolbarButton
             onClick={() => editor.chain().focus().toggleBulletList().run()}
             isActive={editor.isActive('bulletList')}
-            icon={List}
+            icon={FaListUl}
             title="Bullet List"
           />
           <ToolbarButton
             onClick={() => editor.chain().focus().toggleOrderedList().run()}
             isActive={editor.isActive('orderedList')}
-            icon={ListOrdered}
+            icon={FaListOl}
             title="Numbered List"
           />
         </div>
@@ -192,7 +197,7 @@ export default function RichTextEditor({
       {/* Editor Content */}
       <div 
         className={`
-          bg-slate-800 border border-slate-700 p-4 overflow-y-auto
+          bg-neutral-800 border border-neutral-700 p-4 overflow-y-auto
           ${editable ? 'rounded-b-xl' : 'rounded-xl'}
           ${editable ? 'cursor-text' : 'cursor-default'}
         `}
@@ -253,15 +258,15 @@ export function RichTextRenderer({ content, className = '' }: RichTextRendererPr
 
   if (!content || content === '<p></p>') {
     return (
-      <p className="text-slate-500 text-sm italic">No description provided</p>
+      <p className="text-neutral-500 text-sm italic">No description provided</p>
     )
   }
 
   if (!mounted) {
     return (
       <div className="animate-pulse">
-        <div className="h-4 bg-slate-700 rounded w-3/4 mb-2" />
-        <div className="h-4 bg-slate-700 rounded w-1/2" />
+        <div className="h-4 bg-neutral-700 rounded w-3/4 mb-2" />
+        <div className="h-4 bg-neutral-700 rounded w-1/2" />
       </div>
     )
   }
@@ -270,16 +275,16 @@ export function RichTextRenderer({ content, className = '' }: RichTextRendererPr
     <div 
       className={`
         prose prose-invert prose-sm max-w-none
-        prose-p:my-2 prose-p:leading-relaxed prose-p:text-slate-300
-        prose-ul:my-2 prose-ul:pl-6 prose-ul:text-slate-300
-        prose-ol:my-2 prose-ol:pl-6 prose-ol:text-slate-300
-        prose-li:my-1 prose-li:text-slate-300
+        prose-p:my-2 prose-p:leading-relaxed prose-p:text-neutral-300
+        prose-ul:my-2 prose-ul:pl-6 prose-ul:text-neutral-300
+        prose-ol:my-2 prose-ol:pl-6 prose-ol:text-neutral-300
+        prose-li:my-1 prose-li:text-neutral-300
         prose-a:text-primary-400 prose-a:underline prose-a:cursor-pointer hover:prose-a:text-primary-300
         prose-strong:text-white prose-strong:font-bold
-        prose-em:italic prose-em:text-slate-300
+        prose-em:italic prose-em:text-neutral-300
         [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:my-2
         [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:my-2
-        [&_li]:my-1 [&_li]:text-slate-300
+        [&_li]:my-1 [&_li]:text-neutral-300
         ${className}
       `}
       dangerouslySetInnerHTML={{ __html: sanitizedHTML || content }}

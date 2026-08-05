@@ -2,13 +2,43 @@
 
 import { useState, useEffect, useMemo, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-
+import { 
+  FaUsers, 
+  FaSearch, 
+  FaFilter,
+  FaEdit,
+  FaHistory,
+  FaUserCircle,
+  FaCalendarAlt,
+  FaBuilding,
+  FaIdBadge,
+  FaCheckCircle,
+  FaTimesCircle,
+  FaClock,
+  FaSave,
+  FaTimes,
+  FaChevronDown,
+  FaChartBar,
+  FaExclamationTriangle,
+  FaMapMarkerAlt,
+  FaSortAlphaDown,
+  FaSortAmountDown,
+  FaEye,
+  FaDownload,
+  FaFilePdf,
+  FaFileExcel,
+  FaFileCsv,
+  FaEnvelope,
+  FaCheck,
+  FaHome,
+  FaListAlt,
+  FaEyeSlash
+} from 'react-icons/fa'
 import { useEmployeeAuth, EmployeeProfile, AttendanceRecord, ActivityLog, LeaveRequest, isAdminOrSubAdmin, formatDate, Holiday } from '@/lib/employeePortalContext'
 import { Card, Button, Input, Select, Badge, Avatar, Modal, Spinner, EmptyState, Tabs, ProfileInfo, ProfileInfoData, employeeToProfileData, getLocalProfileImage } from './ui'
 import { toast } from 'sonner'
 import { Timestamp } from 'firebase/firestore'
 import EventVisibilityManager from './EventVisibilityManager'
-import { AlertTriangle, BadgeCheck, BarChart2, Building, CalendarDays, Check, CheckCircle, ChevronDown, Clock, Download, Edit2, Eye, EyeOff, FileSpreadsheet, FileText, Filter, History, Home, List, Mail, MapPin, Save, Search, UserCircle, Users, X, XCircle } from 'lucide-react'
 
 // ============================================
 // LOCAL PROFILE IMAGE FALLBACKS (use centralized getLocalProfileImage from ui)
@@ -140,10 +170,10 @@ function EmployeeProfileModal({
       size="xl"
     >
       {/* Employee Header */}
-      <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-5 p-4 sm:p-5 bg-gradient-to-r from-slate-800/80 to-slate-900/80 backdrop-blur-xl rounded-xl sm:rounded-2xl mb-4 sm:mb-6 border border-white/10">
+      <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-5 p-4 sm:p-5 bg-gradient-to-r from-neutral-800/80 to-neutral-900/80 backdrop-blur-xl rounded-xl sm:rounded-2xl mb-4 sm:mb-6 border border-white/10">
         <div className="relative">
           <Avatar src={getEmpProfileImage(employee.profileImage, employee.employeeId)} name={employee.name} size="xl" showBorder={false} />
-          <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 rounded-full border-2 border-slate-900" />
+          <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 rounded-full border-2 border-neutral-900" />
         </div>
         <div className="flex-1 min-w-0 text-center sm:text-left">
           <h3 className="text-xl sm:text-2xl font-bold text-white truncate">{employee.name}</h3>
@@ -155,7 +185,7 @@ function EmployeeProfileModal({
             </Badge>
           </div>
           {employee.email && (
-            <p className="text-sm text-slate-400 mt-2 truncate">{employee.email}</p>
+            <p className="text-sm text-neutral-400 mt-2 truncate">{employee.email}</p>
           )}
         </div>
         <div className="text-right bg-white/5 p-4 rounded-xl border border-white/10">
@@ -163,10 +193,10 @@ function EmployeeProfileModal({
             <Spinner size="sm" />
           ) : (
             <>
-              <div className="text-3xl font-bold bg-gradient-to-r from-primary-400 to-sky-400 bg-clip-text text-transparent">
+              <div className="text-3xl font-bold bg-gradient-to-r from-primary-400 to-cyan-400 bg-clip-text text-transparent">
                 {stats.attendancePercentage.toFixed(1)}%
               </div>
-              <p className="text-xs text-slate-400 mt-1">Attendance Rate</p>
+              <p className="text-xs text-neutral-400 mt-1">Attendance Rate</p>
             </>
           )}
         </div>
@@ -195,27 +225,27 @@ function EmployeeProfileModal({
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
               <div className="p-4 bg-gradient-to-br from-green-500/20 to-green-600/10 border border-green-500/30 rounded-xl text-center">
                 <div className="text-2xl font-bold text-green-400">{stats.presentDays}</div>
-                <p className="text-sm text-slate-400">Present</p>
+                <p className="text-sm text-neutral-400">Present</p>
               </div>
               <div className="p-4 bg-gradient-to-br from-red-500/20 to-red-600/10 border border-red-500/30 rounded-xl text-center">
                 <div className="text-2xl font-bold text-red-400">{stats.absentDays}</div>
-                <p className="text-sm text-slate-400">Absent</p>
+                <p className="text-sm text-neutral-400">Absent</p>
               </div>
               <div className="p-4 bg-gradient-to-br from-amber-500/20 to-amber-600/10 border border-amber-500/30 rounded-xl text-center">
                 <div className="text-2xl font-bold text-amber-400">{stats.lateDays}</div>
-                <p className="text-sm text-slate-400">Leave</p>
+                <p className="text-sm text-neutral-400">Leave</p>
               </div>
               <div className="p-4 bg-gradient-to-br from-blue-500/20 to-blue-600/10 border border-blue-500/30 rounded-xl text-center">
                 <div className="text-2xl font-bold text-blue-400">{stats.onDutyDays}</div>
-                <p className="text-sm text-slate-400">On Duty</p>
+                <p className="text-sm text-neutral-400">On Duty</p>
               </div>
               <div className="p-4 bg-gradient-to-br from-orange-500/20 to-orange-600/10 border border-orange-500/30 rounded-xl text-center">
                 <div className="text-2xl font-bold text-orange-400">{stats.unauthLeaveDays}</div>
-                <p className="text-sm text-slate-400">Unauth. Leave</p>
+                <p className="text-sm text-neutral-400">Unauth. Leave</p>
               </div>
-              <div className="p-4 bg-gradient-to-br from-slate-500/20 to-slate-600/10 border border-slate-500/30 rounded-xl text-center">
-                <div className="text-2xl font-bold text-slate-300">{stats.totalDays}</div>
-                <p className="text-sm text-slate-400">Total</p>
+              <div className="p-4 bg-gradient-to-br from-neutral-500/20 to-neutral-600/10 border border-neutral-500/30 rounded-xl text-center">
+                <div className="text-2xl font-bold text-neutral-300">{stats.totalDays}</div>
+                <p className="text-sm text-neutral-400">Total</p>
               </div>
             </div>
 
@@ -223,11 +253,11 @@ function EmployeeProfileModal({
             <div>
               <h4 className="font-semibold text-white mb-3">Recent Attendance (Last 10)</h4>
               {attendanceHistory.length === 0 ? (
-                <p className="text-slate-500 text-center py-4">No attendance records found</p>
+                <p className="text-neutral-500 text-center py-4">No attendance records found</p>
               ) : (
                 <div className="space-y-2">
                   {attendanceHistory.slice(0, 10).map((record, i) => (
-                    <div key={i} className="flex items-center justify-between p-3 bg-slate-800/30 rounded-lg">
+                    <div key={i} className="flex items-center justify-between p-3 bg-neutral-800/30 rounded-lg">
                       <div className="flex items-center gap-3">
                         <Badge variant={
                           record.status === 'P' ? 'success' :
@@ -244,9 +274,9 @@ function EmployeeProfileModal({
                            record.status === 'H' ? 'Holiday' :
                            record.status === 'U' ? 'Unauth. Leave' : record.status}
                         </Badge>
-                        <span className="text-slate-300">{formatDateString(record.date)}</span>
+                        <span className="text-neutral-300">{formatDateString(record.date)}</span>
                       </div>
-                      <span className="text-sm text-slate-500">{formatTime(record.timestamp)}</span>
+                      <span className="text-sm text-neutral-500">{formatTime(record.timestamp)}</span>
                     </div>
                   ))}
                 </div>
@@ -261,27 +291,27 @@ function EmployeeProfileModal({
               </div>
             ) : attendanceHistory.length === 0 ? (
               <EmptyState
-                icon={<History className="text-2xl" />}
+                icon={<FaHistory className="text-2xl" />}
                 title="No attendance history"
                 description="No records found for this employee"
               />
             ) : (
-              <table className="w-full border-separate border-spacing-y-2">
-                  <thead className="bg-slate-900/90 backdrop-blur-md sticky top-0 z-10 shadow-sm">
-                    <tr>
-                      <th className="text-left py-3 px-4 text-xs font-semibold uppercase tracking-wider text-slate-400 rounded-l-xl">Date</th>
-                      <th className="text-left py-3 px-4 text-xs font-semibold uppercase tracking-wider text-slate-400">Status</th>
-                      <th className="text-left py-3 px-4 text-xs font-semibold uppercase tracking-wider text-slate-400">Time</th>
-                      <th className="text-left py-3 px-4 text-xs font-semibold uppercase tracking-wider text-slate-400">Location</th>
-                      <th className="text-left py-3 px-4 text-xs font-semibold uppercase tracking-wider text-slate-400">Modified</th>
-                      <th className="text-center py-3 px-4 text-xs font-semibold uppercase tracking-wider text-slate-400 rounded-r-xl">Actions</th>
-                    </tr>
-                  </thead>
+              <table className="w-full">
+                <thead className="bg-neutral-800/50 sticky top-0">
+                  <tr>
+                    <th className="text-left p-3 text-sm font-medium text-neutral-400">Date</th>
+                    <th className="text-left p-3 text-sm font-medium text-neutral-400">Status</th>
+                    <th className="text-left p-3 text-sm font-medium text-neutral-400">Time</th>
+                    <th className="text-left p-3 text-sm font-medium text-neutral-400">Location</th>
+                    <th className="text-left p-3 text-sm font-medium text-neutral-400">Modified</th>
+                    <th className="text-center p-3 text-sm font-medium text-neutral-400">Actions</th>
+                  </tr>
+                </thead>
                 <tbody>
                   {attendanceHistory.map((record, i) => (
-                    <tr key={i} className="bg-slate-800/30 hover:bg-slate-800/50 transition-colors shadow-sm group">
-                      <td className="py-4 px-4 border border-transparent group-hover:border-slate-700/50 border-r-0 rounded-l-xl text-white">{formatDateString(record.date)}</td>
-                      <td className="py-4 px-4 border border-transparent group-hover:border-slate-700/50 border-x-0">
+                    <tr key={i} className="border-t border-neutral-700/50">
+                      <td className="p-3 text-white">{formatDateString(record.date)}</td>
+                      <td className="p-3">
                         <Badge variant={
                           record.status === 'P' ? 'success' :
                           record.status === 'W' ? 'info' :
@@ -290,7 +320,7 @@ function EmployeeProfileModal({
                           record.status === 'U' ? 'error' : 'default'
                         }>
                           {record.status === 'P' && record.locationVerified && (
-                            <CheckCircle className="inline mr-1 text-xs" />
+                            <FaCheckCircle className="inline mr-1 text-xs" />
                           )}
                           {record.status === 'P' ? 'Present' :
                            record.status === 'W' ? 'W' :
@@ -301,37 +331,37 @@ function EmployeeProfileModal({
                            record.status === 'U' ? 'Unauth. Leave' : record.status}
                         </Badge>
                       </td>
-                      <td className="py-4 px-4 border border-transparent group-hover:border-slate-700/50 border-x-0 text-slate-400">{formatHistoryTime(record)}</td>
-                      <td className="py-4 px-4 border border-transparent group-hover:border-slate-700/50 border-x-0">
+                      <td className="p-3 text-neutral-400">{formatHistoryTime(record)}</td>
+                      <td className="p-3">
                         {record.locationVerified ? (
                           <Badge variant="success" size="sm">
-                            <MapPin className="mr-1" /> Verified
+                            <FaMapMarkerAlt className="mr-1" /> Verified
                           </Badge>
                         ) : record.latitude ? (
                           <Badge variant="warning" size="sm">Not in range</Badge>
                         ) : (
-                          <span className="text-slate-500">-</span>
+                          <span className="text-neutral-500">-</span>
                         )}
                       </td>
-                      <td className="py-4 px-4 border border-transparent group-hover:border-slate-700/50 border-x-0">
+                      <td className="p-3">
                         {record.modifiedBy ? (
                           <div className="text-xs">
                             <div className="text-amber-400">By {record.modifiedByName || record.modifiedBy}</div>
                             {record.modifiedAt && (
-                              <div className="text-slate-500">
+                              <div className="text-neutral-500">
                                 {new Date(record.modifiedAt.toDate()).toLocaleString()}
                               </div>
                             )}
                           </div>
                         ) : (
-                          <span className="text-slate-500">-</span>
+                          <span className="text-neutral-500">-</span>
                         )}
                       </td>
-                      <td className="py-4 px-4 border border-transparent group-hover:border-slate-700/50 border-x-0 text-center">
+                      <td className="p-3 text-center">
                         <Button
                           size="sm"
                           variant="secondary"
-                          icon={<Edit2 />}
+                          icon={<FaEdit />}
                           onClick={() => setModifyingRecord(record)}
                         >
                           Modify
@@ -351,7 +381,7 @@ function EmployeeProfileModal({
               </div>
             ) : attendanceHistory.filter(r => r.notes).length === 0 ? (
               <EmptyState
-                icon={<List className="text-2xl" />}
+                icon={<FaListAlt className="text-2xl" />}
                 title="No daily reports"
                 description="This employee has not submitted any daily reports yet"
               />
@@ -360,10 +390,10 @@ function EmployeeProfileModal({
                 {attendanceHistory
                   .filter(r => r.notes)
                   .map((record, i) => (
-                    <div key={i} className="p-4 bg-slate-800/30 rounded-xl border border-slate-700/50">
+                    <div key={i} className="p-4 bg-neutral-800/30 rounded-xl border border-neutral-700/50">
                       <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-2">
-                          <span className="text-sm font-medium text-slate-300">{formatDateString(record.date)}</span>
+                          <span className="text-sm font-medium text-neutral-300">{formatDateString(record.date)}</span>
                           <Badge size="sm" variant={
                             record.status === 'P' ? 'success' :
                             record.status === 'W' ? 'info' :
@@ -377,9 +407,9 @@ function EmployeeProfileModal({
                              record.status === 'O' ? 'On Duty' : record.status}
                           </Badge>
                         </div>
-                        <span className="text-xs text-slate-500">{formatTime(record.timestamp)}</span>
+                        <span className="text-xs text-neutral-500">{formatTime(record.timestamp)}</span>
                       </div>
-                      <p className="text-sm text-slate-300 whitespace-pre-wrap leading-relaxed">{record.notes}</p>
+                      <p className="text-sm text-neutral-300 whitespace-pre-wrap leading-relaxed">{record.notes}</p>
                     </div>
                   ))}
               </div>
@@ -410,7 +440,7 @@ function EmployeeProfileModal({
       
       {/* Close Button at bottom */}
       <div className="flex justify-end mt-6 pt-4 border-t border-white/10">
-        <Button variant="secondary" onClick={onClose} icon={<X />}>
+        <Button variant="secondary" onClick={onClose} icon={<FaTimes />}>
           Close (ESC)
         </Button>
       </div>
@@ -476,24 +506,24 @@ function EditAttendanceModal({
     >
       <div className="space-y-4">
         {/* Employee Info */}
-        <div className="flex items-center gap-3 p-3 bg-slate-800/50 rounded-lg">
+        <div className="flex items-center gap-3 p-3 bg-neutral-800/50 rounded-lg">
           <Avatar src={getEmpProfileImage(employee.profileImage, employee.employeeId)} name={employee.name} size="md" showBorder={false} />
           <div>
             <p className="font-medium text-white">{employee.name}</p>
-            <p className="text-sm text-slate-400">{employee.employeeId}</p>
+            <p className="text-sm text-neutral-400">{employee.employeeId}</p>
           </div>
         </div>
 
         {/* Date */}
         <div>
-          <label className="block text-sm font-medium text-slate-400 mb-1">Date</label>
+          <label className="block text-sm font-medium text-neutral-400 mb-1">Date</label>
           <p className="text-white">{formatDate(record.timestamp)}</p>
         </div>
 
         {/* Current Status */}
         <div className="flex items-center gap-4">
           <div>
-            <label className="block text-sm font-medium text-slate-400 mb-1">Current Status</label>
+            <label className="block text-sm font-medium text-neutral-400 mb-1">Current Status</label>
             <Badge variant={
               record.status === 'P' ? 'success' :
               record.status === 'A' ? 'error' :
@@ -510,9 +540,9 @@ function EditAttendanceModal({
                record.status === 'W' ? 'Work From Home' : record.status}
             </Badge>
           </div>
-          <div className="text-2xl text-slate-500">→</div>
+          <div className="text-2xl text-neutral-500">→</div>
           <div className="flex-1">
-            <label className="block text-sm font-medium text-slate-400 mb-1">New Status</label>
+            <label className="block text-sm font-medium text-neutral-400 mb-1">New Status</label>
             <Select
               value={status}
               onChange={(value) => setStatus(value)}
@@ -532,7 +562,7 @@ function EditAttendanceModal({
         {/* Audit Notice */}
         <div className="p-3 bg-amber-500/10 border border-amber-500/30 rounded-lg">
           <div className="flex items-start gap-2">
-            <AlertTriangle className="text-amber-400 mt-1" />
+            <FaExclamationTriangle className="text-amber-400 mt-1" />
             <div>
               <p className="text-sm text-amber-300">
                 This change will be logged as modified by:
@@ -553,7 +583,7 @@ function EditAttendanceModal({
             variant="primary"
             onClick={handleSave}
             loading={saving}
-            icon={<Save />}
+            icon={<FaSave />}
           >
             Save Changes
           </Button>
@@ -603,7 +633,7 @@ function AttendanceTable({
   if (attendanceRecords.length === 0) {
     return (
       <EmptyState
-        icon={<History className="text-2xl" />}
+        icon={<FaHistory className="text-2xl" />}
         title="No records found"
         description="Try adjusting your filters"
       />
@@ -612,18 +642,18 @@ function AttendanceTable({
 
   return (
     <div className="overflow-x-auto">
-      <table className="w-full border-separate border-spacing-y-2">
-          <thead className="bg-slate-900/90 backdrop-blur-md sticky top-0 z-10 shadow-sm">
-            <tr>
-              <th className="text-left py-3 px-4 text-xs font-semibold uppercase tracking-wider text-slate-400 rounded-l-xl">Employee</th>
-              <th className="text-left py-3 px-4 text-xs font-semibold uppercase tracking-wider text-slate-400">Date</th>
-              <th className="text-left py-3 px-4 text-xs font-semibold uppercase tracking-wider text-slate-400">Time</th>
-              <th className="text-left py-3 px-4 text-xs font-semibold uppercase tracking-wider text-slate-400">Status</th>
-              <th className="text-left py-3 px-4 text-xs font-semibold uppercase tracking-wider text-slate-400">Location</th>
-              <th className="text-left py-3 px-4 text-xs font-semibold uppercase tracking-wider text-slate-400">Modified By</th>
-              <th className="text-right py-3 px-4 text-xs font-semibold uppercase tracking-wider text-slate-400 rounded-r-xl">Actions</th>
-            </tr>
-          </thead>
+      <table className="w-full">
+        <thead className="bg-neutral-800/50">
+          <tr>
+            <th className="text-left p-3 text-sm font-medium text-neutral-400">Employee</th>
+            <th className="text-left p-3 text-sm font-medium text-neutral-400">Date</th>
+            <th className="text-left p-3 text-sm font-medium text-neutral-400">Time</th>
+            <th className="text-left p-3 text-sm font-medium text-neutral-400">Status</th>
+            <th className="text-left p-3 text-sm font-medium text-neutral-400">Location</th>
+            <th className="text-left p-3 text-sm font-medium text-neutral-400">Modified By</th>
+            <th className="text-right p-3 text-sm font-medium text-neutral-400">Actions</th>
+          </tr>
+        </thead>
         <tbody>
           {attendanceRecords.map((record) => {
             const emp = getEmployee(record.employeeId)
@@ -636,18 +666,18 @@ function AttendanceTable({
                 animate={{ opacity: 1 }}
                 className="border-t border-white/5 hover:bg-white/5 transition-colors"
               >
-                <td className="py-4 px-4 border border-transparent group-hover:border-slate-700/50 border-x-0">
+                <td className="p-3">
                   <div className="flex items-center gap-3">
                     <Avatar src={getEmpProfileImage(emp.profileImage, emp.employeeId)} name={emp.name} size="sm" showBorder={false} />
                     <div>
                       <p className="font-medium text-white">{emp.name}</p>
-                      <p className="text-xs text-slate-500">{emp.employeeId}</p>
+                      <p className="text-xs text-neutral-500">{emp.employeeId}</p>
                     </div>
                   </div>
                 </td>
-                <td className="py-4 px-4 border border-transparent group-hover:border-slate-700/50 border-x-0 text-slate-300">{formatDate(record.timestamp)}</td>
-                <td className="py-4 px-4 border border-transparent group-hover:border-slate-700/50 border-x-0 text-slate-400">{formatTime(record.timestamp)}</td>
-                <td className="py-4 px-4 border border-transparent group-hover:border-slate-700/50 border-x-0">
+                <td className="p-3 text-neutral-300">{formatDate(record.timestamp)}</td>
+                <td className="p-3 text-neutral-400">{formatTime(record.timestamp)}</td>
+                <td className="p-3">
                   <Badge variant={
                     record.status === 'P' ? 'success' :
                     record.status === 'A' ? 'error' :
@@ -664,30 +694,30 @@ function AttendanceTable({
                      record.status === 'W' ? '🏠 Work From Home' : record.status}
                   </Badge>
                 </td>
-                <td className="py-4 px-4 border border-transparent group-hover:border-slate-700/50 border-x-0">
+                <td className="p-3">
                   {record.locationVerified ? (
                     <Badge variant="success" size="sm">
-                      <MapPin className="mr-1" /> Verified
+                      <FaMapMarkerAlt className="mr-1" /> Verified
                     </Badge>
                   ) : record.latitude ? (
                     <Badge variant="warning" size="sm">Out of range</Badge>
                   ) : (
-                    <span className="text-slate-500">-</span>
+                    <span className="text-neutral-500">-</span>
                   )}
                 </td>
-                <td className="py-4 px-4 border border-transparent group-hover:border-slate-700/50 border-x-0">
+                <td className="p-3">
                   {record.modifiedBy ? (
                     <div>
                       <p className="text-sm text-amber-400">{record.modifiedByName || record.modifiedBy}</p>
                       {record.modificationReason && (
-                        <p className="text-xs text-slate-500 truncate max-w-32">{record.modificationReason}</p>
+                        <p className="text-xs text-neutral-500 truncate max-w-32">{record.modificationReason}</p>
                       )}
                     </div>
                   ) : (
-                    <span className="text-slate-500">-</span>
+                    <span className="text-neutral-500">-</span>
                   )}
                 </td>
-                <td className="py-4 px-4 border border-transparent group-hover:border-slate-700/50 border-x-0">
+                <td className="p-3">
                   <div className="flex items-center justify-end gap-1">
                     <button
                       onClick={() => {
@@ -696,17 +726,17 @@ function AttendanceTable({
                           onViewProfile(empWithStats)
                         }
                       }}
-                      className="p-2 text-slate-400 hover:text-primary-400 hover:bg-primary-500/10 rounded-lg transition-all"
+                      className="p-2 text-neutral-400 hover:text-primary-400 hover:bg-primary-500/10 rounded-lg transition-all"
                       title="View Profile"
                     >
-                      <Eye />
+                      <FaEye />
                     </button>
                     <button
                       onClick={() => onEditRecord(record, emp)}
-                      className="p-2 text-slate-400 hover:text-white hover:bg-white/10 rounded-lg transition-all"
+                      className="p-2 text-neutral-400 hover:text-white hover:bg-white/10 rounded-lg transition-all"
                       title="Edit Attendance"
                     >
-                      <Edit2 />
+                      <FaEdit />
                     </button>
                   </div>
                 </td>
@@ -733,7 +763,7 @@ function EmployeeList({
   if (employees.length === 0) {
     return (
       <EmptyState
-        icon={<Users className="text-2xl" />}
+        icon={<FaUsers className="text-2xl" />}
         title="No employees found"
         description="Try adjusting your filters"
       />
@@ -752,7 +782,7 @@ function EmployeeList({
               <div className="flex items-center gap-4">
                 <div className="relative">
                   <Avatar src={getEmpProfileImage(emp.profileImage, emp.employeeId)} name={emp.name} size="lg" />
-                  <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-slate-900 rounded-full flex items-center justify-center border border-primary-500/50">
+                  <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-neutral-900 rounded-full flex items-center justify-center border border-primary-500/50">
                     <span className="text-[8px] font-bold text-primary-400">M</span>
                   </div>
                 </div>
@@ -772,11 +802,11 @@ function EmployeeList({
                   }`}>
                     {emp.attendancePercentage.toFixed(0)}%
                   </div>
-                  <p className="text-xs text-slate-500">Attendance</p>
+                  <p className="text-xs text-neutral-500">Attendance</p>
                 </div>
               </div>
             
-            <div className="mt-4 pt-4 border-t border-slate-700/50">
+            <div className="mt-4 pt-4 border-t border-neutral-700/50">
               <div className="flex items-center justify-between text-sm">
                 <span className="text-green-400">P: {emp.presentDays}</span>
                 <span className="text-red-400">A: {emp.absentDays}</span>
@@ -786,7 +816,7 @@ function EmployeeList({
                   onClick={() => onViewProfile(emp)}
                   className="text-primary-400 hover:text-primary-300"
                 >
-                  <Eye className="mr-1 inline" /> View
+                  <FaEye className="mr-1 inline" /> View
                 </button>
               </div>
             </div>
@@ -1203,10 +1233,10 @@ function ExportReportModal({
               className={`p-4 rounded-lg border-2 transition-all ${
                 exportType === 'all'
                   ? 'border-primary-500 bg-primary-500/10 text-white'
-                  : 'border-slate-700 bg-slate-800 text-slate-400 hover:border-slate-600'
+                  : 'border-neutral-700 bg-neutral-800 text-neutral-400 hover:border-neutral-600'
               }`}
             >
-              <Users className="text-2xl mb-2 mx-auto" />
+              <FaUsers className="text-2xl mb-2 mx-auto" />
               <div className="font-medium">All Employees</div>
               <div className="text-xs mt-1">Complete report</div>
             </button>
@@ -1215,10 +1245,10 @@ function ExportReportModal({
               className={`p-4 rounded-lg border-2 transition-all ${
                 exportType === 'individual'
                   ? 'border-primary-500 bg-primary-500/10 text-white'
-                  : 'border-slate-700 bg-slate-800 text-slate-400 hover:border-slate-600'
+                  : 'border-neutral-700 bg-neutral-800 text-neutral-400 hover:border-neutral-600'
               }`}
             >
-              <UserCircle className="text-2xl mb-2 mx-auto" />
+              <FaUserCircle className="text-2xl mb-2 mx-auto" />
               <div className="font-medium">Individual</div>
               <div className="text-xs mt-1">Single employee</div>
             </button>
@@ -1230,19 +1260,19 @@ function ExportReportModal({
           <div>
             <label className="block text-sm font-medium text-white mb-2">Select Employee</label>
             <div className="relative">
-              <Search className="absolute left-3 top-3.5 text-slate-500 z-10" />
+              <FaSearch className="absolute left-3 top-3.5 text-neutral-500 z-10" />
               <input
                 type="text"
                 placeholder="Search by name, ID, or department..."
                 value={employeeSearch}
                 onChange={(e) => setEmployeeSearch(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-primary-500/50"
+                className="w-full pl-10 pr-4 py-3 bg-neutral-800 border border-neutral-700 rounded-xl text-white placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-primary-500/50"
               />
             </div>
             {employeeSearch && (
-              <div className="mt-2 max-h-60 overflow-y-auto bg-slate-800 border border-slate-700 rounded-xl">
+              <div className="mt-2 max-h-60 overflow-y-auto bg-neutral-800 border border-neutral-700 rounded-xl">
                 {filteredEmployees.length === 0 ? (
-                  <div className="p-4 text-center text-slate-500">No employees found</div>
+                  <div className="p-4 text-center text-neutral-500">No employees found</div>
                 ) : (
                   filteredEmployees.map((emp) => (
                     <button
@@ -1252,19 +1282,19 @@ function ExportReportModal({
                         setSelectedEmployee(emp.employeeId)
                         setEmployeeSearch('')
                       }}
-                      className={`w-full p-3 text-left transition-all flex items-center gap-3 border-b border-slate-700/50 last:border-0 ${
+                      className={`w-full p-3 text-left transition-all flex items-center gap-3 border-b border-neutral-700/50 last:border-0 ${
                         selectedEmployee === emp.employeeId
                           ? 'bg-primary-500/20 text-primary-400'
-                          : 'hover:bg-slate-700/50 text-white'
+                          : 'hover:bg-neutral-700/50 text-white'
                       }`}
                     >
                       <Avatar src={getEmpProfileImage(emp.profileImage, emp.employeeId)} name={emp.name} size="sm" showBorder={false} />
                       <div className="flex-1 min-w-0">
                         <div className="font-medium truncate">{emp.name}</div>
-                        <div className="text-xs text-slate-500 truncate">{emp.employeeId} • {emp.department}</div>
+                        <div className="text-xs text-neutral-500 truncate">{emp.employeeId} • {emp.department}</div>
                       </div>
                       {selectedEmployee === emp.employeeId && (
-                        <CheckCircle className="text-primary-500" />
+                        <FaCheckCircle className="text-primary-500" />
                       )}
                     </button>
                   ))
@@ -1278,9 +1308,9 @@ function ExportReportModal({
                 </span>
                 <button
                   onClick={() => setSelectedEmployee('')}
-                  className="text-slate-400 hover:text-white"
+                  className="text-neutral-400 hover:text-white"
                 >
-                  <X />
+                  <FaTimes />
                 </button>
               </div>
             )}
@@ -1296,10 +1326,10 @@ function ExportReportModal({
               className={`p-3 rounded-lg border-2 transition-all ${
                 dateRange === 'monthly'
                   ? 'border-primary-500 bg-primary-500/10 text-white'
-                  : 'border-slate-700 bg-slate-800 text-slate-400 hover:border-slate-600'
+                  : 'border-neutral-700 bg-neutral-800 text-neutral-400 hover:border-neutral-600'
               }`}
             >
-              <CalendarDays className="text-xl mb-1 mx-auto" />
+              <FaCalendarAlt className="text-xl mb-1 mx-auto" />
               <div className="text-sm font-medium">This Month</div>
             </button>
             <button
@@ -1307,10 +1337,10 @@ function ExportReportModal({
               className={`p-3 rounded-lg border-2 transition-all ${
                 dateRange === 'custom'
                   ? 'border-primary-500 bg-primary-500/10 text-white'
-                  : 'border-slate-700 bg-slate-800 text-slate-400 hover:border-slate-600'
+                  : 'border-neutral-700 bg-neutral-800 text-neutral-400 hover:border-neutral-600'
               }`}
             >
-              <Filter className="text-xl mb-1 mx-auto" />
+              <FaFilter className="text-xl mb-1 mx-auto" />
               <div className="text-sm font-medium">Custom</div>
             </button>
             <button
@@ -1318,10 +1348,10 @@ function ExportReportModal({
               className={`p-3 rounded-lg border-2 transition-all ${
                 dateRange === 'full'
                   ? 'border-primary-500 bg-primary-500/10 text-white'
-                  : 'border-slate-700 bg-slate-800 text-slate-400 hover:border-slate-600'
+                  : 'border-neutral-700 bg-neutral-800 text-neutral-400 hover:border-neutral-600'
               }`}
             >
-              <History className="text-xl mb-1 mx-auto" />
+              <FaHistory className="text-xl mb-1 mx-auto" />
               <div className="text-sm font-medium">All Time</div>
             </button>
           </div>
@@ -1354,10 +1384,10 @@ function ExportReportModal({
               className={`p-4 rounded-lg border-2 transition-all ${
                 format === 'pdf'
                   ? 'border-primary-500 bg-primary-500/10 text-white'
-                  : 'border-slate-700 bg-slate-800 text-slate-400 hover:border-slate-600'
+                  : 'border-neutral-700 bg-neutral-800 text-neutral-400 hover:border-neutral-600'
               }`}
             >
-              <FileText className="text-2xl mb-2 mx-auto text-red-500" />
+              <FaFilePdf className="text-2xl mb-2 mx-auto text-red-500" />
               <div className="font-medium">PDF</div>
               <div className="text-xs mt-1">Print-ready</div>
             </button>
@@ -1366,10 +1396,10 @@ function ExportReportModal({
               className={`p-4 rounded-lg border-2 transition-all ${
                 format === 'csv'
                   ? 'border-primary-500 bg-primary-500/10 text-white'
-                  : 'border-slate-700 bg-slate-800 text-slate-400 hover:border-slate-600'
+                  : 'border-neutral-700 bg-neutral-800 text-neutral-400 hover:border-neutral-600'
               }`}
             >
-              <FileSpreadsheet className="text-2xl mb-2 mx-auto text-green-500" />
+              <FaFileCsv className="text-2xl mb-2 mx-auto text-green-500" />
               <div className="font-medium">CSV</div>
               <div className="text-xs mt-1">Spreadsheet</div>
             </button>
@@ -1378,10 +1408,10 @@ function ExportReportModal({
               className={`p-4 rounded-lg border-2 transition-all ${
                 format === 'xlsx'
                   ? 'border-primary-500 bg-primary-500/10 text-white'
-                  : 'border-slate-700 bg-slate-800 text-slate-400 hover:border-slate-600'
+                  : 'border-neutral-700 bg-neutral-800 text-neutral-400 hover:border-neutral-600'
               }`}
             >
-              <FileSpreadsheet className="text-2xl mb-2 mx-auto text-emerald-500" />
+              <FaFileExcel className="text-2xl mb-2 mx-auto text-emerald-500" />
               <div className="font-medium">Excel</div>
               <div className="text-xs mt-1">Formatted XLS</div>
             </button>
@@ -1389,7 +1419,7 @@ function ExportReportModal({
         </div>
 
         {/* Action Buttons */}
-        <div className="flex gap-3 pt-4 border-t border-slate-700">
+        <div className="flex gap-3 pt-4 border-t border-neutral-700">
           <Button
             variant="secondary"
             onClick={onClose}
@@ -1402,7 +1432,7 @@ function ExportReportModal({
             loading={exporting}
             disabled={exportType === 'individual' && !selectedEmployee}
             className="flex-1"
-            icon={<Download />}
+            icon={<FaDownload />}
           >
             Export Report
           </Button>
@@ -1491,15 +1521,15 @@ function LeaveRequestsPanel() {
         <div className="grid grid-cols-3 gap-4 text-center">
           <div>
             <div className="text-2xl font-bold text-amber-400">{leaveRequests.filter(r => r.status === 'Pending').length}</div>
-            <p className="text-sm text-slate-400">Pending</p>
+            <p className="text-sm text-neutral-400">Pending</p>
           </div>
           <div>
             <div className="text-2xl font-bold text-green-400">{leaveRequests.filter(r => r.status === 'Approved').length}</div>
-            <p className="text-sm text-slate-400">Approved</p>
+            <p className="text-sm text-neutral-400">Approved</p>
           </div>
           <div>
             <div className="text-2xl font-bold text-red-400">{leaveRequests.filter(r => r.status === 'Rejected').length}</div>
-            <p className="text-sm text-slate-400">Rejected</p>
+            <p className="text-sm text-neutral-400">Rejected</p>
           </div>
         </div>
       </Card>
@@ -1524,7 +1554,7 @@ function LeaveRequestsPanel() {
       {/* Requests List */}
       {filteredRequests.length === 0 ? (
         <EmptyState
-          icon={<Mail className="text-2xl" />}
+          icon={<FaEnvelope className="text-2xl" />}
           title="No leave requests"
           description={filterStatus ? `No ${filterStatus.toLowerCase()} leave requests found` : 'No leave requests submitted yet'}
         />
@@ -1543,7 +1573,7 @@ function LeaveRequestsPanel() {
                     <div className="flex items-center gap-3 mb-2">
                       <div>
                         <h4 className="font-semibold text-white">{request.employeeName}</h4>
-                        <p className="text-xs text-slate-500">{request.employeeId}</p>
+                        <p className="text-xs text-neutral-500">{request.employeeId}</p>
                       </div>
                       <Badge variant={
                         request.status === 'Pending' ? 'warning' :
@@ -1555,13 +1585,13 @@ function LeaveRequestsPanel() {
 
                     <div className="space-y-1 mb-3">
                       <div className="flex items-center gap-2 text-sm">
-                        <CalendarDays className="text-slate-500" />
-                        <span className="text-slate-300">
+                        <FaCalendarAlt className="text-neutral-500" />
+                        <span className="text-neutral-300">
                           Date: <span className="text-white font-medium">{request.date}</span>
                         </span>
                       </div>
                       <div className="text-sm">
-                        <span className="text-slate-400">Subject: </span>
+                        <span className="text-neutral-400">Subject: </span>
                         <span className="text-white">{request.subject}</span>
                       </div>
                     </div>
@@ -1582,20 +1612,20 @@ function LeaveRequestsPanel() {
                           exit={{ height: 0, opacity: 0 }}
                           className="overflow-hidden"
                         >
-                          <div className="mt-3 p-3 bg-slate-800/50 rounded-lg space-y-2">
+                          <div className="mt-3 p-3 bg-neutral-800/50 rounded-lg space-y-2">
                             <div>
-                              <p className="text-xs text-slate-500 mb-1">Leave Letter</p>
-                              <p className="text-sm text-slate-300 whitespace-pre-wrap">{request.letter}</p>
+                              <p className="text-xs text-neutral-500 mb-1">Leave Letter</p>
+                              <p className="text-sm text-neutral-300 whitespace-pre-wrap">{request.letter}</p>
                             </div>
                             {request.reason && (
                               <div>
-                                <p className="text-xs text-slate-500 mb-1">Reason</p>
-                                <p className="text-sm text-slate-300">{request.reason}</p>
+                                <p className="text-xs text-neutral-500 mb-1">Reason</p>
+                                <p className="text-sm text-neutral-300">{request.reason}</p>
                               </div>
                             )}
                             {request.reviewedByName && (
-                              <div className="pt-2 border-t border-slate-700">
-                                <p className="text-xs text-slate-500">
+                              <div className="pt-2 border-t border-neutral-700">
+                                <p className="text-xs text-neutral-500">
                                   {request.status === 'Approved' ? 'Approved' : 'Rejected'} by{' '}
                                   <span className="text-white">{request.reviewedByName}</span>
                                   {request.reviewedAt && (
@@ -1616,7 +1646,7 @@ function LeaveRequestsPanel() {
                       <Button
                         size="sm"
                         variant="primary"
-                        icon={<Check />}
+                        icon={<FaCheck />}
                         onClick={() => handleApprove(request)}
                         loading={processing === request.id}
                         disabled={processing !== null}
@@ -1626,7 +1656,7 @@ function LeaveRequestsPanel() {
                       <Button
                         size="sm"
                         variant="secondary"
-                        icon={<X />}
+                        icon={<FaTimes />}
                         onClick={() => handleReject(request)}
                         loading={processing === request.id}
                         disabled={processing !== null}
@@ -1639,8 +1669,8 @@ function LeaveRequestsPanel() {
                 </div>
 
                 {/* Submitted timestamp */}
-                <div className="mt-2 pt-2 border-t border-slate-800">
-                  <p className="text-xs text-slate-500">
+                <div className="mt-2 pt-2 border-t border-neutral-800">
+                  <p className="text-xs text-neutral-500">
                     Submitted {request.createdAt ? new Date(request.createdAt.toDate()).toLocaleString() : 'Recently'}
                   </p>
                 </div>
@@ -1939,7 +1969,7 @@ export function AdminPanel() {
   if (!isAdminOrSubAdmin(employee?.role)) {
     return (
       <EmptyState
-        icon={<AlertTriangle className="text-2xl text-red-400" />}
+        icon={<FaExclamationTriangle className="text-2xl text-red-400" />}
         title="Access Denied"
         description="You don't have permission to access the admin panel"
       />
@@ -1952,19 +1982,19 @@ export function AdminPanel() {
       <div className="flex flex-col gap-3 sm:gap-4">
         <div>
           <h2 className="text-xl sm:text-2xl font-bold text-white flex items-center gap-2">
-            <Users className="text-primary-500" />
+            <FaUsers className="text-primary-500" />
             Admin Panel
           </h2>
-          <p className="text-slate-400 text-sm sm:text-base mt-1">
+          <p className="text-neutral-400 text-sm sm:text-base mt-1">
             Manage employees and attendance
           </p>
         </div>
         
         <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
           {/* WFH/WFO Toggle */}
-          <div className="flex items-center gap-3 px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg">
-            <Building className={`text-sm ${workMode === 'WFO' ? 'text-primary-400' : 'text-slate-500'}`} />
-            <span className={`text-sm font-medium ${workMode === 'WFO' ? 'text-white' : 'text-slate-500'}`}>WFO</span>
+          <div className="flex items-center gap-3 px-4 py-2 bg-neutral-800 border border-neutral-700 rounded-lg">
+            <FaBuilding className={`text-sm ${workMode === 'WFO' ? 'text-primary-400' : 'text-neutral-500'}`} />
+            <span className={`text-sm font-medium ${workMode === 'WFO' ? 'text-white' : 'text-neutral-500'}`}>WFO</span>
             <button
               onClick={async () => {
                 const newMode = workMode === 'WFO' ? 'WFH' : 'WFO'
@@ -1972,21 +2002,21 @@ export function AdminPanel() {
                 toast.success(`Work mode switched to ${newMode === 'WFH' ? 'Work From Home' : 'Work From Office'}`)
               }}
               className={`relative w-12 h-6 rounded-full transition-colors duration-300 ${
-                workMode === 'WFH' ? 'bg-sky-500' : 'bg-slate-600'
+                workMode === 'WFH' ? 'bg-cyan-500' : 'bg-neutral-600'
               }`}
             >
               <div className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform duration-300 ${
                 workMode === 'WFH' ? 'translate-x-6' : 'translate-x-0.5'
               }`} />
             </button>
-            <Home className={`text-sm ${workMode === 'WFH' ? 'text-sky-400' : 'text-slate-500'}`} />
-            <span className={`text-sm font-medium ${workMode === 'WFH' ? 'text-white' : 'text-slate-500'}`}>WFH</span>
+            <FaHome className={`text-sm ${workMode === 'WFH' ? 'text-cyan-400' : 'text-neutral-500'}`} />
+            <span className={`text-sm font-medium ${workMode === 'WFH' ? 'text-white' : 'text-neutral-500'}`}>WFH</span>
           </div>
 
           <Button
             variant="primary"
             onClick={() => setShowExportModal(true)}
-            icon={<Download />}
+            icon={<FaDownload />}
             className="w-full sm:w-auto"
           >
             Export Reports
@@ -2020,7 +2050,7 @@ export function AdminPanel() {
       <div className="relative" style={{ zIndex: 10 }}>
         <Card padding="md">
         <div className="flex items-center gap-2 mb-4">
-          <Filter className="text-slate-400" />
+          <FaFilter className="text-neutral-400" />
           <span className="font-medium text-white">Filters</span>
         </div>
         
@@ -2028,13 +2058,13 @@ export function AdminPanel() {
           {/* Search */}
           <div className="lg:col-span-2">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+              <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search by name or ID..."
-                className="w-full pl-10 pr-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="w-full pl-10 pr-4 py-2 bg-neutral-800 border border-neutral-700 rounded-lg text-white placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-primary-500"
               />
             </div>
           </div>
@@ -2072,7 +2102,7 @@ export function AdminPanel() {
             <Button
               variant="ghost"
               onClick={clearFilters}
-              icon={<X />}
+              icon={<FaTimes />}
             >
               Clear
             </Button>
@@ -2083,21 +2113,21 @@ export function AdminPanel() {
         {activeTab === 'attendance' && (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
             <div>
-              <label className="block text-sm font-medium text-slate-400 mb-1">From Date</label>
+              <label className="block text-sm font-medium text-neutral-400 mb-1">From Date</label>
               <input
                 type="date"
                 value={filterDateFrom}
                 onChange={(e) => setFilterDateFrom(e.target.value)}
-                className="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="w-full px-4 py-2 bg-neutral-800 border border-neutral-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-400 mb-1">To Date</label>
+              <label className="block text-sm font-medium text-neutral-400 mb-1">To Date</label>
               <input
                 type="date"
                 value={filterDateTo}
                 onChange={(e) => setFilterDateTo(e.target.value)}
-                className="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="w-full px-4 py-2 bg-neutral-800 border border-neutral-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
               />
             </div>
           </div>
@@ -2110,43 +2140,43 @@ export function AdminPanel() {
       {activeTab === 'attendance' && !loading && (
         <Card padding="md">
           <div className="flex items-center gap-2 mb-3 sm:mb-4">
-            <BarChart2 className="text-slate-400" />
+            <FaChartBar className="text-neutral-400" />
             <span className="font-medium text-white text-sm sm:text-base">Summary</span>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
             <div className="text-center">
               <div className="text-xl sm:text-2xl font-bold text-white">{filteredAttendance.length}</div>
-              <p className="text-xs sm:text-sm text-slate-400">Total Records</p>
+              <p className="text-xs sm:text-sm text-neutral-400">Total Records</p>
             </div>
             <div className="text-center">
               <div className="text-xl sm:text-2xl font-bold text-green-400">
                 {filteredAttendance.filter(r => r.status === 'P').length}
               </div>
-              <p className="text-xs sm:text-sm text-slate-400">Present</p>
+              <p className="text-xs sm:text-sm text-neutral-400">Present</p>
             </div>
             <div className="text-center">
               <div className="text-xl sm:text-2xl font-bold text-red-400">
                 {filteredAttendance.filter(r => r.status === 'A').length}
               </div>
-              <p className="text-xs sm:text-sm text-slate-400">Absent</p>
+              <p className="text-xs sm:text-sm text-neutral-400">Absent</p>
             </div>
             <div className="text-center">
               <div className="text-xl sm:text-2xl font-bold text-amber-400">
                 {filteredAttendance.filter(r => r.status === 'L').length}
               </div>
-              <p className="text-xs sm:text-sm text-slate-400">Leave</p>
+              <p className="text-xs sm:text-sm text-neutral-400">Leave</p>
             </div>
             <div className="text-center">
               <div className="text-xl sm:text-2xl font-bold text-orange-400">
                 {filteredAttendance.filter(r => r.status === 'U').length}
               </div>
-              <p className="text-xs sm:text-sm text-slate-400">Unauth. Leave</p>
+              <p className="text-xs sm:text-sm text-neutral-400">Unauth. Leave</p>
             </div>
             <div className="text-center">
-              <div className="text-xl sm:text-2xl font-bold text-sky-400">
+              <div className="text-xl sm:text-2xl font-bold text-cyan-400">
                 {filteredAttendance.filter(r => r.status === 'W').length}
               </div>
-              <p className="text-xs sm:text-sm text-slate-400">WFH</p>
+              <p className="text-xs sm:text-sm text-neutral-400">WFH</p>
             </div>
           </div>
         </Card>

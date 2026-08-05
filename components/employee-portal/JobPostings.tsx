@@ -2,6 +2,19 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { motion, AnimatePresence, Reorder } from 'framer-motion'
+import {
+  FaBriefcase, FaPlus, FaEdit, FaTrash, FaLock, FaUnlock,
+  FaMapMarkerAlt, FaClock, FaUsers, FaEye, FaSpinner, FaClipboardList,
+  FaFileAlt, FaGripVertical, FaCopy, FaChevronDown, FaChevronUp,
+  FaStar, FaArrowDown, FaArrowUp, FaCheck, FaTimes, FaExternalLinkAlt,
+  FaFilePdf, FaEnvelope, FaPhone, FaUniversity, FaCalendarAlt,
+  FaFilter, FaSearch, FaDownload
+} from 'react-icons/fa'
+import {
+  MdShortText, MdSubject, MdRadioButtonChecked, MdCheckBox,
+  MdArrowDropDownCircle, MdCloudUpload, MdLinearScale, MdStar,
+  MdDateRange, MdAccessTime
+} from 'react-icons/md'
 import { collection, addDoc, updateDoc, doc, deleteDoc, Timestamp, onSnapshot } from 'firebase/firestore'
 import { db } from '@/lib/firebaseConfig'
 import { useEmployeeAuth, isAdminOrSubAdmin } from '@/lib/employeePortalContext'
@@ -9,7 +22,6 @@ import { Card, Button, Input, Textarea, Select, Modal, Badge, Alert } from './ui
 import { toast } from 'sonner'
 import type { FormQuestion } from '@/components/careers/ApplicationForm'
 import { normalizeQuestions } from '@/components/careers/ApplicationForm'
-import { AlignLeft, ArrowDown, ArrowUp, Briefcase, CalendarDays, Check, CheckCircle2, CheckSquare, ChevronDown, ChevronDownCircle, ChevronUp, ClipboardList, Clock, Copy, Download, Edit2, ExternalLink, Eye, FileText, Filter, GripVertical, Landmark, ListOrdered, Loader2, Lock, Mail, MapPin, Phone, Plus, Search, Star, Trash2, Type, Unlock, UploadCloud, Users, X } from 'lucide-react'
 
 // ============================================
 // TYPES
@@ -53,16 +65,16 @@ interface JobApplication {
 // ============================================
 
 const QUESTION_TYPES: { value: FormQuestion['type']; label: string; icon: any; description: string }[] = [
-  { value: 'short-answer', label: 'Short answer', icon: Type, description: 'Single line text' },
-  { value: 'paragraph', label: 'Paragraph', icon: AlignLeft, description: 'Multi-line text' },
-  { value: 'multiple-choice', label: 'Multiple choice', icon: CheckCircle2, description: 'Select one option' },
-  { value: 'checkboxes', label: 'Checkboxes', icon: CheckSquare, description: 'Select multiple options' },
-  { value: 'dropdown', label: 'Dropdown', icon: ChevronDownCircle, description: 'Select from list' },
-  { value: 'file-upload', label: 'File upload', icon: UploadCloud, description: 'Upload a file' },
-  { value: 'linear-scale', label: 'Linear scale', icon: ListOrdered, description: 'Numeric scale' },
-  { value: 'rating', label: 'Rating', icon: Star, description: 'Star rating' },
-  { value: 'date', label: 'Date', icon: CalendarDays, description: 'Date picker' },
-  { value: 'time', label: 'Time', icon: Clock, description: 'Time picker' },
+  { value: 'short-answer', label: 'Short answer', icon: MdShortText, description: 'Single line text' },
+  { value: 'paragraph', label: 'Paragraph', icon: MdSubject, description: 'Multi-line text' },
+  { value: 'multiple-choice', label: 'Multiple choice', icon: MdRadioButtonChecked, description: 'Select one option' },
+  { value: 'checkboxes', label: 'Checkboxes', icon: MdCheckBox, description: 'Select multiple options' },
+  { value: 'dropdown', label: 'Dropdown', icon: MdArrowDropDownCircle, description: 'Select from list' },
+  { value: 'file-upload', label: 'File upload', icon: MdCloudUpload, description: 'Upload a file' },
+  { value: 'linear-scale', label: 'Linear scale', icon: MdLinearScale, description: 'Numeric scale' },
+  { value: 'rating', label: 'Rating', icon: MdStar, description: 'Star rating' },
+  { value: 'date', label: 'Date', icon: MdDateRange, description: 'Date picker' },
+  { value: 'time', label: 'Time', icon: MdAccessTime, description: 'Time picker' },
 ]
 
 function getTypeConfig(type: string) {
@@ -133,10 +145,10 @@ function QuestionEditorCard({
   }
 
   return (
-    <div className="bg-slate-800/60 border border-slate-700 rounded-2xl overflow-hidden group hover:border-slate-600 transition-all">
+    <div className="bg-neutral-800/60 border border-neutral-700 rounded-2xl overflow-hidden group hover:border-neutral-600 transition-all">
       {/* Drag Handle */}
       <div className="flex justify-center py-1.5 cursor-grab active:cursor-grabbing opacity-0 group-hover:opacity-100 transition-opacity">
-        <GripVertical className="text-slate-600 text-xs" />
+        <FaGripVertical className="text-neutral-600 text-xs" />
       </div>
 
       <div className="px-4 pb-4 space-y-3">
@@ -147,7 +159,7 @@ function QuestionEditorCard({
               value={question.title}
               onChange={(e) => onUpdate({ ...question, title: e.target.value })}
               placeholder="Question title"
-              className="w-full bg-transparent border-0 border-b-2 border-slate-700 focus:border-primary-500 text-white text-sm font-medium py-2 px-0 focus:outline-none focus:ring-0 transition-colors placeholder:text-slate-500"
+              className="w-full bg-transparent border-0 border-b-2 border-neutral-700 focus:border-primary-500 text-white text-sm font-medium py-2 px-0 focus:outline-none focus:ring-0 transition-colors placeholder:text-neutral-500"
             />
           </div>
 
@@ -156,11 +168,11 @@ function QuestionEditorCard({
             <button
               type="button"
               onClick={() => setShowTypeMenu(!showTypeMenu)}
-              className="flex items-center gap-2 px-3 py-2 bg-slate-700/50 hover:bg-slate-700 rounded-lg text-xs text-slate-300 transition-all border border-slate-600"
+              className="flex items-center gap-2 px-3 py-2 bg-neutral-700/50 hover:bg-neutral-700 rounded-lg text-xs text-neutral-300 transition-all border border-neutral-600"
             >
               <TypeIcon className="text-base" />
               <span className="hidden sm:inline">{typeConfig.label}</span>
-              <ChevronDown className="text-[8px] text-slate-500" />
+              <FaChevronDown className="text-[8px] text-neutral-500" />
             </button>
 
             <AnimatePresence>
@@ -171,7 +183,7 @@ function QuestionEditorCard({
                     initial={{ opacity: 0, y: -5, scale: 0.95 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: -5, scale: 0.95 }}
-                    className="absolute right-0 top-full mt-1 z-50 bg-slate-800 border border-slate-700 rounded-xl shadow-2xl min-w-[220px] py-1 overflow-hidden"
+                    className="absolute right-0 top-full mt-1 z-50 bg-neutral-800 border border-neutral-700 rounded-xl shadow-2xl min-w-[220px] py-1 overflow-hidden"
                   >
                     {QUESTION_TYPES.map(({ value, label, icon: Icon, description }) => (
                       <button
@@ -185,14 +197,14 @@ function QuestionEditorCard({
                           onUpdate({ ...question, ...updates })
                           setShowTypeMenu(false)
                         }}
-                        className={`w-full flex items-center gap-3 px-3 py-2.5 text-left hover:bg-slate-700/50 transition-all ${
-                          question.type === value ? 'bg-primary-500/10 text-primary-400' : 'text-slate-300'
+                        className={`w-full flex items-center gap-3 px-3 py-2.5 text-left hover:bg-neutral-700/50 transition-all ${
+                          question.type === value ? 'bg-primary-500/10 text-primary-400' : 'text-neutral-300'
                         }`}
                       >
                         <Icon className="text-lg flex-shrink-0" />
                         <div>
                           <p className="text-xs font-medium">{label}</p>
-                          <p className="text-[10px] text-slate-500">{description}</p>
+                          <p className="text-[10px] text-neutral-500">{description}</p>
                         </div>
                       </button>
                     ))}
@@ -208,7 +220,7 @@ function QuestionEditorCard({
           value={question.description}
           onChange={(e) => onUpdate({ ...question, description: e.target.value })}
           placeholder="Description (optional)"
-          className="w-full bg-transparent text-xs text-slate-400 py-1 border-0 border-b border-transparent hover:border-slate-700 focus:border-slate-600 focus:outline-none focus:ring-0 transition-colors placeholder:text-slate-600"
+          className="w-full bg-transparent text-xs text-neutral-400 py-1 border-0 border-b border-transparent hover:border-neutral-700 focus:border-neutral-600 focus:outline-none focus:ring-0 transition-colors placeholder:text-neutral-600"
         />
 
         {/* Options Editor (for MC, Checkboxes, Dropdown) */}
@@ -216,21 +228,21 @@ function QuestionEditorCard({
           <div className="space-y-2 pt-1">
             {question.options.map((opt, i) => (
               <div key={i} className="flex items-center gap-2">
-                <span className="text-slate-500 text-xs w-4 text-center">
+                <span className="text-neutral-500 text-xs w-4 text-center">
                   {question.type === 'multiple-choice' ? '○' : question.type === 'checkboxes' ? '☐' : `${i + 1}.`}
                 </span>
                 <input
                   value={opt}
                   onChange={(e) => handleOptionChange(i, e.target.value)}
-                  className="flex-1 bg-transparent text-sm text-slate-300 py-1.5 border-0 border-b border-slate-700 focus:border-slate-500 focus:outline-none focus:ring-0 transition-colors"
+                  className="flex-1 bg-transparent text-sm text-neutral-300 py-1.5 border-0 border-b border-neutral-700 focus:border-neutral-500 focus:outline-none focus:ring-0 transition-colors"
                 />
                 {question.options.length > 1 && (
                   <button
                     type="button"
                     onClick={() => handleRemoveOption(i)}
-                    className="p-1 text-slate-600 hover:text-red-400 transition-colors"
+                    className="p-1 text-neutral-600 hover:text-red-400 transition-colors"
                   >
-                    <X className="text-[10px]" />
+                    <FaTimes className="text-[10px]" />
                   </button>
                 )}
               </div>
@@ -238,9 +250,9 @@ function QuestionEditorCard({
             <button
               type="button"
               onClick={handleAddOption}
-              className="flex items-center gap-2 text-xs text-slate-500 hover:text-primary-400 transition-colors py-1"
+              className="flex items-center gap-2 text-xs text-neutral-500 hover:text-primary-400 transition-colors py-1"
             >
-              <Plus className="text-[8px]" />
+              <FaPlus className="text-[8px]" />
               Add option
             </button>
           </div>
@@ -251,21 +263,21 @@ function QuestionEditorCard({
           <div className="space-y-2 pt-1">
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="text-[10px] text-slate-500 mb-1 block">Min</label>
+                <label className="text-[10px] text-neutral-500 mb-1 block">Min</label>
                 <input
                   type="number"
                   value={question.scaleConfig?.min || 1}
                   onChange={(e) => onUpdate({ ...question, scaleConfig: { ...(question.scaleConfig || { min: 1, max: 5, minLabel: '', maxLabel: '' }), min: parseInt(e.target.value) || 0 } })}
-                  className="w-full bg-slate-700/50 text-sm text-slate-300 rounded-lg px-3 py-1.5 border border-slate-600 focus:border-primary-500 focus:outline-none"
+                  className="w-full bg-neutral-700/50 text-sm text-neutral-300 rounded-lg px-3 py-1.5 border border-neutral-600 focus:border-primary-500 focus:outline-none"
                 />
               </div>
               <div>
-                <label className="text-[10px] text-slate-500 mb-1 block">Max</label>
+                <label className="text-[10px] text-neutral-500 mb-1 block">Max</label>
                 <input
                   type="number"
                   value={question.scaleConfig?.max || 5}
                   onChange={(e) => onUpdate({ ...question, scaleConfig: { ...(question.scaleConfig || { min: 1, max: 5, minLabel: '', maxLabel: '' }), max: parseInt(e.target.value) || 10 } })}
-                  className="w-full bg-slate-700/50 text-sm text-slate-300 rounded-lg px-3 py-1.5 border border-slate-600 focus:border-primary-500 focus:outline-none"
+                  className="w-full bg-neutral-700/50 text-sm text-neutral-300 rounded-lg px-3 py-1.5 border border-neutral-600 focus:border-primary-500 focus:outline-none"
                 />
               </div>
             </div>
@@ -274,13 +286,13 @@ function QuestionEditorCard({
                 value={question.scaleConfig?.minLabel || ''}
                 onChange={(e) => onUpdate({ ...question, scaleConfig: { ...(question.scaleConfig || { min: 1, max: 5, minLabel: '', maxLabel: '' }), minLabel: e.target.value } })}
                 placeholder="Min label (optional)"
-                className="bg-slate-700/50 text-xs text-slate-300 rounded-lg px-3 py-1.5 border border-slate-600 focus:border-primary-500 focus:outline-none placeholder:text-slate-600"
+                className="bg-neutral-700/50 text-xs text-neutral-300 rounded-lg px-3 py-1.5 border border-neutral-600 focus:border-primary-500 focus:outline-none placeholder:text-neutral-600"
               />
               <input
                 value={question.scaleConfig?.maxLabel || ''}
                 onChange={(e) => onUpdate({ ...question, scaleConfig: { ...(question.scaleConfig || { min: 1, max: 5, minLabel: '', maxLabel: '' }), maxLabel: e.target.value } })}
                 placeholder="Max label (optional)"
-                className="bg-slate-700/50 text-xs text-slate-300 rounded-lg px-3 py-1.5 border border-slate-600 focus:border-primary-500 focus:outline-none placeholder:text-slate-600"
+                className="bg-neutral-700/50 text-xs text-neutral-300 rounded-lg px-3 py-1.5 border border-neutral-600 focus:border-primary-500 focus:outline-none placeholder:text-neutral-600"
               />
             </div>
           </div>
@@ -289,17 +301,17 @@ function QuestionEditorCard({
         {/* Rating Config */}
         {question.type === 'rating' && (
           <div className="flex items-center gap-3 pt-1">
-            <label className="text-xs text-slate-400">Max stars:</label>
+            <label className="text-xs text-neutral-400">Max stars:</label>
             <select
               value={question.ratingMax || 5}
               onChange={(e) => onUpdate({ ...question, ratingMax: parseInt(e.target.value) })}
-              className="bg-slate-700/50 text-xs text-slate-300 rounded-lg px-3 py-1.5 border border-slate-600 focus:border-primary-500 focus:outline-none"
+              className="bg-neutral-700/50 text-xs text-neutral-300 rounded-lg px-3 py-1.5 border border-neutral-600 focus:border-primary-500 focus:outline-none"
             >
               {[3, 4, 5, 6, 7, 8, 9, 10].map(n => <option key={n} value={n}>{n}</option>)}
             </select>
             <div className="flex gap-0.5 ml-2">
               {Array.from({ length: question.ratingMax || 5 }, (_, i) => (
-                <Star key={i} className="text-amber-400 text-xs" />
+                <FaStar key={i} className="text-amber-400 text-xs" />
               ))}
             </div>
           </div>
@@ -316,17 +328,17 @@ function QuestionEditorCard({
                   onUpdate({ ...question, validation: { type: 'none' } })
                 }
               }}
-              className="text-[10px] text-slate-500 hover:text-slate-300 transition-colors"
+              className="text-[10px] text-neutral-500 hover:text-neutral-300 transition-colors"
             >
               {showValidation ? '▾ Hide validation' : '▸ Response validation'}
             </button>
 
             {showValidation && (
-              <div className="mt-2 space-y-2 pl-2 border-l-2 border-slate-700">
+              <div className="mt-2 space-y-2 pl-2 border-l-2 border-neutral-700">
                 <select
                   value={question.validation?.type || 'none'}
                   onChange={(e) => onUpdate({ ...question, validation: { ...(question.validation || { type: 'none' }), type: e.target.value as any } })}
-                  className="bg-slate-700/50 text-xs text-slate-300 rounded-lg px-3 py-1.5 border border-slate-600 focus:border-primary-500 focus:outline-none"
+                  className="bg-neutral-700/50 text-xs text-neutral-300 rounded-lg px-3 py-1.5 border border-neutral-600 focus:border-primary-500 focus:outline-none"
                 >
                   <option value="none">No validation</option>
                   <option value="number">Number</option>
@@ -341,7 +353,7 @@ function QuestionEditorCard({
                         value={question.validation.pattern || ''}
                         onChange={(e) => onUpdate({ ...question, validation: { ...question.validation!, pattern: e.target.value } })}
                         placeholder="Regex pattern"
-                        className="col-span-2 bg-slate-700/50 text-xs text-slate-300 rounded-lg px-3 py-1.5 border border-slate-600 focus:border-primary-500 focus:outline-none placeholder:text-slate-600"
+                        className="col-span-2 bg-neutral-700/50 text-xs text-neutral-300 rounded-lg px-3 py-1.5 border border-neutral-600 focus:border-primary-500 focus:outline-none placeholder:text-neutral-600"
                       />
                     ) : (
                       <>
@@ -350,14 +362,14 @@ function QuestionEditorCard({
                           value={question.validation.min ?? ''}
                           onChange={(e) => onUpdate({ ...question, validation: { ...question.validation!, min: e.target.value ? Number(e.target.value) : undefined } })}
                           placeholder={question.validation.type === 'length' ? 'Min length' : 'Min value'}
-                          className="bg-slate-700/50 text-xs text-slate-300 rounded-lg px-3 py-1.5 border border-slate-600 focus:border-primary-500 focus:outline-none placeholder:text-slate-600"
+                          className="bg-neutral-700/50 text-xs text-neutral-300 rounded-lg px-3 py-1.5 border border-neutral-600 focus:border-primary-500 focus:outline-none placeholder:text-neutral-600"
                         />
                         <input
                           type="number"
                           value={question.validation.max ?? ''}
                           onChange={(e) => onUpdate({ ...question, validation: { ...question.validation!, max: e.target.value ? Number(e.target.value) : undefined } })}
                           placeholder={question.validation.type === 'length' ? 'Max length' : 'Max value'}
-                          className="bg-slate-700/50 text-xs text-slate-300 rounded-lg px-3 py-1.5 border border-slate-600 focus:border-primary-500 focus:outline-none placeholder:text-slate-600"
+                          className="bg-neutral-700/50 text-xs text-neutral-300 rounded-lg px-3 py-1.5 border border-neutral-600 focus:border-primary-500 focus:outline-none placeholder:text-neutral-600"
                         />
                       </>
                     )}
@@ -365,7 +377,7 @@ function QuestionEditorCard({
                       value={question.validation?.errorMessage || ''}
                       onChange={(e) => onUpdate({ ...question, validation: { ...question.validation!, errorMessage: e.target.value } })}
                       placeholder="Custom error message"
-                      className="col-span-2 bg-slate-700/50 text-xs text-slate-300 rounded-lg px-3 py-1.5 border border-slate-600 focus:border-primary-500 focus:outline-none placeholder:text-slate-600"
+                      className="col-span-2 bg-neutral-700/50 text-xs text-neutral-300 rounded-lg px-3 py-1.5 border border-neutral-600 focus:border-primary-500 focus:outline-none placeholder:text-neutral-600"
                     />
                   </div>
                 )}
@@ -375,32 +387,32 @@ function QuestionEditorCard({
         )}
 
         {/* Footer: Required toggle + Actions */}
-        <div className="flex items-center justify-between pt-2 border-t border-slate-700/50">
+        <div className="flex items-center justify-between pt-2 border-t border-neutral-700/50">
           <div className="flex items-center gap-1">
-            <button type="button" onClick={onDuplicate} className="p-2 text-slate-500 hover:text-slate-300 hover:bg-slate-700/50 rounded-lg transition-all" title="Duplicate">
-              <Copy className="text-xs" />
+            <button type="button" onClick={onDuplicate} className="p-2 text-neutral-500 hover:text-neutral-300 hover:bg-neutral-700/50 rounded-lg transition-all" title="Duplicate">
+              <FaCopy className="text-xs" />
             </button>
-            <button type="button" onClick={onDelete} className="p-2 text-slate-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-all" title="Delete">
-              <Trash2 className="text-xs" />
+            <button type="button" onClick={onDelete} className="p-2 text-neutral-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-all" title="Delete">
+              <FaTrash className="text-xs" />
             </button>
             {!isFirst && (
-              <button type="button" onClick={onMoveUp} className="p-2 text-slate-500 hover:text-slate-300 hover:bg-slate-700/50 rounded-lg transition-all" title="Move up">
-                <ArrowUp className="text-xs" />
+              <button type="button" onClick={onMoveUp} className="p-2 text-neutral-500 hover:text-neutral-300 hover:bg-neutral-700/50 rounded-lg transition-all" title="Move up">
+                <FaArrowUp className="text-xs" />
               </button>
             )}
             {!isLast && (
-              <button type="button" onClick={onMoveDown} className="p-2 text-slate-500 hover:text-slate-300 hover:bg-slate-700/50 rounded-lg transition-all" title="Move down">
-                <ArrowDown className="text-xs" />
+              <button type="button" onClick={onMoveDown} className="p-2 text-neutral-500 hover:text-neutral-300 hover:bg-neutral-700/50 rounded-lg transition-all" title="Move down">
+                <FaArrowDown className="text-xs" />
               </button>
             )}
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="text-[10px] text-slate-500">Required</span>
+            <span className="text-[10px] text-neutral-500">Required</span>
             <button
               type="button"
               onClick={() => onUpdate({ ...question, required: !question.required })}
-              className={`relative w-9 h-5 rounded-full transition-all ${question.required ? 'bg-primary-500' : 'bg-slate-600'}`}
+              className={`relative w-9 h-5 rounded-full transition-all ${question.required ? 'bg-primary-500' : 'bg-neutral-600'}`}
             >
               <div className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-all ${question.required ? 'left-[18px]' : 'left-0.5'}`} />
             </button>
@@ -560,12 +572,12 @@ function JobFormModal({
     <Modal isOpen={isOpen} onClose={onClose} title={editingRole ? 'Edit Job Posting' : 'Create Job Posting'} size="lg">
       <form onSubmit={handleSubmit}>
         {/* Tabs */}
-        <div className="flex gap-1 mb-4 bg-slate-800/50 p-1 rounded-xl">
+        <div className="flex gap-1 mb-4 bg-neutral-800/50 p-1 rounded-xl">
           <button
             type="button"
             onClick={() => setActiveTab('details')}
             className={`flex-1 py-2 text-xs font-medium rounded-lg transition-all ${
-              activeTab === 'details' ? 'bg-primary-500/20 text-primary-400' : 'text-slate-400 hover:text-slate-200'
+              activeTab === 'details' ? 'bg-primary-500/20 text-primary-400' : 'text-neutral-400 hover:text-neutral-200'
             }`}
           >
             Job Details
@@ -574,7 +586,7 @@ function JobFormModal({
             type="button"
             onClick={() => setActiveTab('questions')}
             className={`flex-1 py-2 text-xs font-medium rounded-lg transition-all flex items-center justify-center gap-1.5 ${
-              activeTab === 'questions' ? 'bg-primary-500/20 text-primary-400' : 'text-slate-400 hover:text-slate-200'
+              activeTab === 'questions' ? 'bg-primary-500/20 text-primary-400' : 'text-neutral-400 hover:text-neutral-200'
             }`}
           >
             Questions
@@ -606,9 +618,9 @@ function JobFormModal({
                   id="requireResumeCheckbox"
                   checked={form.requireResume}
                   onChange={(e) => setForm({ ...form, requireResume: e.target.checked })}
-                  className="w-4 h-4 rounded border-slate-700 bg-slate-800 text-primary-600 focus:ring-primary-500"
+                  className="w-4 h-4 rounded border-neutral-700 bg-neutral-800 text-primary-600 focus:ring-primary-500"
                 />
-                <label htmlFor="requireResumeCheckbox" className="text-sm text-slate-300">Require resume upload from applicants</label>
+                <label htmlFor="requireResumeCheckbox" className="text-sm text-neutral-300">Require resume upload from applicants</label>
               </div>
             </div>
           )}
@@ -618,10 +630,10 @@ function JobFormModal({
             <div className="space-y-3">
               {questions.length === 0 ? (
                 <div className="text-center py-12">
-                  <ClipboardList className="text-3xl text-slate-600 mx-auto mb-3" />
-                  <p className="text-slate-400 text-sm mb-1">No custom questions yet</p>
-                  <p className="text-slate-500 text-xs mb-4">Add questions for applicants to answer alongside their basic details</p>
-                  <Button size="sm" icon={<Plus />} onClick={handleAddQuestion}>Add Question</Button>
+                  <FaClipboardList className="text-3xl text-neutral-600 mx-auto mb-3" />
+                  <p className="text-neutral-400 text-sm mb-1">No custom questions yet</p>
+                  <p className="text-neutral-500 text-xs mb-4">Add questions for applicants to answer alongside their basic details</p>
+                  <Button size="sm" icon={<FaPlus />} onClick={handleAddQuestion}>Add Question</Button>
                 </div>
               ) : (
                 <>
@@ -642,9 +654,9 @@ function JobFormModal({
                   <button
                     type="button"
                     onClick={handleAddQuestion}
-                    className="w-full flex items-center justify-center gap-2 py-3 border-2 border-dashed border-slate-700 hover:border-primary-500 rounded-xl text-slate-400 hover:text-primary-400 transition-all text-sm"
+                    className="w-full flex items-center justify-center gap-2 py-3 border-2 border-dashed border-neutral-700 hover:border-primary-500 rounded-xl text-neutral-400 hover:text-primary-400 transition-all text-sm"
                   >
-                    <Plus className="text-xs" /> Add Question
+                    <FaPlus className="text-xs" /> Add Question
                   </button>
                 </>
               )}
@@ -652,8 +664,8 @@ function JobFormModal({
           )}
         </div>
 
-        <div className="flex justify-between items-center gap-3 pt-4 border-t border-slate-800 mt-4">
-          <p className="text-[10px] text-slate-600">
+        <div className="flex justify-between items-center gap-3 pt-4 border-t border-neutral-800 mt-4">
+          <p className="text-[10px] text-neutral-600">
             {questions.length} question{questions.length !== 1 ? 's' : ''} • {form.requireResume ? 'Resume required' : 'No resume'}
           </p>
           <div className="flex gap-3">
@@ -735,13 +747,13 @@ function ApplicationsModal({
           <button
             type="button"
             onClick={() => setSelectedApp(null)}
-            className="flex items-center gap-2 text-xs text-slate-400 hover:text-slate-200 mb-4 transition-colors"
+            className="flex items-center gap-2 text-xs text-neutral-400 hover:text-neutral-200 mb-4 transition-colors"
           >
             ← Back to all applications
           </button>
 
           {/* Applicant Header */}
-          <div className="bg-slate-800/50 border border-slate-700 rounded-2xl p-5 mb-4">
+          <div className="bg-neutral-800/50 border border-neutral-700 rounded-2xl p-5 mb-4">
             <div className="flex items-start justify-between gap-3 mb-4">
               <div>
                 <h3 className="text-xl font-bold text-white">{selectedApp.fullName}</h3>
@@ -752,24 +764,24 @@ function ApplicationsModal({
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
-              <div className="flex items-center gap-2 text-slate-300">
-                <Mail className="text-xs text-slate-500" />
+              <div className="flex items-center gap-2 text-neutral-300">
+                <FaEnvelope className="text-xs text-neutral-500" />
                 <a href={`mailto:${selectedApp.email}`} className="hover:text-primary-400 transition-colors">{selectedApp.email}</a>
               </div>
-              <div className="flex items-center gap-2 text-slate-300">
-                <Phone className="text-xs text-slate-500" />
+              <div className="flex items-center gap-2 text-neutral-300">
+                <FaPhone className="text-xs text-neutral-500" />
                 <a href={`tel:${selectedApp.phone}`} className="hover:text-primary-400 transition-colors">{selectedApp.phone}</a>
               </div>
-              <div className="flex items-center gap-2 text-slate-300">
-                <Landmark className="text-xs text-slate-500" />
+              <div className="flex items-center gap-2 text-neutral-300">
+                <FaUniversity className="text-xs text-neutral-500" />
                 {selectedApp.college}
               </div>
-              <div className="flex items-center gap-2 text-slate-300">
-                <Briefcase className="text-xs text-slate-500" />
+              <div className="flex items-center gap-2 text-neutral-300">
+                <FaBriefcase className="text-xs text-neutral-500" />
                 {selectedApp.yearOrExperience}
               </div>
-              <div className="flex items-center gap-2 text-slate-400 text-xs sm:col-span-2">
-                <CalendarDays className="text-[10px]" />
+              <div className="flex items-center gap-2 text-neutral-400 text-xs sm:col-span-2">
+                <FaCalendarAlt className="text-[10px]" />
                 Applied {selectedApp.submittedAt?.toDate ? selectedApp.submittedAt.toDate().toLocaleString() : new Date(selectedApp.submittedAt).toLocaleString()}
               </div>
             </div>
@@ -777,9 +789,9 @@ function ApplicationsModal({
 
           {/* Resume */}
           {selectedApp.resumeURL && (
-            <div className="bg-slate-800/50 border border-slate-700 rounded-2xl p-4 mb-4">
+            <div className="bg-neutral-800/50 border border-neutral-700 rounded-2xl p-4 mb-4">
               <h4 className="text-sm font-semibold text-white mb-3 flex items-center gap-2">
-                <FileText className="text-red-400" /> Resume
+                <FaFilePdf className="text-red-400" /> Resume
               </h4>
               <div className="flex items-center gap-3">
                 <a
@@ -788,17 +800,17 @@ function ApplicationsModal({
                   rel="noopener noreferrer"
                   className="flex items-center gap-2 px-4 py-2 bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 rounded-xl text-sm transition-all"
                 >
-                  <ExternalLink className="text-xs" /> View Resume
+                  <FaExternalLinkAlt className="text-xs" /> View Resume
                 </a>
                 <a
                   href={selectedApp.resumeURL}
                   download
-                  className="flex items-center gap-2 px-4 py-2 bg-slate-700/50 text-slate-300 hover:bg-slate-700 rounded-xl text-sm transition-all"
+                  className="flex items-center gap-2 px-4 py-2 bg-neutral-700/50 text-neutral-300 hover:bg-neutral-700 rounded-xl text-sm transition-all"
                 >
-                  <Download className="text-xs" /> Download
+                  <FaDownload className="text-xs" /> Download
                 </a>
                 {(selectedApp as any).resumeFileName && (
-                  <span className="text-xs text-slate-500">{(selectedApp as any).resumeFileName}</span>
+                  <span className="text-xs text-neutral-500">{(selectedApp as any).resumeFileName}</span>
                 )}
               </div>
             </div>
@@ -806,15 +818,15 @@ function ApplicationsModal({
 
           {/* Custom Answers */}
           {selectedApp.customAnswers && Object.keys(selectedApp.customAnswers).length > 0 && (
-            <div className="bg-slate-800/50 border border-slate-700 rounded-2xl p-4 mb-4">
+            <div className="bg-neutral-800/50 border border-neutral-700 rounded-2xl p-4 mb-4">
               <h4 className="text-sm font-semibold text-white mb-3 flex items-center gap-2">
-                <ClipboardList className="text-primary-400" /> Responses
+                <FaClipboardList className="text-primary-400" /> Responses
               </h4>
               <div className="space-y-4">
                 {Object.entries(selectedApp.customAnswers).map(([question, answer]) => (
-                  <div key={question} className="border-b border-slate-700/50 pb-3 last:border-0 last:pb-0">
-                    <p className="text-xs text-slate-400 font-medium mb-1">{question}</p>
-                    <p className="text-sm text-slate-200 whitespace-pre-wrap">
+                  <div key={question} className="border-b border-neutral-700/50 pb-3 last:border-0 last:pb-0">
+                    <p className="text-xs text-neutral-400 font-medium mb-1">{question}</p>
+                    <p className="text-sm text-neutral-200 whitespace-pre-wrap">
                       {Array.isArray(answer) ? answer.join(', ') : String(answer)}
                     </p>
                   </div>
@@ -824,7 +836,7 @@ function ApplicationsModal({
           )}
 
           {/* Status Actions */}
-          <div className="bg-slate-800/50 border border-slate-700 rounded-2xl p-4">
+          <div className="bg-neutral-800/50 border border-neutral-700 rounded-2xl p-4">
             <h4 className="text-sm font-semibold text-white mb-3">Update Status</h4>
             <div className="flex flex-wrap gap-2">
               {(['pending', 'reviewed', 'shortlisted', 'rejected'] as const).map(s => (
@@ -835,7 +847,7 @@ function ApplicationsModal({
                   className={`px-4 py-2 rounded-xl text-xs font-medium transition-all disabled:opacity-30 disabled:cursor-not-allowed border ${
                     selectedApp.status === s
                       ? statusColors[s]
-                      : 'bg-slate-700/30 text-slate-400 border-slate-600 hover:bg-slate-700 hover:text-slate-200'
+                      : 'bg-neutral-700/30 text-neutral-400 border-neutral-600 hover:bg-neutral-700 hover:text-neutral-200'
                   }`}
                 >
                   {s.charAt(0).toUpperCase() + s.slice(1)}
@@ -854,7 +866,7 @@ function ApplicationsModal({
         {/* Stats Bar */}
         <div className="flex flex-wrap gap-2 mb-4">
           {[
-            { key: 'all', label: `All (${roleApps.length})`, color: 'bg-slate-700/50 text-slate-300' },
+            { key: 'all', label: `All (${roleApps.length})`, color: 'bg-neutral-700/50 text-neutral-300' },
             { key: 'pending', label: `Pending (${statusCount('pending')})`, color: 'bg-amber-500/10 text-amber-400' },
             { key: 'reviewed', label: `Reviewed (${statusCount('reviewed')})`, color: 'bg-blue-500/10 text-blue-400' },
             { key: 'shortlisted', label: `Shortlisted (${statusCount('shortlisted')})`, color: 'bg-emerald-500/10 text-emerald-400' },
@@ -864,7 +876,7 @@ function ApplicationsModal({
               key={f.key}
               onClick={() => setFilterStatus(f.key)}
               className={`text-[10px] px-2.5 py-1 rounded-lg font-medium transition-all border ${
-                filterStatus === f.key ? `${f.color} border-current` : 'bg-slate-800/50 text-slate-500 border-transparent hover:text-slate-300'
+                filterStatus === f.key ? `${f.color} border-current` : 'bg-neutral-800/50 text-neutral-500 border-transparent hover:text-neutral-300'
               }`}
             >
               {f.label}
@@ -875,12 +887,12 @@ function ApplicationsModal({
         {/* Search */}
         {roleApps.length > 3 && (
           <div className="relative mb-3">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-xs" />
+            <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500 text-xs" />
             <input
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search applicants..."
-              className="w-full pl-8 pr-4 py-2 bg-slate-800/50 border border-slate-700 rounded-xl text-xs text-slate-300 focus:border-primary-500 focus:outline-none"
+              className="w-full pl-8 pr-4 py-2 bg-neutral-800/50 border border-neutral-700 rounded-xl text-xs text-neutral-300 focus:border-primary-500 focus:outline-none"
             />
           </div>
         )}
@@ -888,8 +900,8 @@ function ApplicationsModal({
         {/* Applications List */}
         {filtered.length === 0 ? (
           <div className="text-center py-12">
-            <ClipboardList className="text-3xl text-slate-600 mx-auto mb-3" />
-            <p className="text-slate-400 text-sm">{searchQuery || filterStatus !== 'all' ? 'No matching applications' : 'No applications yet'}</p>
+            <FaClipboardList className="text-3xl text-neutral-600 mx-auto mb-3" />
+            <p className="text-neutral-400 text-sm">{searchQuery || filterStatus !== 'all' ? 'No matching applications' : 'No applications yet'}</p>
           </div>
         ) : (
           <div className="space-y-2">
@@ -898,19 +910,19 @@ function ApplicationsModal({
                 key={app.id}
                 initial={{ opacity: 0, y: 5 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="p-4 bg-slate-800/50 border border-slate-700 rounded-xl hover:border-slate-600 transition-all cursor-pointer group"
+                className="p-4 bg-neutral-800/50 border border-neutral-700 rounded-xl hover:border-neutral-600 transition-all cursor-pointer group"
                 onClick={() => setSelectedApp(app)}
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
                       <h4 className="text-white font-semibold text-sm group-hover:text-primary-400 transition-colors">{app.fullName}</h4>
-                      {app.resumeURL && <FileText className="text-[10px] text-red-400" />}
+                      {app.resumeURL && <FaFilePdf className="text-[10px] text-red-400" title="Has resume" />}
                     </div>
-                    <p className="text-xs text-slate-400 mt-0.5">{app.email} • {app.phone}</p>
-                    <p className="text-xs text-slate-500 mt-0.5">{app.college} • {app.yearOrExperience}</p>
+                    <p className="text-xs text-neutral-400 mt-0.5">{app.email} • {app.phone}</p>
+                    <p className="text-xs text-neutral-500 mt-0.5">{app.college} • {app.yearOrExperience}</p>
                     {app.submittedAt && (
-                      <p className="text-[10px] text-slate-600 mt-1">
+                      <p className="text-[10px] text-neutral-600 mt-1">
                         Applied {app.submittedAt?.toDate ? app.submittedAt.toDate().toLocaleDateString() : new Date(app.submittedAt).toLocaleDateString()}
                       </p>
                     )}
@@ -921,7 +933,7 @@ function ApplicationsModal({
                 </div>
 
                 {/* Quick Actions */}
-                <div className="flex gap-2 mt-3 pt-2 border-t border-slate-800">
+                <div className="flex gap-2 mt-3 pt-2 border-t border-neutral-800">
                   {(['reviewed', 'shortlisted', 'rejected'] as const).map(s => (
                     <button
                       key={s}
@@ -1026,8 +1038,8 @@ export default function JobPostings() {
     return (
       <Card padding="lg">
         <div className="text-center py-8">
-          <Lock className="text-3xl text-slate-600 mx-auto mb-3" />
-          <p className="text-slate-400">Admin access required</p>
+          <FaLock className="text-3xl text-neutral-600 mx-auto mb-3" />
+          <p className="text-neutral-400">Admin access required</p>
         </div>
       </Card>
     )
@@ -1038,24 +1050,24 @@ export default function JobPostings() {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-lg sm:text-xl font-bold text-white flex items-center gap-2">
-            <Briefcase className="text-sky-400" />
+            <FaBriefcase className="text-cyan-400" />
             Job Postings
           </h2>
-          <p className="text-slate-500 text-xs mt-0.5">
+          <p className="text-neutral-500 text-xs mt-0.5">
             {roles.filter(r => r.status === 'open').length} active • {applications.length} total applications
           </p>
         </div>
-        <Button size="sm" icon={<Plus />} onClick={() => { setEditingRole(null); setShowForm(true) }}>New Posting</Button>
+        <Button size="sm" icon={<FaPlus />} onClick={() => { setEditingRole(null); setShowForm(true) }}>New Posting</Button>
       </div>
 
       {loading ? (
-        <Card padding="lg"><div className="flex items-center justify-center py-12"><Loader2 className="animate-spin text-2xl text-primary-500" /></div></Card>
+        <Card padding="lg"><div className="flex items-center justify-center py-12"><FaSpinner className="animate-spin text-2xl text-primary-500" /></div></Card>
       ) : roles.length === 0 ? (
         <Card padding="lg">
           <div className="text-center py-12">
-            <Briefcase className="text-3xl text-slate-600 mx-auto mb-3" />
-            <p className="text-slate-400 text-sm">No job postings yet</p>
-            <p className="text-slate-500 text-xs mt-1">Click &quot;New Posting&quot; to create one. It will appear on the careers page.</p>
+            <FaBriefcase className="text-3xl text-neutral-600 mx-auto mb-3" />
+            <p className="text-neutral-400 text-sm">No job postings yet</p>
+            <p className="text-neutral-500 text-xs mt-1">Click &quot;New Posting&quot; to create one. It will appear on the careers page.</p>
           </div>
         </Card>
       ) : (
@@ -1073,7 +1085,7 @@ export default function JobPostings() {
 
               return (
                 <motion.div key={role.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} layout>
-                  <Card className="hover:border-slate-600 transition-all">
+                  <Card className="hover:border-neutral-600 transition-all">
                     <div className="p-4">
                       <div className="flex items-start justify-between gap-3">
                         <div className="flex-1 min-w-0">
@@ -1081,26 +1093,26 @@ export default function JobPostings() {
                             <h3 className="text-sm font-semibold text-white">{role.title}</h3>
                             <Badge variant={role.status === 'open' ? 'success' : 'default'} size="sm">{role.status === 'open' ? 'Open' : 'Closed'}</Badge>
                           </div>
-                          <div className="flex flex-wrap items-center gap-3 mt-1 text-xs text-slate-400">
-                            <span className="flex items-center gap-1"><Users className="text-[10px]" />{role.team}</span>
-                            <span className="flex items-center gap-1"><MapPin className="text-[10px]" />{role.location}</span>
-                            <span className="flex items-center gap-1"><Clock className="text-[10px]" />{role.type}</span>
+                          <div className="flex flex-wrap items-center gap-3 mt-1 text-xs text-neutral-400">
+                            <span className="flex items-center gap-1"><FaUsers className="text-[10px]" />{role.team}</span>
+                            <span className="flex items-center gap-1"><FaMapMarkerAlt className="text-[10px]" />{role.location}</span>
+                            <span className="flex items-center gap-1"><FaClock className="text-[10px]" />{role.type}</span>
                           </div>
-                          <p className="text-xs text-slate-500 mt-2 line-clamp-2">{role.description}</p>
+                          <p className="text-xs text-neutral-500 mt-2 line-clamp-2">{role.description}</p>
                         </div>
                         <div className="flex items-center gap-1 flex-shrink-0">
-                          <button onClick={() => setViewingApps(role)} className="relative p-2 text-slate-400 hover:bg-blue-500/10 hover:text-blue-400 rounded-lg transition-all" title={`View ${appCount} applications`}>
-                            <Eye className="text-xs" />
+                          <button onClick={() => setViewingApps(role)} className="relative p-2 text-neutral-400 hover:bg-blue-500/10 hover:text-blue-400 rounded-lg transition-all" title={`View ${appCount} applications`}>
+                            <FaEye className="text-xs" />
                             {pendingCount > 0 && <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-red-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center">{pendingCount}</span>}
                           </button>
-                          <button onClick={() => { setEditingRole(role); setShowForm(true) }} className="p-2 text-slate-400 hover:bg-blue-500/10 hover:text-blue-400 rounded-lg transition-all" title="Edit"><Edit2 className="text-xs" /></button>
-                          <button onClick={() => handleToggleStatus(role)} className={`p-2 rounded-lg transition-all ${role.status === 'open' ? 'text-slate-400 hover:bg-amber-500/10 hover:text-amber-400' : 'text-emerald-400 hover:bg-emerald-500/10'}`} title={role.status === 'open' ? 'Close posting' : 'Reopen posting'}>
-                            {role.status === 'open' ? <Lock className="text-xs" /> : <Unlock className="text-xs" />}
+                          <button onClick={() => { setEditingRole(role); setShowForm(true) }} className="p-2 text-neutral-400 hover:bg-blue-500/10 hover:text-blue-400 rounded-lg transition-all" title="Edit"><FaEdit className="text-xs" /></button>
+                          <button onClick={() => handleToggleStatus(role)} className={`p-2 rounded-lg transition-all ${role.status === 'open' ? 'text-neutral-400 hover:bg-amber-500/10 hover:text-amber-400' : 'text-emerald-400 hover:bg-emerald-500/10'}`} title={role.status === 'open' ? 'Close posting' : 'Reopen posting'}>
+                            {role.status === 'open' ? <FaLock className="text-xs" /> : <FaUnlock className="text-xs" />}
                           </button>
-                          <button onClick={() => handleDelete(role.id)} className="p-2 text-slate-400 hover:bg-red-500/10 hover:text-red-400 rounded-lg transition-all" title="Delete"><Trash2 className="text-xs" /></button>
+                          <button onClick={() => handleDelete(role.id)} className="p-2 text-neutral-400 hover:bg-red-500/10 hover:text-red-400 rounded-lg transition-all" title="Delete"><FaTrash className="text-xs" /></button>
                         </div>
                       </div>
-                      <div className="flex items-center gap-3 mt-3 pt-3 border-t border-slate-800 text-[11px] text-slate-500">
+                      <div className="flex items-center gap-3 mt-3 pt-3 border-t border-neutral-800 text-[11px] text-neutral-500">
                         <span>{appCount} application{appCount !== 1 ? 's' : ''}</span>
                         {pendingCount > 0 && <span className="text-amber-400">{pendingCount} pending review</span>}
                         {questions.length > 0 && <span>{questions.length} custom question{questions.length !== 1 ? 's' : ''}</span>}

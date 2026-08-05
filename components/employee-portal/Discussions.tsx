@@ -3,12 +3,23 @@
 import { useState, useMemo, useRef, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-
+import { 
+  FaComments, 
+  FaPaperPlane, 
+  FaThumbtack,
+  FaTrash,
+  FaReply,
+  FaAt,
+  FaEdit,
+  FaEllipsisV,
+  FaSearch,
+  FaTimes,
+  FaSmile
+} from 'react-icons/fa'
 import { useEmployeeAuth, Discussion, DiscussionReply, EmployeeProfile, isAdminOrSubAdmin } from '@/lib/employeePortalContext'
 import { Card, Button, Badge, Avatar, EmptyState, Spinner, Modal, ProfileInfo, getLocalProfileImage } from './ui'
 import { toast } from 'sonner'
 import { Timestamp } from 'firebase/firestore'
-import { AtSign, Edit2, MessageCircle, MoreVertical, Pin, Reply, Search, Send, Smile, Trash2, X } from 'lucide-react'
 
 // ============================================
 // LOCAL PROFILE IMAGE FALLBACKS (use centralized getLocalProfileImage from ui)
@@ -240,9 +251,9 @@ function MentionInput({
 
   // Dropdown portal content
   const dropdownContent = showDropdown && suggestions.length > 0 && mounted ? (
-    <div
+      <div
       ref={dropdownRef}
-      className="fixed bg-slate-800 border border-slate-700 rounded-lg shadow-2xl overflow-hidden"
+      className="fixed bg-[#FFFFFF] dark:bg-neutral-800 border border-[rgba(15,23,42,0.08)] dark:border-neutral-700 rounded-lg shadow-2xl overflow-hidden"
       style={{
         top: dropdownPos.top,
         left: dropdownPos.left,
@@ -250,8 +261,8 @@ function MentionInput({
         zIndex: 999999
       }}
     >
-      <div className="px-2 py-1.5 bg-slate-900 border-b border-slate-700">
-        <p className="text-xs text-slate-400 font-medium">
+      <div className="px-2 py-1.5 bg-[#F8FAFC] dark:bg-neutral-900 border-b border-[rgba(15,23,42,0.08)] dark:border-neutral-700">
+        <p className="text-xs text-[#64748B] dark:text-neutral-400 font-medium">
           {dropdownType === 'user' ? 'Select a person' : 'Select a department'}
         </p>
       </div>
@@ -263,13 +274,13 @@ function MentionInput({
               type="button"
               onClick={() => selectMention(emp.name)}
               className={`w-full flex items-center gap-2 px-2 py-1.5 transition-colors text-left ${
-                index === selectedIndex ? 'bg-primary-500/30 border-l-2 border-primary-500' : 'hover:bg-slate-700'
+                index === selectedIndex ? 'bg-[#2563EB]/5 dark:bg-primary-500/30 border-l-2 border-[#2563EB] dark:border-primary-500' : 'hover:bg-[#F1F5F9] dark:hover:bg-neutral-700'
               }`}
             >
               <Avatar src={getEmpProfileImage(emp.profileImage, emp.employeeId)} name={emp.name} size="sm" showBorder={false} />
               <div className="min-w-0 flex-1">
-                <p className="text-sm text-white font-medium truncate">{emp.name}</p>
-                <p className="text-xs text-slate-500 truncate">{emp.department}</p>
+                <p className="text-sm text-[#0F172A] dark:text-white font-medium truncate">{emp.name}</p>
+                <p className="text-xs text-[#64748B] dark:text-neutral-500 truncate">{emp.department}</p>
               </div>
             </button>
           ))
@@ -280,13 +291,13 @@ function MentionInput({
               type="button"
               onClick={() => selectMention(dept)}
               className={`w-full flex items-center gap-2 px-2 py-1.5 transition-colors text-left ${
-                index === selectedIndex ? 'bg-primary-500/30 border-l-2 border-primary-500' : 'hover:bg-slate-700'
+                index === selectedIndex ? 'bg-[#2563EB]/5 dark:bg-primary-500/30 border-l-2 border-[#2563EB] dark:border-primary-500' : 'hover:bg-[#F1F5F9] dark:hover:bg-neutral-700'
               }`}
             >
-              <div className="w-6 h-6 rounded-full bg-primary-500/20 flex items-center justify-center">
-                <AtSign className="text-primary-400 text-xs" />
+              <div className="w-6 h-6 rounded-full bg-[#2563EB]/10 dark:bg-primary-500/20 flex items-center justify-center">
+                <FaAt className="text-[#2563EB] dark:text-primary-400 text-xs" />
               </div>
-              <p className="text-sm text-white truncate">{dept}</p>
+              <p className="text-sm text-[#0F172A] dark:text-white truncate">{dept}</p>
             </button>
           ))
         )}
@@ -303,21 +314,21 @@ function MentionInput({
         onKeyDown={handleKeyDown}
         placeholder={placeholder}
         rows={3}
-        className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-primary-500/50 resize-y"
+        className="w-full px-4 py-3 bg-[#F8FAFC] dark:bg-neutral-800 border border-[rgba(15,23,42,0.06)] dark:border-neutral-700 rounded-xl text-[#0F172A] dark:text-white placeholder:text-[#94A3B8] dark:placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-[#2563EB]/50 resize-y"
       />
       
       {/* Portal dropdown to document.body */}
       {mounted && dropdownContent && createPortal(dropdownContent, document.body)}
 
       <div className="flex items-center justify-between mt-2">
-        <p className="text-xs text-slate-500">
+        <p className="text-xs text-[#64748B] dark:text-neutral-500">
           Use @name to mention people, #department to mention teams
         </p>
         <Button
           onClick={handleSubmit}
           loading={loading}
           disabled={!value.trim()}
-          icon={<Send />}
+          icon={<FaPaperPlane />}
           size="sm"
         >
           {buttonText}
@@ -380,7 +391,7 @@ function ReplyItem({
   }
 
   return (
-    <div className="p-4 border-b border-slate-700/30 last:border-b-0">
+    <div className="p-4 border-b border-[rgba(15,23,42,0.06)] dark:border-neutral-700/30 last:border-b-0">
       <div className="flex items-start gap-3">
         <ProfileInfo
           data={{
@@ -406,9 +417,9 @@ function ReplyItem({
               }}
               isAdmin={false}
             >
-              <span className="font-medium text-white text-sm hover:text-primary-400 cursor-pointer">{reply.authorName || 'Anonymous'}</span>
+              <span className="font-medium text-[#0F172A] dark:text-white text-sm hover:text-[#2563EB] dark:hover:text-primary-400 cursor-pointer">{reply.authorName || 'Anonymous'}</span>
             </ProfileInfo>
-            <span className="text-xs text-slate-500">
+            <span className="text-xs text-[#64748B] dark:text-neutral-500">
               {formatTimestamp(reply.createdAt)}
               {reply.updatedAt && ' (edited)'}
             </span>
@@ -421,7 +432,7 @@ function ReplyItem({
                 onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setEditContent(e.target.value)}
                 placeholder="Edit your reply..."
                 rows={2}
-                className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/50 resize-y"
+                className="w-full px-3 py-2 bg-[#FFFFFF] dark:bg-neutral-800 border border-[rgba(15,23,42,0.08)] dark:border-neutral-700 rounded-xl text-[#0F172A] dark:text-white placeholder:text-[#94A3B8] dark:placeholder-neutral-500 text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/50 resize-y"
               />
               <div className="flex items-center gap-2 justify-end">
                 <Button
@@ -444,7 +455,7 @@ function ReplyItem({
               </div>
             </div>
           ) : (
-            <p className="text-slate-300 text-sm mt-1">{renderContent(reply.content)}</p>
+            <p className="text-[#334155] dark:text-neutral-300 text-sm mt-1">{renderContent(reply.content)}</p>
           )}
         </div>
         
@@ -453,9 +464,9 @@ function ReplyItem({
           <div className="relative">
             <button
               onClick={() => setShowMenu(!showMenu)}
-              className="p-1 text-slate-500 hover:text-white transition-colors"
+              className="p-1 text-[#94A3B8] dark:text-neutral-500 hover:text-[#0F172A] dark:hover:text-white transition-colors"
             >
-              <MoreVertical className="text-xs" />
+              <FaEllipsisV className="text-xs" />
             </button>
             
             <AnimatePresence>
@@ -464,23 +475,23 @@ function ReplyItem({
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.95 }}
-                  className="absolute right-0 mt-1 w-32 bg-slate-800 border border-slate-700 rounded-lg shadow-xl z-10 overflow-hidden"
+                  className="absolute right-0 mt-1 w-32 bg-[#FFFFFF] dark:bg-neutral-800 border border-[rgba(15,23,42,0.08)] dark:border-neutral-700 rounded-lg shadow-xl z-10 overflow-hidden"
                 >
                   {canEdit && (
                     <button
                       onClick={() => { setIsEditing(true); setShowMenu(false) }}
-                      className="w-full flex items-center gap-2 px-3 py-2 text-xs text-slate-300 hover:bg-slate-700 transition-colors"
+                      className="w-full flex items-center gap-2 px-3 py-2 text-xs text-[#0F172A] dark:text-neutral-300 hover:bg-[#F1F5F9] dark:hover:bg-neutral-700 transition-colors"
                     >
-                      <Edit2 />
+                      <FaEdit />
                       Edit
                     </button>
                   )}
                   {canDelete && (
                     <button
                       onClick={() => { onDelete(reply.id); setShowMenu(false) }}
-                      className="w-full flex items-center gap-2 px-3 py-2 text-xs text-red-400 hover:bg-slate-700 transition-colors"
+                      className="w-full flex items-center gap-2 px-3 py-2 text-xs text-red-500 dark:text-red-400 hover:bg-[#F1F5F9] dark:hover:bg-neutral-700 transition-colors"
                     >
-                      <Trash2 />
+                      <FaTrash />
                       Delete
                     </button>
                   )}
@@ -737,8 +748,8 @@ function DiscussionPost({
         ${discussion.isPinned 
           ? 'bg-amber-500/5 border-amber-500/30' 
           : isMentioned 
-            ? 'bg-primary-500/5 border-primary-500/30'
-            : 'bg-slate-800/50 border-slate-700'
+            ? 'bg-[#2563EB]/5 dark:bg-primary-500/5 border-[#2563EB]/30 dark:border-primary-500/30'
+            : 'bg-[#FFFFFF] dark:bg-neutral-800/50 border-[rgba(15,23,42,0.08)] dark:border-neutral-700'
         }
       `}
     >
@@ -778,21 +789,21 @@ function DiscussionPost({
                 }}
                 isAdmin={false}
               >
-                <span className="font-medium text-white hover:text-primary-400 cursor-pointer">{discussion.authorName || 'Anonymous'}</span>
+                <span className="font-medium text-[#0F172A] dark:text-white hover:text-[#2563EB] dark:hover:text-primary-400 cursor-pointer">{discussion.authorName || 'Anonymous'}</span>
               </ProfileInfo>
               {discussion.authorDepartment && (
                 <Badge size="sm">{discussion.authorDepartment}</Badge>
               )}
               {discussion.isPinned && (
                 <Badge variant="warning" size="sm">
-                  <Pin className="mr-1" /> Pinned
+                  <FaThumbtack className="mr-1" /> Pinned
                 </Badge>
               )}
               {isMentioned && (
                 <Badge variant="primary" size="sm">Mentioned</Badge>
               )}
             </div>
-            <span className="text-xs text-slate-500">
+            <span className="text-xs text-[#64748B] dark:text-neutral-500">
               {formatTimestamp(discussion.createdAt)}
               {discussion.updatedAt && ' (edited)'}
             </span>
@@ -802,9 +813,9 @@ function DiscussionPost({
           <div className="relative">
             <button
               onClick={() => setShowMenu(!showMenu)}
-              className="p-2 text-slate-400 hover:text-white hover:bg-slate-700 rounded-lg transition-colors"
+              className="p-2 text-[#94A3B8] dark:text-neutral-400 hover:text-[#0F172A] dark:hover:text-white hover:bg-[#F1F5F9] dark:hover:bg-neutral-700 rounded-lg transition-colors"
             >
-              <MoreVertical />
+              <FaEllipsisV />
             </button>
             
             <AnimatePresence>
@@ -813,32 +824,32 @@ function DiscussionPost({
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.95 }}
-                  className="absolute right-0 mt-1 w-40 bg-slate-800 border border-slate-700 rounded-lg shadow-xl z-10 overflow-hidden"
+                  className="absolute right-0 mt-1 w-40 bg-[#FFFFFF] dark:bg-neutral-800 border border-[rgba(15,23,42,0.08)] dark:border-neutral-700 rounded-lg shadow-xl z-10 overflow-hidden"
                 >
                   {isAdmin && (
                     <button
                       onClick={() => { handleTogglePin(); setShowMenu(false) }}
-                      className="w-full flex items-center gap-2 px-4 py-2 text-sm text-slate-300 hover:bg-slate-700 transition-colors"
+                      className="w-full flex items-center gap-2 px-4 py-2 text-sm text-[#0F172A] dark:text-neutral-300 hover:bg-[#F1F5F9] dark:hover:bg-neutral-700 transition-colors"
                     >
-                      <Pin />
+                      <FaThumbtack />
                       {discussion.isPinned ? 'Unpin' : 'Pin Post'}
                     </button>
                   )}
                   {canEdit && (
                     <button
                       onClick={() => { setIsEditing(true); setShowMenu(false) }}
-                      className="w-full flex items-center gap-2 px-4 py-2 text-sm text-slate-300 hover:bg-slate-700 transition-colors"
+                      className="w-full flex items-center gap-2 px-4 py-2 text-sm text-[#0F172A] dark:text-neutral-300 hover:bg-[#F1F5F9] dark:hover:bg-neutral-700 transition-colors"
                     >
-                      <Edit2 />
+                      <FaEdit />
                       Edit
                     </button>
                   )}
                   {canDelete && (
                     <button
                       onClick={() => { handleDelete(); setShowMenu(false) }}
-                      className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-400 hover:bg-slate-700 transition-colors"
+                      className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-500 dark:text-red-400 hover:bg-[#F1F5F9] dark:hover:bg-neutral-700 transition-colors"
                     >
-                      <Trash2 />
+                      <FaTrash />
                       Delete
                     </button>
                   )}
@@ -856,7 +867,7 @@ function DiscussionPost({
               onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setEditContent(e.target.value)}
               placeholder="Edit your message..."
               rows={4}
-              className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-primary-500/50 resize-y"
+              className="w-full px-4 py-3 bg-[#FFFFFF] dark:bg-neutral-800 border border-[rgba(15,23,42,0.08)] dark:border-neutral-700 rounded-xl text-[#0F172A] dark:text-white placeholder:text-[#94A3B8] dark:placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-[#2563EB]/50 resize-y"
             />
             <div className="flex items-center gap-2 justify-end">
               <Button
@@ -879,7 +890,7 @@ function DiscussionPost({
             </div>
           </div>
         ) : (
-          <div className="mt-3 text-slate-300 whitespace-pre-wrap">
+          <div className="mt-3 text-[#334155] dark:text-neutral-300 whitespace-pre-wrap">
             {renderContent(discussion.content)}
           </div>
         )}
@@ -902,8 +913,8 @@ function DiscussionPost({
                     onClick={() => discussion.id && toggleDiscussionReaction(discussion.id, emoji)}
                     className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-sm transition-all ${
                       hasReacted 
-                        ? 'bg-primary-500/20 border border-primary-500/50 text-primary-300' 
-                        : 'bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700'
+                        ? 'bg-[#2563EB]/10 border border-[#2563EB]/30 text-[#1D4ED8] dark:bg-primary-500/20 dark:border-primary-500/50 dark:text-primary-300' 
+                        : 'bg-[#F8FAFC] border border-[rgba(15,23,42,0.08)] text-[#64748B] hover:bg-[#F1F5F9] dark:bg-neutral-800 dark:border-neutral-700 dark:text-neutral-300 dark:hover:bg-neutral-700'
                     }`}
                   >
                     <span className="text-base">{emoji}</span>
@@ -918,29 +929,29 @@ function DiscussionPost({
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 5 }}
                         transition={{ duration: 0.15 }}
-                        className="absolute bottom-full left-0 mb-2 bg-slate-800 border border-slate-700 rounded-xl p-2 shadow-xl z-[100] min-w-[180px] max-w-[250px]"
+                        className="absolute bottom-full left-0 mb-2 bg-[#FFFFFF] border border-[rgba(15,23,42,0.08)] dark:bg-neutral-800 dark:border-neutral-700 rounded-xl p-2 shadow-xl z-[100] min-w-[180px] max-w-[250px]"
                       >
-                        <div className="text-xs text-slate-400 mb-2 px-1 flex items-center gap-1.5">
+                        <div className="text-xs text-[#64748B] dark:text-neutral-400 mb-2 px-1 flex items-center gap-1.5">
                           <span className="text-base">{emoji}</span>
                           <span>Reacted by</span>
                         </div>
                         <div className="space-y-1.5 max-h-40 overflow-y-auto">
                           {reactedUsers.map((user) => (
-                            <div key={user!.employeeId} className="flex items-center gap-2 px-1 py-1 rounded hover:bg-slate-700/50">
+                            <div key={user!.employeeId} className="flex items-center gap-2 px-1 py-1 rounded hover:bg-[#F1F5F9] dark:hover:bg-neutral-700/50">
                               <img
                                 src={getEmpProfileImage(user!.profileImage, user!.employeeId) || `https://ui-avatars.com/api/?name=${encodeURIComponent(user!.name)}&background=7c3aed&color=fff&size=32`}
                                 alt={user!.name}
                                 className="w-6 h-6 rounded-full object-cover flex-shrink-0"
                               />
                               <div className="min-w-0 flex-1">
-                                <p className="text-xs text-white font-medium truncate">{user!.name}</p>
-                                <p className="text-[10px] text-slate-500 truncate capitalize">{user!.role || user!.department || 'Employee'}</p>
+                                <p className="text-xs text-[#0F172A] dark:text-white font-medium truncate">{user!.name}</p>
+                                <p className="text-[10px] text-[#64748B] dark:text-neutral-500 truncate capitalize">{user!.role || user!.department || 'Employee'}</p>
                               </div>
                             </div>
                           ))}
                         </div>
                         {/* Arrow pointer */}
-                        <div className="absolute -bottom-1 left-4 w-2 h-2 bg-slate-800 border-r border-b border-slate-700 transform rotate-45"></div>
+                        <div className="absolute -bottom-1 left-4 w-2 h-2 bg-[#FFFFFF] border-r border-b border-[rgba(15,23,42,0.08)] dark:bg-neutral-800 dark:border-neutral-700 transform rotate-45"></div>
                       </motion.div>
                     )}
                   </AnimatePresence>
@@ -949,16 +960,15 @@ function DiscussionPost({
             })}
           </div>
         )}
-
         {/* Actions */}
-        <div className="flex items-center gap-4 mt-4 pt-3 border-t border-slate-700/50">
+        <div className="flex items-center gap-4 mt-4 pt-3 border-t border-[rgba(15,23,42,0.06)] dark:border-neutral-700/50">
           {/* Reaction Button with Picker */}
           <div className="relative">
             <button
               onClick={() => setShowReactionPicker(!showReactionPicker)}
-              className="flex items-center gap-2 text-sm text-slate-400 hover:text-amber-400 transition-colors"
+              className="flex items-center gap-2 text-sm text-[#94A3B8] dark:text-neutral-400 hover:text-[#0F172A] dark:hover:text-amber-400 transition-colors"
             >
-              <Smile />
+              <FaSmile />
               React
             </button>
             
@@ -969,7 +979,7 @@ function DiscussionPost({
                   initial={{ opacity: 0, scale: 0.9, y: 5 }}
                   animate={{ opacity: 1, scale: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.9, y: 5 }}
-                  className="absolute bottom-full left-0 mb-2 bg-slate-800 border border-slate-700 rounded-xl p-2 shadow-xl z-50"
+                  className="absolute bottom-full left-0 mb-2 bg-[#FFFFFF] border border-[rgba(15,23,42,0.08)] dark:bg-neutral-800 dark:border-neutral-700 rounded-xl p-2 shadow-xl z-50"
                 >
                   <div className="flex gap-1">
                     {['Like', 'Love', 'Laugh', 'Wow', 'Sad', 'Fire', 'Clap', 'Celebrate'].map((emoji) => (
@@ -981,7 +991,7 @@ function DiscussionPost({
                           }
                           setShowReactionPicker(false)
                         }}
-                        className="text-xl p-1.5 hover:bg-slate-700 rounded-lg transition-colors"
+                        className="text-xl p-1.5 hover:bg-[#F1F5F9] dark:hover:bg-neutral-700 rounded-lg transition-colors"
                       >
                         {emoji}
                       </button>
@@ -994,18 +1004,18 @@ function DiscussionPost({
 
           <button
             onClick={() => setShowReplyInput(!showReplyInput)}
-            className="flex items-center gap-2 text-sm text-slate-400 hover:text-primary-400 transition-colors"
+            className="flex items-center gap-2 text-sm text-[#94A3B8] dark:text-neutral-400 hover:text-[#2563EB] dark:hover:text-primary-400 transition-colors"
           >
-            <Reply />
+            <FaReply />
             Reply
           </button>
           
           {discussion.replies?.length > 0 && (
             <button
               onClick={() => setShowReplies(!showReplies)}
-              className="flex items-center gap-2 text-sm text-slate-400 hover:text-white transition-colors"
+              className="flex items-center gap-2 text-sm text-[#94A3B8] dark:text-neutral-400 hover:text-[#0F172A] dark:hover:text-white transition-colors"
             >
-              <MessageCircle />
+              <FaComments />
               {discussion.replies.length} {discussion.replies.length === 1 ? 'reply' : 'replies'}
             </button>
           )}
@@ -1019,7 +1029,7 @@ function DiscussionPost({
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            className="px-4 pb-4 border-t border-slate-700/50"
+            className="px-4 pb-4 border-t border-[rgba(15,23,42,0.06)] dark:border-neutral-700/50"
           >
             <div className="pt-4">
               <MentionInput
@@ -1044,7 +1054,7 @@ function DiscussionPost({
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            className="border-t border-slate-700/50 bg-slate-900/30"
+            className="border-t border-[rgba(15,23,42,0.06)] dark:border-neutral-700/50 bg-[#F8FAFC]/50 dark:bg-neutral-900/30"
           >
             {discussion.replies.map((reply) => {
               if (!reply) return null
@@ -1150,11 +1160,11 @@ export function Discussions() {
       {/* Header */}
       <div className="flex flex-col gap-2">
         <div>
-          <h2 className="text-xl sm:text-2xl font-bold text-white flex items-center gap-2">
-            <MessageCircle className="text-primary-500" />
+          <h2 className="text-xl sm:text-2xl font-bold text-[#0F172A] dark:text-white flex items-center gap-2">
+            <FaComments className="text-[#2563EB] dark:text-primary-500" />
             Discussions
           </h2>
-          <p className="text-slate-400 text-sm sm:text-base mt-1">
+          <p className="text-[#64748B] dark:text-neutral-400 text-sm sm:text-base mt-1">
             Share updates, ask questions, and collaborate
           </p>
         </div>
@@ -1183,13 +1193,13 @@ export function Discussions() {
       <div className="flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-2 sm:gap-3">
         <div className="flex-1 min-w-0 sm:min-w-[200px]">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+            <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-[#94A3B8] dark:text-neutral-400" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search discussions..."
-              className="w-full pl-10 pr-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+              className="w-full pl-10 pr-4 py-2 bg-[#F8FAFC] dark:bg-neutral-800 border border-[rgba(15,23,42,0.06)] dark:border-neutral-700 rounded-lg text-[#0F172A] dark:text-white placeholder:text-[#94A3B8] dark:placeholder-neutral-500 text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/50 dark:focus:ring-primary-500"
             />
           </div>
         </div>
@@ -1198,7 +1208,7 @@ export function Discussions() {
           <Button
             variant={filterMentioned ? 'primary' : 'secondary'}
             size="sm"
-            icon={<AtSign />}
+            icon={<FaAt />}
             onClick={() => setFilterMentioned(!filterMentioned)}
             className="flex-1 sm:flex-none"
           >
@@ -1220,7 +1230,7 @@ export function Discussions() {
       {/* Discussions List */}
       {filteredDiscussions.length === 0 ? (
         <EmptyState
-          icon={<MessageCircle className="text-2xl" />}
+          icon={<FaComments className="text-2xl" />}
           title={searchQuery || filterMentioned ? 'No discussions found' : 'No discussions yet'}
           description={searchQuery || filterMentioned 
             ? 'Try adjusting your search or filters' 

@@ -2,7 +2,26 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-
+import { 
+  CalendarCheck as FaCalendarCheck, 
+  Clock as FaClock, 
+  CheckCircle as FaCheckCircle, 
+  XCircle as FaTimesCircle,
+  Umbrella as FaUmbrellaBeach,
+  Briefcase as FaBriefcase,
+  Plane as FaPlane,
+  Loader2 as FaSpinner,
+  MapPin as FaMapMarkerAlt,
+  AlertTriangle as FaExclamationTriangle,
+  Navigation as FaLocationArrow,
+  Shield as FaShieldAlt,
+  History as FaHistory,
+  Smartphone as FaApple,
+  Settings as FaCog,
+  Ban as FaBan,
+  Mail as FaEnvelope,
+  Home as FaHome
+} from 'lucide-react'
 
 // ============================================
 // iOS PWA DETECTION HELPERS
@@ -25,20 +44,19 @@ const isIOSPWA = () => isIOSDevice() && isInStandaloneMode()
 import { useEmployeeAuth, AttendanceRecord, LeaveType } from '@/lib/employeePortalContext'
 import { Card, Button, Textarea, Input, Badge, Alert, Spinner, Modal } from './ui'
 import { toast } from 'sonner'
-import { AlertTriangle, Ban, Briefcase, CalendarCheck, CheckCircle, Clock, History, Home, Loader2, Mail, MapPin, Navigation, Plane, Settings, Shield, Smartphone, Umbrella, XCircle } from 'lucide-react'
 
 // ============================================
 // STATUS CONFIGURATION
 // ============================================
 
 const statusConfig = {
-  P: { label: 'Present', color: 'bg-emerald-500', icon: CheckCircle, textColor: 'text-emerald-400', bgLight: 'bg-emerald-500/20' },
-  A: { label: 'Absent', color: 'bg-red-500', icon: XCircle, textColor: 'text-red-400', bgLight: 'bg-red-500/20' },
-  L: { label: 'Leave', color: 'bg-amber-500', icon: Umbrella, textColor: 'text-amber-400', bgLight: 'bg-amber-500/20' },
-  O: { label: 'On Duty', color: 'bg-blue-500', icon: Briefcase, textColor: 'text-blue-400', bgLight: 'bg-blue-500/20' },
-  H: { label: 'Holiday', color: 'bg-blue-500', icon: Plane, textColor: 'text-blue-400', bgLight: 'bg-blue-500/15' },
-  U: { label: 'Unauthorised Leave', color: 'bg-rose-600', icon: Ban, textColor: 'text-rose-400', bgLight: 'bg-rose-600/20' },
-  W: { label: 'Work From Home', color: 'bg-sky-500', icon: Home, textColor: 'text-sky-400', bgLight: 'bg-sky-500/15' }
+  P: { label: 'Present', color: 'bg-emerald-500', icon: FaCheckCircle, textColor: 'text-emerald-600 dark:text-emerald-400', bgLight: 'bg-emerald-500/10 dark:bg-emerald-500/20' },
+  A: { label: 'Absent', color: 'bg-red-500', icon: FaTimesCircle, textColor: 'text-red-600 dark:text-red-400', bgLight: 'bg-red-500/10 dark:bg-red-500/20' },
+  L: { label: 'Leave', color: 'bg-amber-500', icon: FaUmbrellaBeach, textColor: 'text-amber-600 dark:text-amber-400', bgLight: 'bg-amber-500/10 dark:bg-amber-500/20' },
+  O: { label: 'On Duty', color: 'bg-blue-500', icon: FaBriefcase, textColor: 'text-blue-600 dark:text-blue-400', bgLight: 'bg-blue-500/10 dark:bg-blue-500/20' },
+  H: { label: 'Holiday', color: 'bg-purple-500', icon: FaPlane, textColor: 'text-purple-600 dark:text-purple-400', bgLight: 'bg-purple-500/10 dark:bg-purple-500/20' },
+  U: { label: 'Unauthorised Leave', color: 'bg-rose-600', icon: FaBan, textColor: 'text-rose-600 dark:text-rose-400', bgLight: 'bg-rose-600/10 dark:bg-rose-600/20' },
+  W: { label: 'Work From Home', color: 'bg-cyan-500', icon: FaHome, textColor: 'text-cyan-600 dark:text-cyan-400', bgLight: 'bg-cyan-500/10 dark:bg-cyan-500/20' }
 }
 
 // ============================================
@@ -95,22 +113,22 @@ function LocationStatus({
 }) {
   if (latitude === undefined || longitude === undefined) {
     return (
-      <div className="flex items-center gap-2 text-sm text-slate-500">
-        <MapPin />
+      <div className="flex items-center gap-2 text-sm text-[#64748B] dark:text-neutral-500">
+        <FaMapMarkerAlt />
         <span>Location not captured</span>
       </div>
     )
   }
 
   return (
-    <div className={`flex items-center gap-2 text-sm ${locationVerified ? 'text-emerald-400' : 'text-amber-400'}`}>
-      {locationVerified ? <MapPin /> : <MapPin />}
+    <div className={`flex items-center gap-2 text-sm ${locationVerified ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600 dark:text-amber-400'}`}>
+      {locationVerified ? <FaMapMarkerAlt /> : <FaMapMarkerAlt />}
       <span>
         {locationVerified ? 'Verified (at office)' : 'Not in office range'}
       </span>
       {accuracy && (
-        <span className="text-slate-500 text-xs">
-          (�{Math.round(accuracy)}m)
+        <span className="text-[#64748B] dark:text-neutral-500 text-xs">
+          (±{Math.round(accuracy)}m)
         </span>
       )}
     </div>
@@ -499,39 +517,39 @@ export function AttendanceMarker({ onAttendanceMarked }: { onAttendanceMarked?: 
 
   if (loading) {
     return (
-      <Card padding="lg" glow>
+      <div className="bg-[#FFFFFF] dark:bg-[#101C30] border border-[rgba(15,23,42,0.06)] dark:border-[rgba(255,255,255,0.06)] rounded-[28px] p-6 sm:p-[40px] shadow-[0_12px_40px_rgba(15,23,42,0.06)] dark:shadow-[0_10px_30px_rgba(0,0,0,0.25)] text-[#0F172A] dark:text-[#F8FAFC]">
         <div className="flex items-center justify-center py-12">
           <Spinner size="lg" />
         </div>
-      </Card>
+      </div>
     )
   }
 
   // If today is a holiday, show holiday notice
   if (isTodayHoliday) {
     return (
-      <Card padding="lg" glow>
+      <div className="bg-[#FFFFFF] dark:bg-[#101C30] border border-[rgba(15,23,42,0.06)] dark:border-[rgba(255,255,255,0.06)] rounded-[28px] p-6 sm:p-[40px] shadow-[0_12px_40px_rgba(15,23,42,0.06)] dark:shadow-[0_10px_30px_rgba(0,0,0,0.25)] text-[#0F172A] dark:text-[#F8FAFC]">
         <div className="text-center py-8">
-          <div className="w-20 h-20 rounded-full bg-blue-500/15 flex items-center justify-center mx-auto mb-4">
-            <Plane className="text-4xl text-blue-400" />
+          <div className="w-20 h-20 rounded-full bg-purple-500/20 flex items-center justify-center mx-auto mb-4">
+            <FaPlane className="text-4xl text-purple-400" />
           </div>
           <h2 className="text-2xl font-bold text-white mb-2">It's a Holiday!</h2>
-          <p className="text-slate-400 mb-4">
+          <p className="text-neutral-400 mb-4">
             {todayHoliday?.name || 'Holiday'}
           </p>
           {todayHoliday?.description && (
-            <p className="text-slate-500 text-sm">{todayHoliday.description}</p>
+            <p className="text-neutral-500 text-sm">{todayHoliday.description}</p>
           )}
           <Badge variant="warning" className="mt-4">
             Attendance marking is disabled for holidays
           </Badge>
         </div>
-      </Card>
+      </div>
     )
   }
 
   return (
-    <Card padding="lg" glow>
+    <div className="bg-[#FFFFFF] dark:bg-[#101C30] border border-[rgba(15,23,42,0.06)] dark:border-[rgba(255,255,255,0.06)] rounded-[28px] p-6 sm:p-[40px] shadow-[0_12px_40px_rgba(15,23,42,0.06)] dark:shadow-[0_10px_30px_rgba(0,0,0,0.25)] text-[#0F172A] dark:text-[#F8FAFC]">
       {/* iOS PWA Location Instructions Modal */}
       <AnimatePresence>
         {showIOSInstructions && (isIOSPWAMode || isIOSDevice()) && (
@@ -546,16 +564,16 @@ export function AttendanceMarker({ onAttendanceMarked }: { onAttendanceMarked?: 
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
-              className="bg-slate-900 border border-slate-700 rounded-2xl p-6 max-w-md w-full max-h-[90vh] overflow-y-auto"
+              className="bg-neutral-900 border border-neutral-700 rounded-2xl p-6 max-w-md w-full max-h-[90vh] overflow-y-auto"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-12 h-12 rounded-xl bg-gray-500/20 flex items-center justify-center">
-                  <Smartphone className="text-2xl text-white" />
+                  <FaApple className="text-2xl text-white" />
                 </div>
                 <div>
                   <h3 className="text-xl font-bold text-white">Fix Location Access</h3>
-                  <p className="text-sm text-slate-400">For iOS Home Screen App</p>
+                  <p className="text-sm text-neutral-400">For iOS Home Screen App</p>
                 </div>
               </div>
               
@@ -569,18 +587,18 @@ export function AttendanceMarker({ onAttendanceMarked }: { onAttendanceMarked?: 
                 {/* Method 1: Tap the button inside the PWA */}
                 <div>
                   <p className="text-sm font-semibold text-emerald-400 mb-2">?o. Method 1: Grant Permission (Easiest)</p>
-                  <div className="bg-slate-800/50 rounded-xl p-4 space-y-2">
+                  <div className="bg-neutral-800/50 rounded-xl p-4 space-y-2">
                     <div className="flex items-start gap-3">
                       <div className="w-5 h-5 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400 text-xs font-bold flex-shrink-0">1</div>
-                      <p className="text-sm text-slate-300">Tap <strong className="text-white">"Try Again"</strong> below ??" this will trigger the iOS <strong className="text-white">location permission popup</strong></p>
+                      <p className="text-sm text-neutral-300">Tap <strong className="text-white">"Try Again"</strong> below ??" this will trigger the iOS <strong className="text-white">location permission popup</strong></p>
                     </div>
                     <div className="flex items-start gap-3">
                       <div className="w-5 h-5 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400 text-xs font-bold flex-shrink-0">2</div>
-                      <p className="text-sm text-slate-300">Tap <strong className="text-white">"Allow Once"</strong> or <strong className="text-white">"Allow While Using App"</strong> in the popup</p>
+                      <p className="text-sm text-neutral-300">Tap <strong className="text-white">"Allow Once"</strong> or <strong className="text-white">"Allow While Using App"</strong> in the popup</p>
                     </div>
                     <div className="flex items-start gap-3">
                       <div className="w-5 h-5 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400 text-xs font-bold flex-shrink-0">3</div>
-                      <p className="text-sm text-slate-300">If no popup appeared, the permission may already be blocked ??" go to Method 2</p>
+                      <p className="text-sm text-neutral-300">If no popup appeared, the permission may already be blocked ??" go to Method 2</p>
                     </div>
                   </div>
                 </div>
@@ -588,45 +606,45 @@ export function AttendanceMarker({ onAttendanceMarked }: { onAttendanceMarked?: 
                 {/* Method 2: Fix via iPhone Settings */}
                 <div>
                   <p className="text-sm font-semibold text-blue-400 mb-2">?s&trade;? Method 2: Enable in iPhone Settings</p>
-                  <div className="bg-slate-800/50 rounded-xl p-4 space-y-2">
+                  <div className="bg-neutral-800/50 rounded-xl p-4 space-y-2">
                     <div className="flex items-start gap-3">
                       <div className="w-5 h-5 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400 text-xs font-bold flex-shrink-0">1</div>
-                      <p className="text-sm text-slate-300">Open iPhone <strong className="text-white">Settings</strong></p>
+                      <p className="text-sm text-neutral-300">Open iPhone <strong className="text-white">Settings</strong></p>
                     </div>
                     <div className="flex items-start gap-3">
                       <div className="w-5 h-5 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400 text-xs font-bold flex-shrink-0">2</div>
-                      <p className="text-sm text-slate-300">Go to <strong className="text-white">Privacy & Security ??' Location Services</strong></p>
+                      <p className="text-sm text-neutral-300">Go to <strong className="text-white">Privacy & Security ??' Location Services</strong></p>
                     </div>
                     <div className="flex items-start gap-3">
                       <div className="w-5 h-5 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400 text-xs font-bold flex-shrink-0">3</div>
-                      <p className="text-sm text-slate-300">Scroll down and find <strong className="text-white">Safari Websites</strong> ??" set it to <strong className="text-white">"While Using App"</strong></p>
+                      <p className="text-sm text-neutral-300">Scroll down and find <strong className="text-white">Safari Websites</strong> ??" set it to <strong className="text-white">"While Using App"</strong></p>
                     </div>
                     <div className="flex items-start gap-3">
                       <div className="w-5 h-5 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400 text-xs font-bold flex-shrink-0">4</div>
-                      <p className="text-sm text-slate-300">Come back to this app and tap <strong className="text-white">"Try Again"</strong></p>
+                      <p className="text-sm text-neutral-300">Come back to this app and tap <strong className="text-white">"Try Again"</strong></p>
                     </div>
                   </div>
                 </div>
 
                 {/* Method 3: Reinstall */}
                 <div>
-                  <p className="text-sm font-semibold text-blue-400 mb-2">Method 3: Re-add to Home Screen</p>
-                  <div className="bg-slate-800/50 rounded-xl p-4 space-y-2">
+                  <p className="text-sm font-semibold text-purple-400 mb-2">Method 3: Re-add to Home Screen</p>
+                  <div className="bg-neutral-800/50 rounded-xl p-4 space-y-2">
                     <div className="flex items-start gap-3">
-                      <div className="w-5 h-5 rounded-full bg-blue-500/15 flex items-center justify-center text-blue-400 text-xs font-bold flex-shrink-0">1</div>
-                      <p className="text-sm text-slate-300"><strong className="text-white">Delete</strong> the matriXO app from your Home Screen</p>
+                      <div className="w-5 h-5 rounded-full bg-purple-500/20 flex items-center justify-center text-purple-400 text-xs font-bold flex-shrink-0">1</div>
+                      <p className="text-sm text-neutral-300"><strong className="text-white">Delete</strong> the matriXO app from your Home Screen</p>
                     </div>
                     <div className="flex items-start gap-3">
-                      <div className="w-5 h-5 rounded-full bg-blue-500/15 flex items-center justify-center text-blue-400 text-xs font-bold flex-shrink-0">2</div>
-                      <p className="text-sm text-slate-300">Open <strong className="text-white">Safari</strong> and visit <strong className="text-white">team-auth.matrixo.in</strong></p>
+                      <div className="w-5 h-5 rounded-full bg-purple-500/20 flex items-center justify-center text-purple-400 text-xs font-bold flex-shrink-0">2</div>
+                      <p className="text-sm text-neutral-300">Open <strong className="text-white">Safari</strong> and visit <strong className="text-white">team-auth.matrixo.in</strong></p>
                     </div>
                     <div className="flex items-start gap-3">
-                      <div className="w-5 h-5 rounded-full bg-blue-500/15 flex items-center justify-center text-blue-400 text-xs font-bold flex-shrink-0">3</div>
-                      <p className="text-sm text-slate-300">Tap <strong className="text-white">Share ??'</strong> <strong className="text-white">Add to Home Screen</strong></p>
+                      <div className="w-5 h-5 rounded-full bg-purple-500/20 flex items-center justify-center text-purple-400 text-xs font-bold flex-shrink-0">3</div>
+                      <p className="text-sm text-neutral-300">Tap <strong className="text-white">Share ??'</strong> <strong className="text-white">Add to Home Screen</strong></p>
                     </div>
                     <div className="flex items-start gap-3">
-                      <div className="w-5 h-5 rounded-full bg-blue-500/15 flex items-center justify-center text-blue-400 text-xs font-bold flex-shrink-0">4</div>
-                      <p className="text-sm text-slate-300">Open the app ??" tap <strong className="text-white">"Enable Location"</strong> and allow the popup</p>
+                      <div className="w-5 h-5 rounded-full bg-purple-500/20 flex items-center justify-center text-purple-400 text-xs font-bold flex-shrink-0">4</div>
+                      <p className="text-sm text-neutral-300">Open the app ??" tap <strong className="text-white">"Enable Location"</strong> and allow the popup</p>
                     </div>
                   </div>
                 </div>
@@ -641,7 +659,7 @@ export function AttendanceMarker({ onAttendanceMarked }: { onAttendanceMarked?: 
               <div className="flex gap-3">
                 <button
                   onClick={() => setShowIOSInstructions(false)}
-                  className="flex-1 px-4 py-3 bg-slate-800 hover:bg-slate-700 text-white font-medium rounded-xl transition-all"
+                  className="flex-1 px-4 py-3 bg-neutral-800 hover:bg-neutral-700 text-white font-medium rounded-xl transition-all"
                 >
                   Close
                 </button>
@@ -672,7 +690,7 @@ export function AttendanceMarker({ onAttendanceMarked }: { onAttendanceMarked?: 
                   }}
                   className="flex-1 px-4 py-3 bg-blue-500 hover:bg-blue-400 text-white font-medium rounded-xl transition-all flex items-center justify-center gap-2"
                 >
-                  <Navigation />
+                  <FaLocationArrow />
                   Try Again
                 </button>
               </div>
@@ -686,11 +704,11 @@ export function AttendanceMarker({ onAttendanceMarked }: { onAttendanceMarked?: 
         <div className="mb-6 p-4 bg-gradient-to-r from-red-500/20 to-orange-500/20 border border-red-500/30 rounded-xl">
           <div className="flex items-start gap-3">
             <div className="w-10 h-10 rounded-lg bg-red-500/20 flex items-center justify-center flex-shrink-0">
-              <AlertTriangle className="text-red-400" />
+              <FaExclamationTriangle className="text-red-400" />
             </div>
             <div className="flex-1">
               <h3 className="font-semibold text-red-400">Attendance Cutoff Passed</h3>
-              <p className="text-sm text-slate-400 mt-1">
+              <p className="text-sm text-neutral-400 mt-1">
                 The attendance marking window has closed for today. The daily cutoff is 7:30 PM. 
                 Your attendance for today will be marked as Absent. Contact your admin if you need corrections.
               </p>
@@ -704,18 +722,18 @@ export function AttendanceMarker({ onAttendanceMarked }: { onAttendanceMarked?: 
         <div className="mb-6 p-4 bg-gradient-to-r from-amber-500/20 to-orange-500/20 border border-amber-500/30 rounded-xl">
           <div className="flex items-start gap-3">
             <div className="w-10 h-10 rounded-lg bg-amber-500/20 flex items-center justify-center flex-shrink-0">
-              <Navigation className="text-amber-400" />
+              <FaLocationArrow className="text-amber-400" />
             </div>
             <div className="flex-1">
               <h3 className="font-semibold text-amber-400">Location Access Required</h3>
-              <p className="text-sm text-slate-400 mt-1">
+              <p className="text-sm text-neutral-400 mt-1">
                 {isIOSPWAMode
                   ? 'Tap "Enable Location" below ??" iOS will ask for permission in a popup. You must tap "Allow" to continue.'
                   : 'Location services are mandatory for marking attendance. Please enable location access to continue.'}
               </p>
               {isIOSPWAMode && (
                 <p className="text-xs text-amber-300/80 mt-1.5 flex items-start gap-1">
-                  <Smartphone className="flex-shrink-0 mt-0.5" />
+                  <FaApple className="flex-shrink-0 mt-0.5" />
                   <span>This is a Home Screen app ??" <strong>each tap on "Enable Location" triggers the iOS dialog.</strong> Tap it now if you haven't seen the popup yet.</span>
                 </p>
               )}
@@ -728,7 +746,7 @@ export function AttendanceMarker({ onAttendanceMarked }: { onAttendanceMarked?: 
                 onClick={requestLocationPermission}
                 className="mt-3 px-4 py-2 bg-amber-500 hover:bg-amber-400 text-black font-semibold rounded-lg transition-all flex items-center gap-2 text-sm"
               >
-                <Navigation />
+                <FaLocationArrow />
                 {isIOSPWAMode ? 'Enable Location (iOS)' : 'Enable Location'}
               </button>
             </div>
@@ -739,36 +757,36 @@ export function AttendanceMarker({ onAttendanceMarked }: { onAttendanceMarked?: 
       {/* Header */}
       <div className="flex flex-col gap-3 sm:gap-4 mb-4 sm:mb-6">
         <div>
-          <h2 className="text-xl sm:text-2xl font-bold text-white flex items-center gap-2">
-            <CalendarCheck className="text-primary-500" />
+          <h2 className="text-xl sm:text-2xl font-bold text-[#0F172A] dark:text-[#F8FAFC] flex items-center gap-2">
+            <FaCalendarCheck className="text-[#2563EB]" />
             Mark Attendance
           </h2>
-          <p className="text-slate-400 text-sm sm:text-base mt-1">{formattedDate}</p>
+          <p className="text-[#475569] dark:text-[#94A3B8] text-sm sm:text-base mt-1">{formattedDate}</p>
         </div>
         <div className="flex flex-wrap items-center gap-2 sm:gap-3">
           {/* Location Status Indicator */}
           <button
             onClick={locationStatus !== 'granted' ? requestLocationPermission : undefined}
             className={`
-              flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium transition-all whitespace-nowrap
+              flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-[12px] text-xs sm:text-sm font-medium transition-all whitespace-nowrap
               ${locationStatus === 'granted' 
-                ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' 
+                ? 'bg-green-50 text-green-700 border border-green-200' 
                 : locationStatus === 'denied' 
-                  ? 'bg-red-500/20 text-red-400 border border-red-500/30 hover:bg-red-500/30 cursor-pointer' 
-                  : 'bg-amber-500/20 text-amber-400 border border-amber-500/30 hover:bg-amber-500/30 cursor-pointer'
+                  ? 'bg-red-50 text-red-700 border border-red-200 hover:bg-red-100 cursor-pointer' 
+                  : 'bg-yellow-50 text-yellow-700 border border-yellow-200 hover:bg-yellow-100 cursor-pointer'
               }
             `}
           >
-            <Navigation />
+            <FaLocationArrow />
             <span>
-              {locationStatus === 'granted' ? '?o" Location On' : 
+              {locationStatus === 'granted' ? '✓ Location On' : 
                locationStatus === 'denied' ? 'Enable Location' : 
                'Enable Location'}
             </span>
           </button>
           
-          <div className="flex items-center gap-1.5 sm:gap-2 text-white bg-white/5 backdrop-blur-xl border border-white/10 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl whitespace-nowrap">
-            <Clock className="text-primary-400 text-sm sm:text-base" />
+          <div className="flex items-center gap-1.5 sm:gap-2 text-[#0F172A] dark:text-[#F8FAFC] bg-[#FFFFFF] dark:bg-[#101C30] border border-[rgba(15,23,42,0.06)] dark:border-[rgba(255,255,255,0.06)] shadow-[0_4px_20px_rgba(15,23,42,0.05)] dark:shadow-[0_10px_30px_rgba(0,0,0,0.25)] px-3 sm:px-4 py-1.5 sm:py-2 rounded-[14px] whitespace-nowrap">
+            <FaClock className="text-[#2563EB] text-sm sm:text-base" />
             <span className="text-base sm:text-lg font-mono tabular-nums">{formattedTime}</span>
           </div>
         </div>
@@ -777,26 +795,26 @@ export function AttendanceMarker({ onAttendanceMarked }: { onAttendanceMarked?: 
       {todayAttendance ? (
         <div className="space-y-3 sm:space-y-4">
           {/* Attendance Status Card */}
-          <div className="bg-slate-800/50 rounded-lg sm:rounded-xl p-4 sm:p-6 border border-slate-700">
+          <div className="bg-[#FFFFFF] dark:bg-[#0B172A] rounded-[20px] p-4 sm:p-6 border border-[rgba(15,23,42,0.06)] dark:border-[rgba(255,255,255,0.08)] shadow-[0_4px_20px_rgba(15,23,42,0.02)] dark:shadow-none">
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
-              <div className={`w-12 h-12 sm:w-16 sm:h-16 rounded-lg sm:rounded-xl ${statusConfig[todayAttendance.status].color} flex items-center justify-center flex-shrink-0`}>
+              <div className={`w-12 h-12 sm:w-16 sm:h-16 rounded-[14px] ${statusConfig[todayAttendance.status].color} flex items-center justify-center flex-shrink-0`}>
                 {(() => {
                   const Icon = statusConfig[todayAttendance.status].icon
                   return <Icon className="text-xl sm:text-3xl text-white" />
                 })()}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-slate-400 text-xs sm:text-sm">Today's Status</p>
-                <p className="text-xl sm:text-2xl font-bold text-white">
+                <p className="text-[#475569] dark:text-[#94A3B8] text-xs sm:text-sm">Today's Status</p>
+                <p className="text-xl sm:text-2xl font-bold text-[#0F172A] dark:text-[#F8FAFC]">
                   {statusConfig[todayAttendance.status].label}
                 </p>
                 {todayAttendance.checkInTime && (
-                  <p className="text-slate-400 text-xs sm:text-sm mt-1">
+                  <p className="text-[#475569] dark:text-[#94A3B8] text-xs sm:text-sm mt-1">
                     Checked in at {todayAttendance.checkInTime}
                   </p>
                 )}
                 {todayAttendance.onDutyLocation && (
-                  <p className="text-blue-400 text-xs sm:text-sm mt-1 truncate">
+                  <p className="text-[#2563EB] text-xs sm:text-sm mt-1 truncate">
                     Location: {todayAttendance.onDutyLocation}
                   </p>
                 )}
@@ -812,20 +830,20 @@ export function AttendanceMarker({ onAttendanceMarked }: { onAttendanceMarked?: 
                 </div>
               </div>
               <div className="text-left sm:text-right flex sm:flex-col items-center sm:items-end gap-2 sm:gap-0 w-full sm:w-auto mt-2 sm:mt-0">
-                <div className="flex items-center gap-1 text-emerald-400 text-xs sm:text-sm">
-                  <Shield />
+                <div className="flex items-center gap-1 text-emerald-600 text-xs sm:text-sm">
+                  <FaShieldAlt />
                   <span>Verified</span>
                 </div>
-                <p className="text-slate-500 text-xs mt-0 sm:mt-1">Cannot re-mark</p>
+                <p className="text-gray-500 text-xs mt-0 sm:mt-1">Cannot re-mark</p>
               </div>
             </div>
           </div>
 
           {/* Daily Report Section - Editable until 6:00 PM */}
-          <div className="bg-slate-800/50 rounded-xl p-4 border border-slate-700">
+          <div className="bg-[#FFFFFF] dark:bg-[#0B172A] rounded-[20px] p-4 border border-[rgba(15,23,42,0.06)] dark:border-[rgba(255,255,255,0.08)] shadow-[0_4px_20px_rgba(15,23,42,0.02)] dark:shadow-none">
             <div className="flex items-center justify-between mb-3">
-              <label className="text-sm font-medium text-slate-300 flex items-center gap-2">
-                <History className="text-primary-400" />
+              <label className="text-sm font-medium text-[#0F172A] dark:text-[#F8FAFC] flex items-center gap-2">
+                <FaHistory className="text-[#2563EB]" />
                 Daily Report
               </label>
               {isEditingAllowed() ? (
@@ -846,9 +864,8 @@ export function AttendanceMarker({ onAttendanceMarked }: { onAttendanceMarked?: 
             </div>
             
             {editingNotes && isEditingAllowed() ? (
-              <div className="space-y-3">
-                {/* Rich Text Toolbar for Edit Mode */}
-                <div className="flex items-center gap-1 p-2 bg-slate-900 rounded-t-lg border border-slate-700 border-b-0">
+              <div className="space-y-3">                {/* Rich Text Toolbar for Edit Mode */}
+                <div className="flex items-center gap-1 p-2 bg-[#F5F7FB] dark:bg-[#101C30] rounded-t-[12px] border border-[rgba(15,23,42,0.08)] dark:border-[rgba(255,255,255,0.08)] border-b-0">
                   <button
                     type="button"
                     onClick={() => {
@@ -865,7 +882,7 @@ export function AttendanceMarker({ onAttendanceMarked }: { onAttendanceMarked?: 
                         }, 0)
                       }
                     }}
-                    className="p-2 hover:bg-slate-700 rounded text-slate-300 hover:text-white transition-colors font-bold"
+                    className="p-2 hover:bg-[#EEF3F8] dark:hover:bg-[#152542] rounded text-[#475569] hover:text-[#0F172A] dark:text-[#94A3B8] dark:hover:text-[#F8FAFC] transition-colors font-bold"
                     title="Bold"
                   >
                     B
@@ -886,7 +903,7 @@ export function AttendanceMarker({ onAttendanceMarked }: { onAttendanceMarked?: 
                         }, 0)
                       }
                     }}
-                    className="p-2 hover:bg-slate-700 rounded text-slate-300 hover:text-white transition-colors italic"
+                    className="p-2 hover:bg-[#EEF3F8] dark:hover:bg-[#152542] rounded text-[#475569] hover:text-[#0F172A] dark:text-[#94A3B8] dark:hover:text-[#F8FAFC] transition-colors italic"
                     title="Italic"
                   >
                     I
@@ -907,19 +924,19 @@ export function AttendanceMarker({ onAttendanceMarked }: { onAttendanceMarked?: 
                         }, 0)
                       }
                     }}
-                    className="p-2 hover:bg-slate-700 rounded text-slate-300 hover:text-white transition-colors underline"
+                    className="p-2 hover:bg-[#EEF3F8] dark:hover:bg-[#152542] rounded text-[#475569] hover:text-[#0F172A] dark:text-[#94A3B8] dark:hover:text-[#F8FAFC] transition-colors underline"
                     title="Underline"
                   >
                     U
                   </button>
-                  <div className="w-px h-6 bg-slate-600 mx-1" />
+                  <div className="w-px h-6 bg-[rgba(15,23,42,0.12)] dark:bg-[rgba(255,255,255,0.12)] mx-1" />
                   <button
                     type="button"
                     onClick={() => {
                       const textarea = document.getElementById('edit-report-textarea') as HTMLTextAreaElement
                       if (textarea) {
                         const start = textarea.selectionStart
-                        const newText = updatedNotes.substring(0, start) + '\n??? ' + updatedNotes.substring(start)
+                        const newText = updatedNotes.substring(0, start) + '\n• ' + updatedNotes.substring(start)
                         setUpdatedNotes(newText)
                         setTimeout(() => {
                           textarea.focus()
@@ -927,10 +944,10 @@ export function AttendanceMarker({ onAttendanceMarked }: { onAttendanceMarked?: 
                         }, 0)
                       }
                     }}
-                    className="p-2 hover:bg-slate-700 rounded text-slate-300 hover:text-white transition-colors flex items-center gap-1"
+                    className="p-2 hover:bg-[#EEF3F8] dark:hover:bg-[#152542] rounded text-[#475569] hover:text-[#0F172A] dark:text-[#94A3B8] dark:hover:text-[#F8FAFC] transition-colors flex items-center gap-1"
                     title="Bullet Point"
                   >
-                    <span className="text-lg leading-none">???</span>
+                    <span className="text-lg leading-none">•</span>
                     <span className="text-xs">List</span>
                   </button>
                   <button
@@ -958,7 +975,7 @@ export function AttendanceMarker({ onAttendanceMarked }: { onAttendanceMarked?: 
                         }, 0)
                       }
                     }}
-                    className="p-2 hover:bg-slate-700 rounded text-slate-300 hover:text-white transition-colors flex items-center gap-1"
+                    className="p-2 hover:bg-[#EEF3F8] dark:hover:bg-[#152542] rounded text-[#475569] hover:text-[#0F172A] dark:text-[#94A3B8] dark:hover:text-[#F8FAFC] transition-colors flex items-center gap-1"
                     title="Numbered List"
                   >
                     <span className="text-sm leading-none">1.</span>
@@ -971,7 +988,7 @@ export function AttendanceMarker({ onAttendanceMarked }: { onAttendanceMarked?: 
                   onChange={(e) => setUpdatedNotes(e.target.value)}
                   placeholder="Describe what you worked on today, tasks completed, meetings attended, etc."
                   rows={4}
-                  className="w-full px-4 py-3 bg-slate-900 border border-slate-700 border-t-0 rounded-b-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 resize-none font-mono text-sm"
+                  className="w-full px-4 py-3 bg-[#FFFFFF] dark:bg-[#0B172A] border border-[rgba(15,23,42,0.08)] dark:border-[rgba(255,255,255,0.08)] border-t-0 rounded-b-[12px] text-[#0F172A] dark:text-[#F8FAFC] placeholder-[#64748B] dark:shadow-inner focus:outline-none focus:ring-2 focus:ring-[#2563EB] dark:focus:ring-1 focus:border-[#2563EB] resize-none font-mono text-sm"
                 />
                 <div className="flex gap-2 justify-end">
                   <Button
@@ -988,7 +1005,7 @@ export function AttendanceMarker({ onAttendanceMarked }: { onAttendanceMarked?: 
                     size="sm"
                     loading={savingNotes}
                     onClick={handleUpdateNotes}
-                    icon={<CheckCircle />}
+                    icon={<FaCheckCircle />}
                   >
                     Save Report
                   </Button>
@@ -996,15 +1013,15 @@ export function AttendanceMarker({ onAttendanceMarked }: { onAttendanceMarked?: 
               </div>
             ) : (
               <div>
-                <div className="text-slate-300 text-sm whitespace-pre-wrap">
+                <div className="text-[#475569] dark:text-neutral-300 text-sm whitespace-pre-wrap">
                   {todayAttendance.notes ? (
                     <LinkifiedText text={todayAttendance.notes} />
                   ) : (
-                    <span className="text-slate-500 italic">No daily report submitted.</span>
+                    <span className="text-[#64748B] dark:text-neutral-500 italic">No daily report submitted.</span>
                   )}
                 </div>
                 {isEditingAllowed() && (
-                  <p className="text-xs text-amber-400 mt-2">
+                  <p className="text-xs text-[#D97706] dark:text-amber-400 mt-2">
                     You can update your daily report until 6:00 PM
                   </p>
                 )}
@@ -1026,7 +1043,7 @@ export function AttendanceMarker({ onAttendanceMarked }: { onAttendanceMarked?: 
 
           {/* Location Permission Notice */}
           {locationStatus !== 'granted' && (
-            <Alert variant="warning" icon={<MapPin />}>
+            <Alert variant="warning" icon={<FaMapMarkerAlt />}>
               <strong>Location Required:</strong> Please enable location access for accurate attendance verification. 
               Your location will be captured when you mark attendance to verify you're at the office.
             </Alert>
@@ -1034,7 +1051,7 @@ export function AttendanceMarker({ onAttendanceMarked }: { onAttendanceMarked?: 
 
           {/* Status Options */}
           <div>
-            <label className="text-sm font-medium text-slate-300 mb-3 block">Select Status</label>
+            <label className="text-sm font-medium text-[#475569] dark:text-neutral-300 mb-3 block">Select Status</label>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               {availableStatuses.map(({ status, label, icon: Icon, color, textColor, bgLight }) => (
                 <motion.button
@@ -1051,17 +1068,17 @@ export function AttendanceMarker({ onAttendanceMarked }: { onAttendanceMarked?: 
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   className={`
-                    p-4 rounded-xl border-2 transition-all flex items-center gap-3
+                    p-4 rounded-[16px] border transition-all flex items-center gap-3 bg-[#FFFFFF] dark:bg-[#101C30] shadow-[0_4px_20px_rgba(15,23,42,0.05)] dark:shadow-[0_10px_30px_rgba(0,0,0,0.25)]
                     ${selectedStatus === status
-                      ? `${color} border-white/50 shadow-lg`
-                      : 'bg-slate-800/50 border-slate-700 hover:border-slate-600'
+                      ? `border-[#2563EB] shadow-[0_4px_12px_rgba(37,99,235,0.15)] ring-1 ring-[#2563EB]`
+                      : 'border-[rgba(15,23,42,0.08)] dark:border-[rgba(255,255,255,0.06)] hover:border-[rgba(15,23,42,0.15)] dark:hover:border-[rgba(255,255,255,0.12)]'
                     }
                   `}
                 >
-                  <div className={`w-10 h-10 rounded-lg ${selectedStatus === status ? 'bg-white/20' : bgLight} flex items-center justify-center`}>
-                    <Icon className={`text-xl ${selectedStatus === status ? 'text-white' : textColor}`} />
+                  <div className={`w-10 h-10 rounded-[12px] ${bgLight} flex items-center justify-center`}>
+                    <Icon className={`text-xl ${textColor}`} />
                   </div>
-                  <span className={`font-medium ${selectedStatus === status ? 'text-white' : 'text-slate-300'}`}>
+                  <span className={`font-medium ${selectedStatus === status ? 'text-[#0F172A] dark:text-[#F8FAFC]' : 'text-[#475569] dark:text-[#94A3B8]'}`}>
                     {label}
                   </span>
                 </motion.button>
@@ -1114,20 +1131,20 @@ export function AttendanceMarker({ onAttendanceMarked }: { onAttendanceMarked?: 
               {/* Validation Warning */}
               {leaveRequestForm.endDate && leaveRequestForm.startDate > leaveRequestForm.endDate && (
                 <div className="flex items-center gap-2 text-red-400 text-sm bg-red-500/10 border border-red-500/30 rounded-lg px-4 py-3">
-                  <AlertTriangle />
+                  <FaExclamationTriangle />
                   <span>End date cannot be before start date</span>
                 </div>
               )}
 
               {/* Leave Type Dropdown */}
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">
+                <label className="block text-sm font-medium text-[#475569] dark:text-[#94A3B8] mb-2">
                   Leave Type
                 </label>
                 <select
                   value={leaveRequestForm.leaveType}
                   onChange={(e) => setLeaveRequestForm(prev => ({ ...prev, leaveType: e.target.value as LeaveType }))}
-                  className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-amber-500 text-sm"
+                  className="w-full px-4 py-3 bg-[#FFFFFF] dark:bg-[#0B172A] border border-[rgba(15,23,42,0.08)] dark:border-[rgba(255,255,255,0.08)] rounded-lg text-[#0F172A] dark:text-[#F8FAFC] focus:outline-none focus:ring-2 focus:ring-[#2563EB] dark:focus:ring-1 text-sm dark:shadow-inner"
                 >
                   {leaveTypeOptions.map((type) => (
                     <option key={type} value={type}>{type}</option>
@@ -1144,7 +1161,7 @@ export function AttendanceMarker({ onAttendanceMarked }: { onAttendanceMarked?: 
               />
               
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">
+                <label className="block text-sm font-medium text-[#475569] dark:text-[#94A3B8] mb-2">
                   Formal Leave Letter
                 </label>
                 <textarea
@@ -1152,13 +1169,13 @@ export function AttendanceMarker({ onAttendanceMarked }: { onAttendanceMarked?: 
                   onChange={(e) => setLeaveRequestForm(prev => ({ ...prev, letter: e.target.value }))}
                   placeholder="Write your formal leave application here..."
                   rows={5}
-                  className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500 resize-none text-sm"
+                  className="w-full px-4 py-3 bg-[#FFFFFF] dark:bg-[#0B172A] border border-[rgba(15,23,42,0.08)] dark:border-[rgba(255,255,255,0.08)] rounded-lg text-[#0F172A] dark:text-[#F8FAFC] placeholder-[#64748B] focus:outline-none focus:ring-2 focus:ring-[#2563EB] dark:focus:ring-1 resize-none text-sm dark:shadow-inner"
                   required
                 />
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">
+                <label className="block text-sm font-medium text-[#475569] dark:text-[#94A3B8] mb-2">
                   Brief Reason
                 </label>
                 <textarea
@@ -1166,12 +1183,12 @@ export function AttendanceMarker({ onAttendanceMarked }: { onAttendanceMarked?: 
                   onChange={(e) => setLeaveRequestForm(prev => ({ ...prev, reason: e.target.value }))}
                   placeholder="Brief reason for leave..."
                   rows={2}
-                  className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500 resize-none text-sm"
+                  className="w-full px-4 py-3 bg-[#FFFFFF] dark:bg-[#0B172A] border border-[rgba(15,23,42,0.08)] dark:border-[rgba(255,255,255,0.08)] rounded-lg text-[#0F172A] dark:text-[#F8FAFC] placeholder-[#64748B] focus:outline-none focus:ring-2 focus:ring-[#2563EB] dark:focus:ring-1 resize-none text-sm dark:shadow-inner"
                   required
                 />
               </div>
               
-              <div className="flex justify-end gap-3 pt-4 border-t border-slate-800">
+              <div className="flex justify-end gap-3 pt-4 border-t border-[rgba(15,23,42,0.08)] dark:border-neutral-800">
                 <Button variant="ghost" onClick={() => setShowLeaveRequestModal(false)}>
                   Cancel
                 </Button>
@@ -1186,7 +1203,7 @@ export function AttendanceMarker({ onAttendanceMarked }: { onAttendanceMarked?: 
                     leaveRequestForm.startDate > leaveRequestForm.endDate ||
                     totalLeaveDays === 0
                   }
-                  icon={<Mail />}
+                  icon={<FaEnvelope />}
                   className="bg-amber-500 hover:bg-amber-600"
                   onClick={async () => {
                     console.log('=== MULTI-DAY LEAVE REQUEST SUBMISSION START ===')
@@ -1273,7 +1290,7 @@ export function AttendanceMarker({ onAttendanceMarked }: { onAttendanceMarked?: 
               >
                 <Card className="border-l-4 border-l-blue-500">
                   <p className="text-sm text-blue-400 font-medium flex items-center gap-2 mb-4">
-                    <Briefcase />
+                    <FaBriefcase />
                     On Duty Details
                   </p>
                   <Input
@@ -1288,15 +1305,15 @@ export function AttendanceMarker({ onAttendanceMarked }: { onAttendanceMarked?: 
 
           {/* Daily Report - Required */}
           <div className="space-y-2">
-            <label className="text-sm font-medium text-slate-300 block">
-              Daily Report <span className="text-red-400">*</span>
+            <label className="text-sm font-medium text-[#0F172A] dark:text-neutral-300 block">
+              Daily Report <span className="text-red-500 dark:text-red-400">*</span>
             </label>
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-[#475569] dark:text-neutral-500">
               Describe your tasks, meetings, and accomplishments for today.
             </p>
             
             {/* Rich Text Toolbar */}
-            <div className="flex items-center gap-1 p-2 bg-slate-800/50 rounded-t-lg border border-slate-700 border-b-0">
+            <div className="flex items-center gap-1 p-2 bg-[#F5F7FB] dark:bg-[#101C30] rounded-t-[12px] border border-[rgba(15,23,42,0.08)] dark:border-[rgba(255,255,255,0.08)] border-b-0">
               <button
                 type="button"
                 onClick={() => {
@@ -1313,7 +1330,7 @@ export function AttendanceMarker({ onAttendanceMarked }: { onAttendanceMarked?: 
                     }, 0)
                   }
                 }}
-                className="p-2 hover:bg-slate-700 rounded text-slate-300 hover:text-white transition-colors font-bold"
+                className="p-2 hover:bg-[#EEF3F8] dark:hover:bg-[#152542] rounded text-[#475569] hover:text-[#0F172A] dark:text-[#94A3B8] dark:hover:text-[#F8FAFC] transition-colors font-bold"
                 title="Bold"
               >
                 B
@@ -1334,7 +1351,7 @@ export function AttendanceMarker({ onAttendanceMarked }: { onAttendanceMarked?: 
                     }, 0)
                   }
                 }}
-                className="p-2 hover:bg-slate-700 rounded text-slate-300 hover:text-white transition-colors italic"
+                className="p-2 hover:bg-[#EEF3F8] dark:hover:bg-[#152542] rounded text-[#475569] hover:text-[#0F172A] dark:text-[#94A3B8] dark:hover:text-[#F8FAFC] transition-colors italic"
                 title="Italic"
               >
                 I
@@ -1355,19 +1372,19 @@ export function AttendanceMarker({ onAttendanceMarked }: { onAttendanceMarked?: 
                     }, 0)
                   }
                 }}
-                className="p-2 hover:bg-slate-700 rounded text-slate-300 hover:text-white transition-colors underline"
+                className="p-2 hover:bg-[#EEF3F8] dark:hover:bg-[#152542] rounded text-[#475569] hover:text-[#0F172A] dark:text-[#94A3B8] dark:hover:text-[#F8FAFC] transition-colors underline"
                 title="Underline"
               >
                 U
               </button>
-              <div className="w-px h-6 bg-slate-600 mx-1" />
+              <div className="w-px h-6 bg-[rgba(15,23,42,0.12)] dark:bg-[rgba(255,255,255,0.12)] mx-1" />
               <button
                 type="button"
                 onClick={() => {
                   const textarea = document.getElementById('daily-report-textarea') as HTMLTextAreaElement
                   if (textarea) {
                     const start = textarea.selectionStart
-                    const newText = notes.substring(0, start) + '\n??? ' + notes.substring(start)
+                    const newText = notes.substring(0, start) + '\n• ' + notes.substring(start)
                     setNotes(newText)
                     setTimeout(() => {
                       textarea.focus()
@@ -1375,10 +1392,10 @@ export function AttendanceMarker({ onAttendanceMarked }: { onAttendanceMarked?: 
                     }, 0)
                   }
                 }}
-                className="p-2 hover:bg-slate-700 rounded text-slate-300 hover:text-white transition-colors flex items-center gap-1"
+                className="p-2 hover:bg-[#EEF3F8] dark:hover:bg-[#152542] rounded text-[#475569] hover:text-[#0F172A] dark:text-[#94A3B8] dark:hover:text-[#F8FAFC] transition-colors flex items-center gap-1"
                 title="Bullet Point"
               >
-                <span className="text-lg leading-none">???</span>
+                <span className="text-lg leading-none">•</span>
                 <span className="text-xs">List</span>
               </button>
               <button
@@ -1407,7 +1424,7 @@ export function AttendanceMarker({ onAttendanceMarked }: { onAttendanceMarked?: 
                     }, 0)
                   }
                 }}
-                className="p-2 hover:bg-slate-700 rounded text-slate-300 hover:text-white transition-colors flex items-center gap-1"
+                className="p-2 hover:bg-[#152542] rounded text-[#94A3B8] hover:text-[#F8FAFC] transition-colors flex items-center gap-1"
                 title="Numbered List"
               >
                 <span className="text-sm leading-none">1.</span>
@@ -1419,13 +1436,13 @@ export function AttendanceMarker({ onAttendanceMarked }: { onAttendanceMarked?: 
               id="daily-report-textarea"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              placeholder="Describe your tasks, meetings attended, accomplishments, etc.&#10;&#10;Example:&#10;??? Completed UI design for dashboard&#10;??? Attended sprint planning meeting&#10;??? Fixed bug in user authentication"
+              placeholder="Describe your tasks, meetings attended, accomplishments, etc.&#10;&#10;Example:&#10;• Completed UI design for dashboard&#10;• Attended sprint planning meeting&#10;• Fixed bug in user authentication"
               rows={5}
-              className="w-full px-4 py-3 bg-slate-900 border border-slate-700 border-t-0 rounded-b-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 resize-none font-mono text-sm"
+              className="w-full px-4 py-3 bg-[#FFFFFF] dark:bg-[#0B172A] border border-[rgba(15,23,42,0.08)] dark:border-[rgba(255,255,255,0.08)] border-t-0 rounded-b-[12px] text-[#0F172A] dark:text-[#F8FAFC] placeholder-[#64748B] focus:outline-none focus:ring-2 focus:ring-[#2563EB] dark:focus:ring-1 focus:border-[#2563EB] resize-none font-mono text-sm dark:shadow-inner"
               required
             />
             {!notes.trim() && selectedStatus && (
-              <p className="text-xs text-red-400 mt-1">Daily report is required</p>
+              <p className="text-xs text-red-500 dark:text-red-400 mt-1">Daily report is required</p>
             )}
           </div>
 
@@ -1436,7 +1453,7 @@ export function AttendanceMarker({ onAttendanceMarked }: { onAttendanceMarked?: 
             loading={marking}
             fullWidth
             size="lg"
-            icon={fetchingLocation ? <Navigation /> : <CheckCircle />}
+            icon={fetchingLocation ? <FaLocationArrow /> : <FaCheckCircle />}
           >
             {marking 
               ? (fetchingLocation ? 'Getting Location...' : 'Marking Attendance...') 
@@ -1447,7 +1464,7 @@ export function AttendanceMarker({ onAttendanceMarked }: { onAttendanceMarked?: 
           </Button>
         </div>
       )}
-    </Card>
+    </div>
   )
 }
 
@@ -1467,13 +1484,13 @@ function StatsCard({ title, value, icon: Icon, color, subtext }: StatsCardProps)
   return (
     <motion.div
       whileHover={{ y: -2 }}
-      className="bg-slate-800/50 border border-slate-700 rounded-xl p-4"
+      className="bg-[#FFFFFF] dark:bg-[#101C30] border border-[rgba(15,23,42,0.06)] dark:border-[rgba(255,255,255,0.06)] rounded-xl p-4 shadow-[0_8px_30px_rgba(15,23,42,0.06)] dark:shadow-[0_10px_30px_rgba(0,0,0,0.25)]"
     >
       <div className="flex items-start justify-between">
         <div>
-          <p className="text-slate-400 text-sm">{title}</p>
-          <p className="text-2xl font-bold text-white mt-1">{value}</p>
-          {subtext && <p className="text-slate-500 text-xs mt-0.5">{subtext}</p>}
+          <p className="text-[#475569] dark:text-[#94A3B8] text-sm">{title}</p>
+          <p className="text-2xl font-bold text-[#0F172A] dark:text-[#F8FAFC] mt-1">{value}</p>
+          {subtext && <p className="text-[#64748B] dark:text-[#64748B] text-xs mt-0.5">{subtext}</p>}
         </div>
         <div className={`w-10 h-10 rounded-lg ${color} flex items-center justify-center`}>
           <Icon className="text-lg text-white" />
@@ -1499,7 +1516,7 @@ export function AttendanceDashboard({ refreshKey }: { refreshKey?: number }) {
         // Fetch current month's records
         const now = new Date()
         const startDate = new Date(now.getFullYear(), now.getMonth(), 1)
-        const endDate = new Date()
+        const endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0)
 
         const data = await getAttendanceRecords(startDate, endDate)
         setRecords(data)
@@ -1517,10 +1534,10 @@ export function AttendanceDashboard({ refreshKey }: { refreshKey?: number }) {
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <h2 className="text-xl font-bold text-white">
+        <h2 className="text-xl font-bold text-[#0F172A] dark:text-white">
           {stats.monthName} {stats.year} Attendance
         </h2>
-        <span className="text-sm text-slate-400">
+        <span className="text-sm text-[#475569] dark:text-neutral-400">
           {stats.isMonthComplete
             ? 'Final Monthly Report'
             : `${stats.workingDaysSoFar} of ${stats.totalWorkingDays} working days elapsed`}
@@ -1534,15 +1551,15 @@ export function AttendanceDashboard({ refreshKey }: { refreshKey?: number }) {
       ) : (
         <>
           <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
-            <StatsCard title="Present" value={stats.presentDays} icon={CheckCircle} color="bg-emerald-500" />
-            <StatsCard title="Absent" value={stats.absentDays} icon={XCircle} color="bg-red-500" />
-            <StatsCard title="Leave" value={stats.leaveDays} icon={Umbrella} color="bg-amber-500" />
-            <StatsCard title="On Duty" value={stats.onDutyDays} icon={Briefcase} color="bg-blue-500" />
-            <StatsCard title="Unauth. Leave" value={stats.unauthorisedLeaveDays} icon={Ban} color="bg-rose-600" />
+            <StatsCard title="Present" value={stats.presentDays} icon={FaCheckCircle} color="bg-emerald-500" />
+            <StatsCard title="Absent" value={stats.absentDays} icon={FaTimesCircle} color="bg-red-500" />
+            <StatsCard title="Leave" value={stats.leaveDays} icon={FaUmbrellaBeach} color="bg-amber-500" />
+            <StatsCard title="On Duty" value={stats.onDutyDays} icon={FaBriefcase} color="bg-blue-500" />
+            <StatsCard title="Unauth. Leave" value={stats.unauthorisedLeaveDays} icon={FaBan} color="bg-rose-600" />
             <StatsCard
               title="Working Days"
               value={stats.totalWorkingDays}
-              icon={CalendarCheck}
+              icon={FaCalendarCheck}
               color="bg-indigo-500"
               subtext={`Sundays & holidays excluded`}
             />
@@ -1551,20 +1568,20 @@ export function AttendanceDashboard({ refreshKey }: { refreshKey?: number }) {
           {/* Progress Bar */}
           <Card>
             <div className="flex items-center justify-between mb-3">
-              <span className="text-slate-300">
+              <span className="text-[#475569] dark:text-neutral-300">
                 {stats.isMonthComplete ? 'Final Monthly Attendance' : 'Attendance Rate'}
               </span>
               <span className={`text-2xl font-bold ${
-                stats.attendanceRate >= 80 ? 'text-emerald-400' :
-                stats.attendanceRate >= 60 ? 'text-amber-400' : 'text-red-400'
+                stats.attendanceRate >= 80 ? 'text-emerald-600 dark:text-emerald-400' :
+                stats.attendanceRate >= 60 ? 'text-amber-600 dark:text-amber-400' : 'text-red-600 dark:text-red-400'
               }`}>
                 {stats.attendanceRate}%
               </span>
             </div>
-            <p className="text-xs text-slate-500 mb-3">
+            <p className="text-xs text-[#64748B] dark:text-neutral-500 mb-3">
               {stats.presentDays} present of {stats.totalWorkingDays} working days
             </p>
-            <div className="h-3 bg-slate-800 rounded-full overflow-hidden relative">
+            <div className="h-3 bg-[#EEF3F8] dark:bg-neutral-800 rounded-full overflow-hidden relative">
               <div className="absolute left-[80%] top-0 bottom-0 w-0.5 bg-white/30 z-10" />
               <motion.div
                 initial={{ width: 0 }}
@@ -1577,14 +1594,14 @@ export function AttendanceDashboard({ refreshKey }: { refreshKey?: number }) {
                 }`}
               />
             </div>
-            <div className="flex justify-between mt-2 text-xs text-slate-500">
+            <div className="flex justify-between mt-2 text-xs text-[#64748B] dark:text-neutral-500">
               <span>0%</span>
-              <span className="text-amber-400 font-medium">Target: 80%</span>
+              <span className="text-amber-600 dark:text-amber-400 font-medium">Target: 80%</span>
               <span>100%</span>
             </div>
             {stats.attendanceRate < 80 && (
               <Alert variant="error" className="mt-4">
-                <AlertTriangle className="mr-2" />
+                <FaExclamationTriangle className="mr-2" />
                 Your attendance is below the minimum required 80%. Please improve.
               </Alert>
             )}
@@ -1631,21 +1648,21 @@ export function AttendanceHistory({ refreshKey }: { refreshKey?: number }) {
 
   return (
     <Card padding="lg">
-      <h2 className="text-xl font-bold text-white flex items-center gap-2 mb-6">
-        <History className="text-primary-500" />
+      <h2 className="text-xl font-bold text-[#0F172A] dark:text-white flex items-center gap-2 mb-6">
+        <FaHistory className="text-primary-500" />
         Attendance History
       </h2>
 
       {records.length === 0 ? (
-        <div className="text-center py-12 text-slate-400">
-          <CalendarCheck className="text-5xl mx-auto mb-4 opacity-50" />
+        <div className="text-center py-12 text-[#64748B] dark:text-neutral-400">
+          <FaCalendarCheck className="text-5xl mx-auto mb-4 opacity-50" />
           <p>No attendance records found</p>
         </div>
       ) : (
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="text-left text-slate-400 text-sm border-b border-slate-800">
+              <tr className="text-left text-[#475569] dark:text-neutral-400 text-sm border-b border-[rgba(15,23,42,0.08)] dark:border-neutral-800">
                 <th className="pb-3 pr-4 font-medium">Date</th>
                 <th className="pb-3 pr-4 font-medium">Status</th>
                 <th className="pb-3 pr-4 font-medium">Check In</th>
@@ -1663,14 +1680,14 @@ export function AttendanceHistory({ refreshKey }: { refreshKey?: number }) {
                     initial={{ opacity: 0, x: -20 }} 
                     animate={{ opacity: 1, x: 0 }} 
                     transition={{ delay: index * 0.03 }}
-                    className="border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors"
+                    className="border-b border-[rgba(15,23,42,0.04)] dark:border-neutral-800/50 hover:bg-[#F5F7FB] dark:hover:bg-neutral-800/30 transition-colors"
                   >
                     <td className="py-3 pr-4">
                       <div>
-                        <p className="text-white font-medium">
+                        <p className="text-[#0F172A] dark:text-white font-medium">
                           {date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
                         </p>
-                        <p className="text-slate-500 text-xs">{date.getFullYear()}</p>
+                        <p className="text-[#64748B] dark:text-neutral-500 text-xs">{date.getFullYear()}</p>
                       </div>
                     </td>
                     <td className="py-3 pr-4">
@@ -1687,11 +1704,11 @@ export function AttendanceHistory({ refreshKey }: { refreshKey?: number }) {
                         <config.icon className="mr-1 text-xs" />
                         {config.label}
                         {record.status === 'P' && record.locationVerified && (
-                          <CheckCircle className="ml-1 text-xs" />
+                          <FaCheckCircle className="ml-1 text-xs" />
                         )}
                       </Badge>
                     </td>
-                    <td className="py-3 pr-4 text-slate-300 text-sm">
+                    <td className="py-3 pr-4 text-[#475569] dark:text-neutral-300 text-sm">
                       {record.checkInTime || '-'}
                     </td>
                     <td className="py-3 pr-4">
@@ -1701,7 +1718,7 @@ export function AttendanceHistory({ refreshKey }: { refreshKey?: number }) {
                         longitude={record.longitude}
                       />
                     </td>
-                    <td className="py-3 text-slate-400 text-sm max-w-xs truncate">
+                    <td className="py-3 text-[#64748B] dark:text-neutral-400 text-sm max-w-xs truncate">
                       {record.notes || '-'}
                     </td>
                   </motion.tr>

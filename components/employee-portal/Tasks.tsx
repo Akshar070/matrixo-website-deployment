@@ -4,7 +4,28 @@ import { useState, useMemo, useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import dynamic from 'next/dynamic'
 import { motion, AnimatePresence } from 'framer-motion'
-
+import { 
+  FaTasks, 
+  FaPlus, 
+  FaEdit,
+  FaTrash,
+  FaComment,
+  FaFilter,
+  FaFlag,
+  FaUser,
+  FaUsers,
+  FaClock,
+  FaCheckCircle,
+  FaSpinner as FaSpinnerIcon,
+  FaEye,
+  FaPaperPlane,
+  FaExclamationCircle,
+  FaArrowUp,
+  FaArrowDown,
+  FaSearch,
+  FaSmile,
+  FaCalendar
+} from 'react-icons/fa'
 import { useEmployeeAuth, Task, TaskComment, EmployeeProfile, isAdminOrSubAdmin } from '@/lib/employeePortalContext'
 import { Card, Button, Input, Textarea, Select, Modal, Badge, Avatar, EmptyState, Spinner, ProfileInfo, employeeToProfileData, getLocalProfileImage } from './ui'
 import { RichTextRenderer } from './RichTextEditor'
@@ -17,13 +38,12 @@ import { toast } from 'sonner'
 import { Timestamp } from 'firebase/firestore'
 
 // Dynamic import of RichTextEditor to prevent SSR issues with TipTap
-import { AlertCircle, ArrowDown, ArrowUp, Calendar, CheckCircle, Clock, Edit2, Eye, Filter, Flag, ListTodo, Loader2, MessageSquare, Plus, Search, Send, Smile, Trash2, User, Users } from 'lucide-react'
 const RichTextEditor = dynamic(() => import('./RichTextEditor'), {
   ssr: false,
   loading: () => (
-    <div className="bg-slate-800 border border-slate-700 rounded-xl p-4 animate-pulse" style={{ minHeight: '150px' }}>
-      <div className="h-4 bg-slate-700 rounded w-3/4 mb-2" />
-      <div className="h-4 bg-slate-700 rounded w-1/2" />
+    <div className="bg-[#FFFFFF] dark:bg-neutral-800 border border-[rgba(15,23,42,0.12)] dark:border-neutral-700 rounded-xl p-4 animate-pulse shadow-sm dark:shadow-none" style={{ minHeight: '150px' }}>
+      <div className="h-4 bg-[#E2E8F0] dark:bg-neutral-700 rounded w-3/4 mb-2" />
+      <div className="h-4 bg-[#E2E8F0] dark:bg-neutral-700 rounded w-1/2" />
     </div>
   )
 })
@@ -239,10 +259,10 @@ function MentionInput({
         maxHeight: '256px',
         overflowY: 'auto'
       }}
-      className="bg-slate-800 border border-slate-700 rounded-lg shadow-2xl w-72"
+      className="bg-[#FFFFFF] dark:bg-neutral-800 border border-[rgba(15,23,42,0.08)] dark:border-neutral-700 rounded-lg shadow-2xl w-72"
     >
-      <div className="px-2 py-1.5 bg-slate-900 border-b border-slate-700">
-        <p className="text-xs text-slate-400 font-medium">
+      <div className="px-2 py-1.5 bg-[#F8FAFC] dark:bg-neutral-900 border-b border-[rgba(15,23,42,0.08)] dark:border-neutral-700">
+        <p className="text-xs text-[#64748B] dark:text-neutral-400 font-medium">
           {dropdownType === 'user' ? 'Select a person' : 'Select a department'}
         </p>
       </div>
@@ -252,13 +272,13 @@ function MentionInput({
             key={emp.employeeId}
             onClick={() => selectMention(emp.name)}
             className={`w-full flex items-center gap-3 px-3 py-2 transition-colors text-left ${
-              index === selectedIndex ? 'bg-primary-500/30 border-l-2 border-primary-500' : 'hover:bg-slate-700'
+              index === selectedIndex ? 'bg-[#2563EB]/10 border-l-2 border-[#2563EB]' : 'hover:bg-[#F1F5F9] dark:hover:bg-neutral-700'
             }`}
           >
             <Avatar src={getEmpProfileImage(emp.profileImage, emp.employeeId)} name={emp.name} size="sm" showBorder={false} />
             <div className="flex-1 min-w-0">
-              <p className="text-sm text-white font-medium truncate">{emp.name}</p>
-              <p className="text-xs text-slate-500 truncate">{emp.department}</p>
+              <p className="text-sm text-[#0F172A] dark:text-white font-medium truncate">{emp.name}</p>
+              <p className="text-xs text-[#64748B] dark:text-neutral-500 truncate">{emp.department}</p>
             </div>
           </button>
         ))
@@ -268,15 +288,15 @@ function MentionInput({
             key={dept}
             onClick={() => selectMention(dept)}
             className={`w-full flex items-center gap-3 px-3 py-2 transition-colors text-left ${
-              index === selectedIndex ? 'bg-primary-500/30 border-l-2 border-primary-500' : 'hover:bg-slate-700'
+              index === selectedIndex ? 'bg-[#2563EB]/10 border-l-2 border-[#2563EB]' : 'hover:bg-[#F1F5F9] dark:hover:bg-neutral-700'
             }`}
           >
             <div className="w-8 h-8 rounded-full bg-amber-500/20 flex items-center justify-center flex-shrink-0">
-              <span className="text-amber-400 text-sm">#</span>
+              <span className="text-amber-500 dark:text-amber-400 text-sm">#</span>
             </div>
             <div>
-              <p className="text-sm text-white font-medium">{dept}</p>
-              <p className="text-xs text-slate-500">Department</p>
+              <p className="text-sm text-[#0F172A] dark:text-white font-medium">{dept}</p>
+              <p className="text-xs text-[#64748B] dark:text-neutral-500">Department</p>
             </div>
           </button>
         ))
@@ -293,20 +313,20 @@ function MentionInput({
         onKeyDown={handleKeyDown}
         placeholder={placeholder}
         rows={2}
-        className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-primary-500/50 resize-y text-sm"
+        className="w-full px-3 py-2 bg-[#F8FAFC] dark:bg-neutral-800 border border-[rgba(15,23,42,0.08)] dark:border-neutral-700 rounded-xl text-[#0F172A] dark:text-white placeholder-[#94A3B8] dark:placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-[#2563EB]/50 resize-y text-sm"
       />
       
       {mounted && dropdownContent && createPortal(dropdownContent, document.body)}
 
       <div className="flex items-center justify-between mt-2">
-        <p className="text-xs text-slate-500">
+        <p className="text-xs text-neutral-500">
           Use @name to mention people, #department to mention teams
         </p>
         <Button
           onClick={handleSubmit}
           loading={loading}
           disabled={!value.trim()}
-          icon={<Send />}
+          icon={<FaPaperPlane />}
           size="sm"
         >
           {buttonText}
@@ -321,17 +341,17 @@ function MentionInput({
 // ============================================
 
 const priorityConfig = {
-  low: { label: 'Low', color: 'bg-slate-500', textColor: 'text-slate-400', icon: ArrowDown },
-  medium: { label: 'Medium', color: 'bg-blue-500', textColor: 'text-blue-400', icon: Flag },
-  high: { label: 'High', color: 'bg-amber-500', textColor: 'text-amber-400', icon: ArrowUp },
-  urgent: { label: 'Urgent', color: 'bg-red-500', textColor: 'text-red-400', icon: AlertCircle }
+  low: { label: 'Low', color: 'bg-[#F1F5F9] text-[#475569] dark:bg-neutral-500 dark:text-neutral-400', textColor: 'text-[#475569] dark:text-neutral-400', icon: FaArrowDown },
+  medium: { label: 'Medium', color: 'bg-[#EFF6FF] text-[#2563EB] dark:bg-blue-500 dark:text-white', textColor: 'text-[#2563EB] dark:text-blue-400', icon: FaFlag },
+  high: { label: 'High', color: 'bg-[#FFFBEB] text-[#D97706] dark:bg-amber-500 dark:text-white', textColor: 'text-[#D97706] dark:text-amber-400', icon: FaArrowUp },
+  urgent: { label: 'Urgent', color: 'bg-[#FEF2F2] text-[#DC2626] dark:bg-red-500 dark:text-white', textColor: 'text-[#DC2626] dark:text-red-400', icon: FaExclamationCircle }
 }
 
 const statusConfig = {
-  'todo': { label: 'To Do', color: 'bg-slate-600' },
-  'in-progress': { label: 'In Progress', color: 'bg-blue-500' },
-  'review': { label: 'In Review', color: 'bg-amber-500' },
-  'completed': { label: 'Completed', color: 'bg-emerald-600 text-white' }
+  'todo': { label: 'To Do', color: 'bg-[#F1F5F9] text-[#475569] dark:bg-neutral-600 dark:text-white' },
+  'in-progress': { label: 'In Progress', color: 'bg-[#EFF6FF] text-[#2563EB] dark:bg-blue-500 dark:text-white' },
+  'review': { label: 'In Review', color: 'bg-[#FFFBEB] text-[#D97706] dark:bg-amber-500 dark:text-white' },
+  'completed': { label: 'Completed', color: 'bg-[#ECFDF3] text-[#16A34A] dark:bg-emerald-600 dark:text-white' }
 }
 
 // ============================================
@@ -533,7 +553,7 @@ function TaskModal({
         />
 
         <div>
-          <label className="block text-sm font-medium text-slate-300 mb-2">
+          <label className="block text-sm font-medium text-neutral-300 mb-2">
             Description
           </label>
           <RichTextEditor
@@ -615,12 +635,12 @@ function TaskModal({
 
         {/* Assignees */}
         <div>
-          <label className="block text-sm font-medium text-slate-300 mb-2">
-            Assign To {form.department && <span className="text-slate-500">({form.department})</span>}
+          <label className="block text-sm font-medium text-neutral-300 mb-2">
+            Assign To {form.department && <span className="text-neutral-500">({form.department})</span>}
           </label>
-          <div className="max-h-40 overflow-y-auto bg-slate-800 rounded-lg p-2 space-y-1">
+          <div className="max-h-40 overflow-y-auto bg-[#FFFFFF] dark:bg-neutral-800 border border-[rgba(15,23,42,0.12)] dark:border-neutral-700 rounded-lg p-2 space-y-1 shadow-sm dark:shadow-none">
             {filteredEmployees.length === 0 ? (
-              <p className="text-sm text-slate-500 p-2 text-center">
+              <p className="text-sm text-neutral-500 p-2 text-center">
                 {form.department ? `No employees in ${form.department}` : 'No employees found'}
               </p>
             ) : (
@@ -633,30 +653,30 @@ function TaskModal({
                     w-full flex items-center gap-3 p-2 rounded-lg transition-colors text-left
                     ${form.assignedTo.includes(emp.employeeId) 
                       ? 'bg-primary-500/20 border border-primary-500/50' 
-                      : 'hover:bg-slate-700'
+                      : 'hover:bg-[#F1F5F9] dark:hover:bg-neutral-700'
                     }
                   `}
                 >
                   <Avatar src={getEmpProfileImage(emp.profileImage, emp.employeeId)} name={emp.name} size="sm" showBorder={false} />
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm text-white truncate">{emp.name}</p>
-                    <p className="text-xs text-slate-500">{isIntern(emp) ? 'Intern' : emp.department}</p>
+                    <p className="text-sm text-[#0F172A] dark:text-white truncate">{emp.name}</p>
+                    <p className="text-xs text-[#64748B] dark:text-neutral-500">{isIntern(emp) ? 'Intern' : emp.department}</p>
                   </div>
                   {form.assignedTo.includes(emp.employeeId) && (
-                    <CheckCircle className="text-primary-500" />
+                    <FaCheckCircle className="text-primary-500" />
                   )}
                 </button>
               ))
             )}
           </div>
           {form.assignedTo.length > 0 && (
-            <p className="text-xs text-slate-500 mt-2">
+            <p className="text-xs text-[#64748B] dark:text-neutral-500 mt-2">
               {form.assignedTo.length} member(s) selected
             </p>
           )}
         </div>
 
-        <div className="flex justify-end gap-3 pt-4 border-t border-slate-800">
+        <div className="flex justify-end gap-3 pt-4 border-t border-[rgba(15,23,42,0.08)] dark:border-neutral-800">
           <Button variant="ghost" onClick={onClose}>Cancel</Button>
           <Button type="submit" loading={loading}>
             {editingTask ? 'Update Task' : 'Create Task'}
@@ -838,14 +858,14 @@ function TaskDetailModal({
                   <Badge variant="info">From Meeting</Badge>
                 )}
               </div>
-              <h2 className="text-xl font-bold text-white">{task.title}</h2>
+              <h2 className="text-xl font-bold text-[#0F172A] dark:text-white">{task.title}</h2>
             </div>
             
             {canDelete && (
               <Button
                 variant="danger"
                 size="sm"
-                icon={<Trash2 />}
+                icon={<FaTrash />}
                 loading={deleting}
                 onClick={handleDeleteTask}
               >
@@ -856,7 +876,7 @@ function TaskDetailModal({
               <Button
                 variant="secondary"
                 size="sm"
-                icon={<Edit2 />}
+                icon={<FaEdit />}
                 onClick={() => {
                   onClose()
                   onEditClick()
@@ -875,27 +895,27 @@ function TaskDetailModal({
         </div>
 
         {/* Meta Info */}
-        <div className="grid grid-cols-2 gap-4 p-4 bg-slate-800/50 rounded-lg">
+        <div className="grid grid-cols-2 gap-4 p-4 bg-[#F8FAFC] dark:bg-neutral-800/50 rounded-lg">
           <div>
-            <p className="text-xs text-slate-500 mb-1">Created by</p>
-            <p className="text-sm text-white">{task.createdFrom === 'meeting' ? 'Fathom' : task.createdByName}</p>
+            <p className="text-xs text-[#64748B] dark:text-neutral-500 mb-1">Created by</p>
+            <p className="text-sm text-[#0F172A] dark:text-white">{task.createdFrom === 'meeting' ? 'Fathom' : task.createdByName}</p>
           </div>
           <div>
-            <p className="text-xs text-slate-500 mb-1">Created</p>
-            <p className="text-sm text-white">{formatTimestamp(task.createdAt)}</p>
+            <p className="text-xs text-[#64748B] dark:text-neutral-500 mb-1">Created</p>
+            <p className="text-sm text-[#0F172A] dark:text-white">{formatTimestamp(task.createdAt)}</p>
           </div>
           {task.dueDate && (
             <div>
-              <p className="text-xs text-slate-500 mb-1">Due Date</p>
-              <p className={`text-sm ${new Date(task.dueDate) < new Date() && task.status !== 'completed' ? 'text-red-400' : 'text-white'}`}>
+              <p className="text-xs text-[#64748B] dark:text-neutral-500 mb-1">Due Date</p>
+              <p className={`text-sm ${new Date(task.dueDate) < new Date() && task.status !== 'completed' ? 'text-red-500 dark:text-red-400' : 'text-[#0F172A] dark:text-white'}`}>
                 {new Date(task.dueDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
               </p>
             </div>
           )}
           {task.assignedToNames?.length > 0 && (
             <div>
-              <p className="text-xs text-slate-500 mb-1">Assigned to</p>
-              <p className="text-sm text-white">{task.assignedToNames.join(', ')}</p>
+              <p className="text-xs text-[#64748B] dark:text-neutral-500 mb-1">Assigned to</p>
+              <p className="text-sm text-[#0F172A] dark:text-white">{task.assignedToNames.join(', ')}</p>
             </div>
           )}
         </div>
@@ -903,7 +923,7 @@ function TaskDetailModal({
         {/* Status Actions */}
         {(canEdit || isAssignee) && (
           <div>
-            <p className="text-sm text-slate-400 mb-2">Update Status</p>
+            <p className="text-sm text-neutral-400 mb-2">Update Status</p>
             <div className="flex flex-wrap gap-2 items-center">
               {Object.entries(statusConfig).map(([status, config]) => (
                 <Button
@@ -920,7 +940,7 @@ function TaskDetailModal({
               {task.status === 'review' && task.approvalStatus === 'pending' && (
                 <>
                   <Badge variant="error" className="flex items-center gap-1">
-                    <AlertCircle className="text-xs" />
+                    <FaExclamationCircle className="text-xs" />
                     Pending Approval
                   </Badge>
                   {isAdmin && (
@@ -929,7 +949,7 @@ function TaskDetailModal({
                       variant="success"
                       loading={approving}
                       onClick={handleApproveTask}
-                      icon={<CheckCircle />}
+                      icon={<FaCheckCircle />}
                     >
                       Approve
                     </Button>
@@ -939,7 +959,7 @@ function TaskDetailModal({
               
               {task.status === 'completed' && task.approvalStatus === 'approved' && (
                 <Badge variant="success" className="flex items-center gap-1">
-                  <CheckCircle className="text-xs" />
+                  <FaCheckCircle className="text-xs" />
                   Approved by {task.approvedByName}
                 </Badge>
               )}
@@ -949,17 +969,17 @@ function TaskDetailModal({
 
         {/* Comments */}
         <div>
-          <h3 className="text-sm font-medium text-slate-300 mb-3 flex items-center gap-2">
-            <MessageSquare />
+          <h3 className="text-sm font-medium text-[#475569] dark:text-neutral-300 mb-3 flex items-center gap-2">
+            <FaComment />
             Comments ({task.comments?.length || 0})
           </h3>
           
           <div className="space-y-3 max-h-96 overflow-y-auto mb-4">
             {task.comments?.length === 0 && (
-              <p className="text-slate-500 text-sm text-center py-4">No comments yet</p>
+              <p className="text-[#64748B] dark:text-neutral-500 text-sm text-center py-4">No comments yet</p>
             )}
             {task.comments?.map((comment) => (
-              <div key={comment.id} className="p-3 bg-slate-800/50 rounded-lg">
+              <div key={comment.id} className="p-3 bg-[#F8FAFC] dark:bg-neutral-800/50 rounded-lg">
                 <div className="flex gap-3">
                   <ProfileInfo
                     data={{
@@ -985,23 +1005,23 @@ function TaskDetailModal({
                         }}
                         isAdmin={false}
                       >
-                        <p className="text-sm font-medium text-white hover:text-primary-400 cursor-pointer">{comment.authorName}</p>
+                        <p className="text-sm font-medium text-[#0F172A] dark:text-white hover:text-[#2563EB] dark:hover:text-primary-400 cursor-pointer">{comment.authorName}</p>
                       </ProfileInfo>
                       <div className="flex items-center gap-2">
-                        <span className="text-xs text-slate-500">
+                        <span className="text-xs text-[#64748B] dark:text-neutral-500">
                           {formatTimestamp(comment.createdAt)}
                         </span>
                         {(comment.authorId === employee?.employeeId || isAdmin) && (
                           <button
                             onClick={() => handleDeleteComment(comment.id)}
-                            className="text-slate-500 hover:text-red-400 transition-colors"
+                            className="text-[#64748B] dark:text-neutral-500 hover:text-red-500 dark:hover:text-red-400 transition-colors"
                           >
-                            <Trash2 className="text-xs" />
+                            <FaTrash className="text-xs" />
                           </button>
                         )}
                       </div>
                     </div>
-                    <div className="text-slate-300 text-sm mt-1">
+                    <div className="text-[#475569] dark:text-neutral-300 text-sm mt-1">
                       {renderCommentContent(comment.text)}
                     </div>
 
@@ -1023,8 +1043,8 @@ function TaskDetailModal({
                                 onClick={() => task.id && toggleTaskCommentReaction(task.id, comment.id, emoji)}
                                 className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-xs transition-all ${
                                   hasReacted 
-                                    ? 'bg-primary-500/20 border border-primary-500/50 text-primary-300' 
-                                    : 'bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700'
+                                    ? 'bg-[#2563EB]/10 border border-[#2563EB]/50 text-[#2563EB] dark:bg-primary-500/20 dark:border-primary-500/50 dark:text-primary-300' 
+                                    : 'bg-[#F1F5F9] border border-[rgba(15,23,42,0.08)] text-[#64748B] hover:bg-[#E2E8F0] dark:bg-neutral-800 dark:border-neutral-700 dark:text-neutral-300 dark:hover:bg-neutral-700'
                                 }`}
                               >
                                 <span className="text-sm">{emoji}</span>
@@ -1039,25 +1059,25 @@ function TaskDetailModal({
                                     animate={{ opacity: 1, y: 0 }}
                                     exit={{ opacity: 0, y: 5 }}
                                     transition={{ duration: 0.15 }}
-                                    className="absolute bottom-full left-0 mb-2 bg-slate-800 border border-slate-700 rounded-xl p-2 shadow-xl z-[100] min-w-[160px] max-w-[220px]"
+                                    className="absolute bottom-full left-0 mb-2 bg-[#FFFFFF] dark:bg-neutral-800 border border-[rgba(15,23,42,0.12)] dark:border-neutral-700 rounded-xl p-2 shadow-xl z-[100] min-w-[160px] max-w-[220px]"
                                   >
-                                    <div className="text-xs text-slate-400 mb-1.5 px-1 flex items-center gap-1.5">
+                                    <div className="text-xs text-[#64748B] dark:text-neutral-400 mb-1.5 px-1 flex items-center gap-1.5">
                                       <span className="text-sm">{emoji}</span>
                                       <span>Reacted by</span>
                                     </div>
                                     <div className="space-y-1 max-h-32 overflow-y-auto">
                                       {reactedUsers.map((user) => (
-                                        <div key={user!.employeeId} className="flex items-center gap-2 px-1 py-0.5 rounded hover:bg-slate-700/50">
+                                        <div key={user!.employeeId} className="flex items-center gap-2 px-1 py-0.5 rounded hover:bg-[#F1F5F9] dark:hover:bg-neutral-700/50">
                                           <img
                                             src={getEmpProfileImage(user!.profileImage, user!.employeeId) || `https://ui-avatars.com/api/?name=${encodeURIComponent(user!.name)}&background=7c3aed&color=fff&size=24`}
                                             alt={user!.name}
                                             className="w-5 h-5 rounded-full object-cover flex-shrink-0"
                                           />
-                                          <p className="text-xs text-white font-medium truncate">{user!.name}</p>
+                                          <p className="text-xs text-[#0F172A] dark:text-white font-medium truncate">{user!.name}</p>
                                         </div>
                                       ))}
                                     </div>
-                                    <div className="absolute -bottom-1 left-3 w-2 h-2 bg-slate-800 border-r border-b border-slate-700 transform rotate-45"></div>
+                                    <div className="absolute -bottom-1 left-3 w-2 h-2 bg-[#FFFFFF] dark:bg-neutral-800 border-r border-b border-[rgba(15,23,42,0.12)] dark:border-neutral-700 transform rotate-45"></div>
                                   </motion.div>
                                 )}
                               </AnimatePresence>
@@ -1071,9 +1091,9 @@ function TaskDetailModal({
                     <div className="relative mt-2">
                       <button
                         onClick={() => setShowReactionPicker(showReactionPicker === comment.id ? null : comment.id)}
-                        className="flex items-center gap-1.5 text-xs text-slate-400 hover:text-amber-400 transition-colors"
+                        className="flex items-center gap-1.5 text-xs text-[#94A3B8] dark:text-neutral-400 hover:text-amber-500 dark:hover:text-amber-400 transition-colors"
                       >
-                        <Smile className="text-xs" />
+                        <FaSmile className="text-xs" />
                         React
                       </button>
                       
@@ -1084,7 +1104,7 @@ function TaskDetailModal({
                             initial={{ opacity: 0, scale: 0.9, y: 5 }}
                             animate={{ opacity: 1, scale: 1, y: 0 }}
                             exit={{ opacity: 0, scale: 0.9, y: 5 }}
-                            className="absolute bottom-full left-0 mb-2 bg-slate-800 border border-slate-700 rounded-xl p-2 shadow-xl z-50"
+                            className="absolute bottom-full left-0 mb-2 bg-[#FFFFFF] dark:bg-neutral-800 border border-[rgba(15,23,42,0.12)] dark:border-neutral-700 rounded-xl p-2 shadow-xl z-50"
                           >
                             <div className="flex gap-1">
                               {['Like', 'Love', 'Laugh', 'Wow', 'Sad', 'Fire', 'Clap', 'Celebrate'].map((emoji) => (
@@ -1096,7 +1116,7 @@ function TaskDetailModal({
                                     }
                                     setShowReactionPicker(null)
                                   }}
-                                  className="text-xl p-1.5 hover:bg-slate-700 rounded-lg transition-colors"
+                                  className="text-xl p-1.5 hover:bg-[#F1F5F9] dark:hover:bg-neutral-700 rounded-lg transition-colors"
                                 >
                                   {emoji}
                                 </button>
@@ -1126,13 +1146,13 @@ function TaskDetailModal({
         </div>
 
         {/* Footer - Task Created By */}
-        <div className="mt-4 pt-3 border-t border-slate-700/50">
-          <p className="text-xs text-slate-500 text-center">
-            Task created by <span className="text-slate-400 font-medium">{task.createdByName}</span>
+        <div className="mt-4 pt-3 border-t border-[rgba(15,23,42,0.06)] dark:border-neutral-700/50">
+          <p className="text-xs text-[#64748B] dark:text-neutral-500 text-center">
+            Task created by <span className="text-[#475569] dark:text-neutral-400 font-medium">{task.createdByName}</span>
           </p>
           {task.editedByName && (
-            <p className="text-xs text-slate-500 text-center mt-1">
-              Task edited by <span className="text-slate-400 font-medium">{task.editedByName}</span>
+            <p className="text-xs text-[#64748B] dark:text-neutral-500 text-center mt-1">
+              Task edited by <span className="text-[#475569] dark:text-neutral-400 font-medium">{task.editedByName}</span>
             </p>
           )}
         </div>
@@ -1159,7 +1179,7 @@ function TaskCard({
   
   const priority = task.priority || 'medium'
   const config = priorityConfig[priority] || priorityConfig.medium
-  const PriorityIcon = config?.icon || Flag
+  const PriorityIcon = config?.icon || FaFlag
 
   return (
     <motion.div
@@ -1168,14 +1188,14 @@ function TaskCard({
       className={`
         p-3 sm:p-4 rounded-lg sm:rounded-xl border cursor-pointer transition-all
         ${isHighlighted 
-          ? 'bg-primary-500/10 border-primary-500/50 ring-2 ring-primary-500/30' 
-          : 'bg-slate-800/50 border-slate-700 hover:border-slate-600'
+          ? 'bg-[#2563EB]/10 border-[#2563EB]/50 ring-2 ring-[#2563EB]/30' 
+          : 'bg-[#F8FAFC] dark:bg-neutral-800/50 border-[rgba(15,23,42,0.06)] dark:border-neutral-700 hover:border-[rgba(15,23,42,0.15)] dark:hover:border-neutral-600'
         }
         ${task.department === 'Management' ? 'border-l-4 border-l-amber-500' : ''}
       `}
     >
       <div className="flex items-start justify-between gap-3 mb-3">
-        <h3 className="font-medium text-white line-clamp-2">{task.title || 'Untitled Task'}</h3>
+        <h3 className="font-medium text-[#0F172A] dark:text-white line-clamp-2">{task.title || 'Untitled Task'}</h3>
         <Badge 
           variant={
             task.priority === 'urgent' ? 'error' :
@@ -1190,13 +1210,13 @@ function TaskCard({
       </div>
 
       {task.description && (
-        <div className="text-slate-400 text-sm line-clamp-2 mb-3 prose prose-invert prose-sm max-w-none prose-p:my-0 prose-ul:my-0 prose-ol:my-0 prose-li:my-0">
+        <div className="text-[#64748B] dark:text-neutral-400 text-sm line-clamp-2 mb-3 prose prose-invert prose-sm max-w-none prose-p:my-0 prose-ul:my-0 prose-ol:my-0 prose-li:my-0">
           <RichTextRenderer content={task.description} className="line-clamp-2" />
         </div>
       )}
 
       {task.createdAt?.toDate && (
-        <p className="text-xs text-slate-500 mb-2">
+        <p className="text-xs text-[#64748B] dark:text-neutral-500 mb-2">
           Created: {task.createdAt.toDate().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
         </p>
       )}
@@ -1214,25 +1234,25 @@ function TaskCard({
           )}
         </div>
         
-        <div className="flex items-center gap-3 text-slate-500 text-sm">
+        <div className="flex items-center gap-3 text-[#64748B] dark:text-neutral-500 text-sm">
           {task.dueDate && (
             <span className={`flex items-center gap-1 ${
               new Date(task.dueDate) < new Date() && task.status !== 'completed' 
-                ? 'text-red-400' : ''
+                ? 'text-red-500 dark:text-red-400' : ''
             }`}>
-              <Clock className="text-xs" />
+              <FaClock className="text-xs" />
               {new Date(task.dueDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
             </span>
           )}
           {task.comments?.length > 0 && (
             <span className="flex items-center gap-1">
-              <MessageSquare className="text-xs" />
+              <FaComment className="text-xs" />
               {task.comments.length}
             </span>
           )}
           {task.assignedTo?.length > 0 && (
             <span className="flex items-center gap-1">
-              <Users className="text-xs" />
+              <FaUsers className="text-xs" />
               {task.assignedTo.length}
             </span>
           )}
@@ -1241,9 +1261,9 @@ function TaskCard({
 
       {/* Assignees */}
       {task.assignedToNames?.length > 0 && (
-        <div className="mt-3 pt-3 border-t border-slate-700/50">
-          <p className="text-xs text-slate-500 mb-1">Assigned to</p>
-          <p className="text-sm text-slate-300 truncate">
+        <div className="mt-3 pt-3 border-t border-[rgba(15,23,42,0.06)] dark:border-neutral-700/50">
+          <p className="text-xs text-[#94A3B8] dark:text-neutral-500 mb-1">Assigned to</p>
+          <p className="text-sm text-[#475569] dark:text-neutral-300 truncate">
             {task.assignedToNames.slice(0, 3).join(', ')}
             {task.assignedToNames.length > 3 && ` +${task.assignedToNames.length - 3} more`}
           </p>
@@ -1430,17 +1450,17 @@ export function Tasks({ selectedTaskId, onTaskOpened, showOnlyMyTasks = false }:
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
         <div>
-          <h2 className="text-xl sm:text-2xl font-bold text-white flex items-center gap-2">
-            <ListTodo className="text-primary-500" />
+          <h2 className="text-xl sm:text-2xl font-bold text-[#0F172A] dark:text-[#F8FAFC] flex items-center gap-2">
+            <FaTasks className="text-[#2563EB]" />
             Tasks
           </h2>
-          <p className="text-slate-400 text-sm sm:text-base mt-1">
+          <p className="text-[#64748B] dark:text-[#94A3B8] text-sm sm:text-base mt-1">
             {filteredTasks.length} task{filteredTasks.length !== 1 ? 's' : ''}
             {hasActiveFilters && ' (filtered)'}
           </p>
         </div>
         
-        <Button icon={<Plus />} onClick={() => setShowCreateModal(true)} className="w-full sm:w-auto">
+        <Button icon={<FaPlus />} onClick={() => setShowCreateModal(true)} className="w-full sm:w-auto">
           Create Task
         </Button>
       </div>
@@ -1454,7 +1474,7 @@ export function Tasks({ selectedTaskId, onTaskOpened, showOnlyMyTasks = false }:
               placeholder="Search tasks..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              icon={<Search />}
+              icon={<FaSearch />}
             />
           </div>
 
@@ -1514,7 +1534,7 @@ export function Tasks({ selectedTaskId, onTaskOpened, showOnlyMyTasks = false }:
             <Button
               variant={showMyTasks ? 'primary' : 'secondary'}
               size="sm"
-              icon={<User />}
+              icon={<FaUser />}
               onClick={() => setShowMyTasks(!showMyTasks)}
             >
               My Tasks
@@ -1524,23 +1544,23 @@ export function Tasks({ selectedTaskId, onTaskOpened, showOnlyMyTasks = false }:
               <Button
                 variant={filterDate ? 'primary' : 'secondary'}
                 size="sm"
-                icon={<Calendar />}
+                icon={<FaCalendar />}
                 onClick={() => setShowDatePicker(v => !v)}
               >
                 {filterDate ? new Date(filterDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Date'}
               </Button>
               {showDatePicker && (
-                <div className="absolute top-full left-0 mt-1 z-50 bg-slate-800 border border-slate-700 rounded-lg p-2 shadow-xl">
+                <div className="absolute top-full left-0 mt-1 z-50 bg-[#FFFFFF] dark:bg-neutral-800 border border-[rgba(15,23,42,0.08)] dark:border-neutral-700 rounded-lg p-2 shadow-xl">
                   <input
                     type="date"
                     value={filterDate}
                     onChange={(e) => { setFilterDate(e.target.value); setShowDatePicker(false) }}
-                    className="bg-slate-900 text-white text-sm border border-slate-600 rounded px-2 py-1 focus:outline-none focus:border-primary-500"
+                    className="bg-[#F8FAFC] dark:bg-neutral-900 text-[#0F172A] dark:text-white text-sm border border-[rgba(15,23,42,0.08)] dark:border-neutral-600 rounded px-2 py-1 focus:outline-none focus:border-[#2563EB]"
                   />
                   {filterDate && (
                     <button
                       onClick={() => { setFilterDate(''); setShowDatePicker(false) }}
-                      className="mt-1 w-full text-xs text-slate-400 hover:text-white py-1"
+                      className="mt-1 w-full text-xs text-[#64748B] dark:text-neutral-400 hover:text-[#0F172A] dark:hover:text-white py-1"
                     >
                       Clear date
                     </button>
@@ -1584,7 +1604,7 @@ export function Tasks({ selectedTaskId, onTaskOpened, showOnlyMyTasks = false }:
       {/* Tasks Grid */}
       {filteredTasks.length === 0 ? (
         <EmptyState
-          icon={<ListTodo className="text-2xl" />}
+          icon={<FaTasks className="text-2xl" />}
           title={hasActiveFilters ? 'No tasks match your filters' : 'No tasks yet'}
           description={hasActiveFilters 
             ? 'Try adjusting your filters or search query' 
@@ -1594,7 +1614,7 @@ export function Tasks({ selectedTaskId, onTaskOpened, showOnlyMyTasks = false }:
             hasActiveFilters ? (
               <Button variant="secondary" onClick={clearFilters}>Clear Filters</Button>
             ) : (
-              <Button icon={<Plus />} onClick={() => setShowCreateModal(true)}>Create Task</Button>
+              <Button icon={<FaPlus />} onClick={() => setShowCreateModal(true)}>Create Task</Button>
             )
           }
         />

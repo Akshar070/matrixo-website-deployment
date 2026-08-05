@@ -4,39 +4,39 @@ import { useState, useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
-  FaUser, 
-  FaLock, 
-  FaSignOutAlt, 
-  FaCalendarCheck, 
-  FaChartLine, 
-  FaHistory,
-  FaCheckCircle,
-  FaTimesCircle,
-  FaPlane,
-  FaBriefcase,
-  FaUmbrellaBeach,
-  FaSpinner,
-  FaIdCard,
-  FaCalendarAlt,
-  FaBars,
-  FaTimes,
-  FaExclamationTriangle,
-  FaUserShield,
-  FaTasks,
-  FaComments,
-  FaChevronDown,
-  FaPlus,
-  FaTrash,
-  FaListAlt,
-  FaQrcode,
-  FaVideo,
-  FaSun,
-  FaMoon,
-  FaUserCircle,
-  FaEye,
-  FaEyeSlash
-} from 'react-icons/fa'
-import { HiCalendarDays } from "react-icons/hi2"
+  User as FaUser, 
+  Lock as FaLock, 
+  LogOut as FaSignOutAlt, 
+  CalendarCheck as FaCalendarCheck, 
+  LayoutDashboard as FaChartLine, 
+  History as FaHistory,
+  CheckCircle as FaCheckCircle,
+  XCircle as FaTimesCircle,
+  Plane as FaPlane,
+  Briefcase as FaBriefcase,
+  Umbrella as FaUmbrellaBeach,
+  Loader2 as FaSpinner,
+  IdCard as FaIdCard,
+  Calendar as FaCalendarAlt,
+  Menu as FaBars,
+  X as FaTimes,
+  AlertTriangle as FaExclamationTriangle,
+  ShieldAlert as FaUserShield,
+  ListTodo as FaTasks,
+  MessageSquare as FaComments,
+  ChevronDown as FaChevronDown,
+  Plus as FaPlus,
+  Trash2 as FaTrash,
+  List as FaListAlt,
+  QrCode as FaQrcode,
+  Video as FaVideo,
+  Sun as FaSun,
+  Moon as FaMoon,
+  UserCircle as FaUserCircle,
+  Eye as FaEye,
+  EyeOff as FaEyeSlash
+} from 'lucide-react'
+import { CalendarDays as HiCalendarDays } from "lucide-react"
 import { EmployeeAuthProvider, useEmployeeAuth, isAdminOrSubAdmin } from '@/lib/employeePortalContext'
 import ProfilePhotoUpload from '@/components/employee-portal/ProfilePhotoUpload'
 import { registerServiceWorker, subscribeToPush } from '@/lib/serviceWorkerRegistration'
@@ -353,21 +353,12 @@ function TopNavbar({
 
   return (
     <nav
-      className="fixed top-0 left-0 right-0 overflow-x-hidden"
+      className="fixed top-0 left-0 right-0 overflow-x-hidden bg-[#FFFFFF] dark:bg-[#081423] transition-colors duration-200"
       style={{
         zIndex: 9000,
         paddingTop: 'env(safe-area-inset-top)',
-        background: darkMode
-          ? 'rgba(10,10,15,0.65)'
-          : 'rgba(255,255,255,0.72)',
-        backdropFilter: 'blur(40px) saturate(180%)',
-        WebkitBackdropFilter: 'blur(40px) saturate(180%)',
-        borderBottom: darkMode
-          ? '1px solid rgba(255,255,255,0.07)'
-          : '1px solid rgba(0,0,0,0.08)',
-        boxShadow: darkMode
-          ? '0 4px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.08)'
-          : '0 4px 24px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.9)',
+        borderBottom: darkMode ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(15,23,42,0.08)',
+        boxShadow: darkMode ? '0 10px 15px -3px rgba(0, 0, 0, 0.1)' : '0 4px 20px rgba(15,23,42,0.05)'
       }}
     >
       {/* Gradient accent line */}
@@ -392,12 +383,10 @@ function TopNavbar({
                   key={item.id}
                   onClick={() => setActiveTab(item.id)}
                   className={`
-                    relative flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl transition-all duration-200 font-medium text-xs whitespace-nowrap
+                    relative flex items-center gap-1.5 px-3 py-2 rounded-[14px] transition-all duration-150 font-medium text-xs whitespace-nowrap
                     ${activeTab === item.id 
-                      ? 'bg-gradient-to-r from-primary-600 to-primary-500 text-white shadow-lg shadow-primary-500/30' 
-                      : darkMode
-                        ? 'text-neutral-400 hover:text-white hover:bg-white/8'
-                        : 'text-gray-600 hover:text-gray-900 hover:bg-black/6'
+                      ? 'bg-[#0F2B5B] text-white dark:bg-[#1E3A8A] dark:text-[#F8FAFC]' 
+                      : 'text-[#475569] hover:text-[#0F172A] hover:bg-[#EEF3F8] dark:text-[#94A3B8] dark:hover:text-[#F8FAFC] dark:hover:bg-[#152542]'
                     }
                   `}
                 >
@@ -411,12 +400,10 @@ function TopNavbar({
                   <button
                     onClick={() => setActiveTab('job-postings')}
                     className={`
-                      relative flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl transition-all duration-200 font-medium text-xs whitespace-nowrap
+                      relative flex items-center gap-1.5 px-3 py-2 rounded-[14px] transition-all duration-150 font-medium text-xs whitespace-nowrap
                       ${activeTab === 'job-postings'
-                        ? 'bg-gradient-to-r from-primary-600 to-primary-500 text-white shadow-lg shadow-primary-500/30'
-                        : darkMode
-                          ? 'text-neutral-400 hover:text-white hover:bg-white/8'
-                          : 'text-gray-600 hover:text-gray-900 hover:bg-black/6'
+                        ? 'bg-[#0F2B5B] text-white dark:bg-[#1E3A8A] dark:text-[#F8FAFC]'
+                        : 'text-[#475569] hover:text-[#0F172A] hover:bg-[#EEF3F8] dark:text-[#94A3B8] dark:hover:text-[#F8FAFC] dark:hover:bg-[#152542]'
                       }
                     `}
                   >
@@ -754,27 +741,20 @@ function DashboardOverview({ onTaskClick, onShowMyTasks }: { onTaskClick?: (task
     <div className="space-y-6">
       {/* Welcome Banner */}
       <div
-        className="rounded-2xl p-4 sm:p-6"
-        style={{
-          background: darkMode ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.65)',
-          backdropFilter: 'blur(30px) saturate(180%)',
-          WebkitBackdropFilter: 'blur(30px) saturate(180%)',
-          border: darkMode ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(255,255,255,0.8)',
-          boxShadow: darkMode ? '0 8px 32px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.08)' : '0 8px 24px rgba(124,58,237,0.08), inset 0 1px 0 rgba(255,255,255,0.9)',
-        }}
+        className="rounded-[20px] p-4 sm:p-6 bg-[#FFFFFF] dark:bg-[#101C30] border border-[rgba(15,23,42,0.06)] dark:border-[rgba(255,255,255,0.06)] shadow-[0_4px_20px_rgba(15,23,42,0.02)] dark:shadow-[0_10px_30px_rgba(0,0,0,0.25)]"
       >
         <div className="flex items-center gap-3 sm:gap-4">
           <img
             src={getProfileImageUrl(employee?.profileImage, employee?.name, employee?.employeeId)}
             alt={employee?.name}
-            className="w-12 h-12 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl object-cover border-2 border-primary-500"
+            className="w-12 h-12 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl object-cover border-2 border-[#2563EB]"
             onError={(e) => { (e.target as HTMLImageElement).src = DEFAULT_AVATAR }}
           />
             <div className="min-w-0 flex-1">
-            <h2 className={`text-lg sm:text-2xl font-bold truncate ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+            <h2 className="text-lg sm:text-2xl font-bold truncate text-[#0F172A] dark:text-[#F8FAFC]">
                 Welcome back, {employee?.name?.split(' ')[0]}!
               </h2>
-              <p className={`text-sm sm:text-base truncate ${darkMode ? 'text-neutral-400' : 'text-gray-500'}`}>
+              <p className="text-sm sm:text-base truncate text-[#475569] dark:text-[#94A3B8]">
                 {employee?.department} . {employee?.designation}
               </p>
             </div>
@@ -812,33 +792,25 @@ function DashboardOverview({ onTaskClick, onShowMyTasks }: { onTaskClick?: (task
       {/* My Tasks & Holidays */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div
-          className="rounded-xl sm:rounded-2xl p-4 sm:p-6"
-          style={{
-            background: darkMode ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.65)',
-            backdropFilter: 'blur(30px) saturate(180%)',
-            WebkitBackdropFilter: 'blur(30px) saturate(180%)',
-            border: darkMode ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(255,255,255,0.8)',
-            boxShadow: darkMode ? '0 8px 32px rgba(0,0,0,0.3)' : '0 8px 24px rgba(124,58,237,0.06)',
-          }}
+          className="rounded-[20px] p-4 sm:p-6 bg-[#FFFFFF] dark:bg-[#101C30] border border-[rgba(15,23,42,0.06)] dark:border-[rgba(255,255,255,0.06)] shadow-[0_4px_20px_rgba(15,23,42,0.02)] dark:shadow-[0_10px_30px_rgba(0,0,0,0.25)]"
         >
-          <h3 className={`text-base sm:text-lg font-bold mb-3 sm:mb-4 flex items-center gap-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-            <FaTasks className="text-primary-500" />
+          <h3 className="text-base sm:text-lg font-bold mb-3 sm:mb-4 flex items-center gap-2 text-[#0F172A] dark:text-[#F8FAFC]">
+            <FaTasks className="text-[#2563EB]" />
             My Pending Tasks
           </h3>
           {myTasks.length === 0 ? (
-            <p className={`text-center py-4 text-sm sm:text-base ${darkMode ? 'text-neutral-500' : 'text-gray-400'}`}>No pending tasks</p>
+            <p className="text-center py-4 text-sm sm:text-base text-[#64748B] dark:text-[#94A3B8]">No pending tasks</p>
           ) : (
             <div className="space-y-2 sm:space-y-3">
               {myTasks.slice(0, 4).map((task) => (
                 <div 
                   key={task.id} 
-                  className={`flex items-center justify-between p-2.5 sm:p-3 rounded-lg sm:rounded-xl cursor-pointer transition-colors gap-2 ${darkMode ? 'bg-white/5 hover:bg-white/10' : 'bg-black/4 hover:bg-black/8'}`}
-                  style={{ border: darkMode ? '1px solid rgba(255,255,255,0.07)' : '1px solid rgba(0,0,0,0.06)' }}
+                  className="flex items-center justify-between p-2.5 sm:p-3 rounded-lg sm:rounded-xl cursor-pointer transition-colors gap-2 bg-[#F5F7FB] hover:bg-[#EEF3F8] dark:bg-[#152542] dark:hover:bg-[#1E3A8A] border border-[rgba(15,23,42,0.04)] dark:border-[rgba(255,255,255,0.04)]"
                   onClick={() => onTaskClick?.(task.id!)}
                 >
                   <div className="min-w-0 flex-1">
-                    <p className={`font-medium text-sm sm:text-base truncate ${darkMode ? 'text-white' : 'text-gray-900'}`}>{task.title}</p>
-                    <p className={`text-xs ${darkMode ? 'text-neutral-500' : 'text-gray-400'}`}>
+                    <p className="font-medium text-sm sm:text-base truncate text-[#0F172A] dark:text-[#F8FAFC]">{task.title}</p>
+                    <p className="text-xs text-[#64748B] dark:text-[#94A3B8]">
                       Due: {task.dueDate ? new Date(task.dueDate).toLocaleDateString() : 'No due date'}
                     </p>
                   </div>
@@ -858,17 +830,10 @@ function DashboardOverview({ onTaskClick, onShowMyTasks }: { onTaskClick?: (task
         </div>
 
         <div
-          className="rounded-xl sm:rounded-2xl p-4 sm:p-6"
-          style={{
-            background: darkMode ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.65)',
-            backdropFilter: 'blur(30px) saturate(180%)',
-            WebkitBackdropFilter: 'blur(30px) saturate(180%)',
-            border: darkMode ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(255,255,255,0.8)',
-            boxShadow: darkMode ? '0 8px 32px rgba(0,0,0,0.3)' : '0 8px 24px rgba(124,58,237,0.06)',
-          }}
+          className="rounded-[20px] p-4 sm:p-6 bg-[#FFFFFF] dark:bg-[#101C30] border border-[rgba(15,23,42,0.06)] dark:border-[rgba(255,255,255,0.06)] shadow-[0_4px_20px_rgba(15,23,42,0.02)] dark:shadow-[0_10px_30px_rgba(0,0,0,0.25)]"
         >
-          <h3 className={`text-base sm:text-lg font-bold mb-3 sm:mb-4 flex items-center gap-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-            <FaListAlt className="text-primary-500" />
+          <h3 className="text-base sm:text-lg font-bold mb-3 sm:mb-4 flex items-center gap-2 text-[#0F172A] dark:text-[#F8FAFC]">
+            <FaListAlt className="text-[#2563EB]" />
             My Todo List
           </h3>
           
@@ -880,50 +845,45 @@ function DashboardOverview({ onTaskClick, onShowMyTasks }: { onTaskClick?: (task
               onChange={(e) => setNewTodoTitle(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleAddTodo()}
               placeholder="Add a new todo..."
-              className={`flex-1 px-3 py-2 rounded-lg sm:rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/50 min-w-0 transition-all ${darkMode ? 'placeholder-neutral-500 text-white' : 'placeholder-gray-400 text-gray-900'}`}
-              style={{
-                background: darkMode ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.05)',
-                border: darkMode ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.09)',
-              }}
+              className="flex-1 px-3 py-2 rounded-lg sm:rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/50 min-w-0 transition-all text-[#0F172A] dark:text-[#F8FAFC] placeholder-[#64748B] dark:placeholder-[#94A3B8] bg-[#F5F7FB] dark:bg-[#152542] border border-[rgba(15,23,42,0.08)] dark:border-[rgba(255,255,255,0.08)]"
             />
             <button
               onClick={handleAddTodo}
               disabled={addingTodo || !newTodoTitle.trim()}
-              className="px-3 py-2 bg-primary-500 hover:bg-primary-400 disabled:bg-neutral-700 disabled:cursor-not-allowed text-white rounded-lg sm:rounded-xl transition-colors flex-shrink-0"
+              className="px-3 py-2 bg-[#2563EB] hover:bg-[#1D4ED8] disabled:bg-[#94A3B8] disabled:dark:bg-neutral-700 disabled:cursor-not-allowed text-white rounded-lg sm:rounded-xl transition-colors flex-shrink-0"
             >
               {addingTodo ? <FaSpinner className="animate-spin" /> : <FaPlus />}
             </button>
           </div>
 
           {sortedTodos.length === 0 ? (
-            <p className={`text-center py-4 ${darkMode ? 'text-neutral-500' : 'text-gray-400'}`}>No todos yet. Add one above!</p>
+            <p className="text-center py-4 text-[#64748B] dark:text-[#94A3B8]">No todos yet. Add one above!</p>
           ) : (
             <div className="space-y-2 max-h-48 overflow-y-auto">
               {sortedTodos.slice(0, 6).map((todo) => (
                 <div 
                   key={todo.id} 
-                  className={`flex items-center justify-between p-3 rounded-xl transition-all ${
+                  className={`flex items-center justify-between p-3 rounded-xl transition-all border border-[rgba(15,23,42,0.04)] dark:border-[rgba(255,255,255,0.04)] ${
                     todo.status === 'completed' 
-                      ? darkMode ? 'bg-white/3' : 'bg-black/3'
-                      : darkMode ? 'bg-white/7' : 'bg-black/5'
+                      ? 'bg-[#EEF3F8] dark:bg-[rgba(255,255,255,0.02)]'
+                      : 'bg-[#F8FAFC] dark:bg-[rgba(255,255,255,0.05)] hover:bg-[#EEF3F8] dark:hover:bg-[rgba(255,255,255,0.08)]'
                   }`}
-                  style={{ border: darkMode ? '1px solid rgba(255,255,255,0.07)' : '1px solid rgba(0,0,0,0.06)' }}
                 >
                   <div className="flex items-center gap-3 flex-1 min-w-0">
                     <button
                       onClick={() => todo.id && handleToggleTodo(todo.id, todo.status)}
                       className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${
                         todo.status === 'completed' 
-                          ? 'bg-green-500 border-green-500 text-white' 
-                          : darkMode ? 'border-neutral-500 hover:border-primary-500' : 'border-gray-400 hover:border-primary-500'
+                          ? 'bg-emerald-500 border-emerald-500 text-white' 
+                          : 'border-[rgba(15,23,42,0.3)] dark:border-neutral-500 hover:border-[#2563EB]'
                       }`}
                     >
                       {todo.status === 'completed' && <FaCheckCircle className="text-xs" />}
                     </button>
                     <span className={`text-sm truncate ${
                       todo.status === 'completed' 
-                        ? darkMode ? 'text-neutral-500 line-through' : 'text-gray-400 line-through'
-                        : darkMode ? 'text-white' : 'text-gray-900'
+                        ? 'text-[#94A3B8] dark:text-neutral-500 line-through'
+                        : 'text-[#0F172A] dark:text-white'
                     }`}>
                       {todo.title}
                     </span>
@@ -943,11 +903,11 @@ function DashboardOverview({ onTaskClick, onShowMyTasks }: { onTaskClick?: (task
 
       {/* Attendance Warning */}
       {attendancePercentage < 80 && (
-        <div className="rounded-xl p-4 flex items-start gap-3" style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.25)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)' }}>
-          <FaExclamationTriangle className="text-red-400 mt-1 flex-shrink-0" />
+        <div className="rounded-xl p-4 flex items-start gap-3 bg-red-500/10 border border-red-500/25">
+          <FaExclamationTriangle className="text-red-500 dark:text-red-400 mt-1 flex-shrink-0" />
           <div>
-            <p className="text-red-400 font-medium">Low Attendance Warning</p>
-            <p className={`text-sm mt-1 ${darkMode ? 'text-neutral-400' : 'text-gray-500'}`}>
+            <p className="text-red-600 dark:text-red-400 font-medium">Low Attendance Warning</p>
+            <p className="text-sm mt-1 text-red-500/80 dark:text-red-400/80">
               Your attendance is below the minimum required 80%. Please improve your attendance to avoid any issues.
             </p>
           </div>
@@ -1000,38 +960,27 @@ function HistoryTab() {
   return (
     <div className="space-y-4 sm:space-y-6">
       <div
-        className="rounded-xl sm:rounded-2xl p-4 sm:p-6"
-        style={{
-          background: darkMode ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.65)',
-          backdropFilter: 'blur(30px) saturate(180%)',
-          WebkitBackdropFilter: 'blur(30px) saturate(180%)',
-          border: darkMode ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(255,255,255,0.8)',
-          boxShadow: darkMode ? '0 8px 32px rgba(0,0,0,0.3)' : '0 8px 24px rgba(124,58,237,0.06)',
-        }}
+        className="rounded-[20px] p-4 sm:p-6 bg-[#FFFFFF] dark:bg-[#101C30] border border-[rgba(15,23,42,0.06)] dark:border-[rgba(255,255,255,0.06)] shadow-[0_4px_20px_rgba(15,23,42,0.02)] dark:shadow-[0_10px_30px_rgba(0,0,0,0.25)]"
       >
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4 mb-4 sm:mb-6">
-          <h2 className={`text-lg sm:text-xl font-bold flex items-center gap-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-            <FaHistory className="text-primary-500" />
+          <h2 className="text-lg sm:text-xl font-bold flex items-center gap-2 text-[#0F172A] dark:text-[#F8FAFC]">
+            <FaHistory className="text-[#2563EB]" />
             Attendance History
           </h2>
           <input
             type="month"
             value={`${selectedMonth.getFullYear()}-${String(selectedMonth.getMonth() + 1).padStart(2, '0')}`}
             onChange={(e) => setSelectedMonth(new Date(e.target.value))}
-            className={`w-full sm:w-auto px-3 sm:px-4 py-2 rounded-lg text-sm focus:ring-2 focus:ring-primary-500 ${darkMode ? 'text-white' : 'text-gray-900'}`}
-            style={{
-              background: darkMode ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.05)',
-              border: darkMode ? '1px solid rgba(255,255,255,0.12)' : '1px solid rgba(0,0,0,0.09)',
-            }}
+            className="w-full sm:w-auto px-3 sm:px-4 py-2 rounded-lg text-sm focus:ring-2 focus:ring-[#2563EB] text-[#0F172A] dark:text-[#F8FAFC] bg-[#F5F7FB] dark:bg-[rgba(255,255,255,0.05)] border border-[rgba(15,23,42,0.08)] dark:border-[rgba(255,255,255,0.12)]"
           />
         </div>
 
         {loading ? (
           <div className="flex justify-center py-8">
-            <FaSpinner className="animate-spin text-3xl text-primary-500" />
+            <FaSpinner className="animate-spin text-3xl text-[#2563EB]" />
           </div>
         ) : records.length === 0 ? (
-          <p className={`text-center py-8 ${darkMode ? 'text-neutral-500' : 'text-gray-400'}`}>No attendance records for this month</p>
+          <p className="text-center py-8 text-[#64748B] dark:text-[#94A3B8]">No attendance records for this month</p>
         ) : (
           <div className="space-y-2 sm:space-y-3">
             {records.map((record) => {
@@ -1040,18 +989,14 @@ function HistoryTab() {
               return (
                 <div
                   key={record.id}
-                  className="flex items-center justify-between p-3 sm:p-4 rounded-lg sm:rounded-xl gap-3"
-                  style={{
-                    background: darkMode ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.03)',
-                    border: darkMode ? '1px solid rgba(255,255,255,0.07)' : '1px solid rgba(0,0,0,0.06)',
-                  }}
+                  className="flex items-center justify-between p-3 sm:p-4 rounded-lg sm:rounded-xl gap-3 bg-[#F8FAFC] dark:bg-[rgba(255,255,255,0.03)] border border-[rgba(15,23,42,0.06)] dark:border-[rgba(255,255,255,0.06)]"
                 >
                   <div className="flex items-center gap-3 sm:gap-4 min-w-0 flex-1">
                     <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg ${config.color} flex items-center justify-center flex-shrink-0`}>
                       <StatusIcon className="text-white text-sm sm:text-base" />
                     </div>
                     <div className="min-w-0 flex-1">
-                      <p className={`font-medium text-sm sm:text-base truncate ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                      <p className="font-medium text-sm sm:text-base truncate text-[#0F172A] dark:text-[#F8FAFC]">
                         {(() => {
                           const timestamp = record.timestamp?.toDate ? record.timestamp.toDate() : new Date(record.timestamp)
                           return timestamp.toLocaleDateString('en-US', {
@@ -1061,7 +1006,7 @@ function HistoryTab() {
                           })
                         })()}
                       </p>
-                      <p className={`text-xs truncate ${darkMode ? 'text-neutral-500' : 'text-gray-400'}`}>
+                      <p className="text-xs truncate text-[#64748B] dark:text-[#94A3B8]">
                         {(() => {
                           const timestamp = record.timestamp?.toDate ? record.timestamp.toDate() : new Date(record.timestamp)
                           return timestamp.toLocaleTimeString('en-US', {
@@ -1121,14 +1066,7 @@ function ProfileTab() {
     <div className="space-y-6 max-w-2xl mx-auto">
       {/* Card */}
       <div
-        className="rounded-2xl p-6"
-        style={{
-          background: darkMode ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.75)',
-          backdropFilter: 'blur(30px) saturate(180%)',
-          WebkitBackdropFilter: 'blur(30px) saturate(180%)',
-          border: darkMode ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(255,255,255,0.8)',
-          boxShadow: darkMode ? '0 8px 32px rgba(0,0,0,0.3)' : '0 8px 24px rgba(124,58,237,0.08)',
-        }}
+        className="rounded-[20px] p-6 bg-[#FFFFFF] dark:bg-[#101C30] border border-[rgba(15,23,42,0.06)] dark:border-[rgba(255,255,255,0.06)] shadow-[0_4px_20px_rgba(15,23,42,0.02)] dark:shadow-[0_10px_30px_rgba(0,0,0,0.25)]"
       >
         {/* Avatar + name row */}
         <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 mb-8">
@@ -1162,14 +1100,14 @@ function ProfileTab() {
 
           {/* Name + role + upload button */}
           <div className="text-center sm:text-left flex-1">
-            <h2 className={`text-2xl font-bold mb-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+            <h2 className="text-2xl font-bold mb-1 text-[#0F172A] dark:text-[#F8FAFC]">
               {employee.name}
             </h2>
             <p className="bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-purple-600 font-medium text-base mb-1">
               {employee.designation || employee.role}
             </p>
             {employee.department && (
-              <p className={`text-sm mb-4 ${darkMode ? 'text-neutral-400' : 'text-gray-500'}`}>
+              <p className="text-sm mb-4 text-[#64748B] dark:text-[#94A3B8]">
                 {employee.department}
               </p>
             )}
@@ -1189,16 +1127,12 @@ function ProfileTab() {
             value ? (
               <div
                 key={label}
-                className="rounded-xl px-4 py-3"
-                style={{
-                  background: darkMode ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.03)',
-                  border: darkMode ? '1px solid rgba(255,255,255,0.07)' : '1px solid rgba(0,0,0,0.06)',
-                }}
+                className="rounded-xl px-4 py-3 bg-[#F8FAFC] dark:bg-[rgba(255,255,255,0.03)] border border-[rgba(15,23,42,0.06)] dark:border-[rgba(255,255,255,0.06)]"
               >
-                <p className={`text-xs font-medium mb-0.5 ${darkMode ? 'text-neutral-500' : 'text-gray-400'}`}>
+                <p className="text-xs font-medium mb-0.5 text-[#64748B] dark:text-[#94A3B8]">
                   {label}
                 </p>
-                <p className={`text-sm font-medium break-all ${darkMode ? 'text-neutral-200' : 'text-gray-800'}`}>
+                <p className="text-sm font-medium break-all text-[#0F172A] dark:text-[#F8FAFC]">
                   {value}
                 </p>
               </div>
@@ -1209,16 +1143,12 @@ function ProfileTab() {
 
       {/* Photo guidelines note */}
       <div
-        className="rounded-xl px-5 py-4 text-sm"
-        style={{
-          background: darkMode ? 'rgba(59,130,246,0.08)' : 'rgba(59,130,246,0.06)',
-          border: darkMode ? '1px solid rgba(59,130,246,0.2)' : '1px solid rgba(59,130,246,0.15)',
-        }}
+        className="rounded-xl px-5 py-4 text-sm bg-blue-500/10 border border-blue-500/20"
       >
-        <p className={`font-medium mb-1 ${darkMode ? 'text-blue-300' : 'text-blue-700'}`}>
+        <p className="font-medium mb-1 text-blue-700 dark:text-blue-400">
           Profile Photo Guidelines
         </p>
-        <ul className={`space-y-0.5 list-disc list-inside text-xs ${darkMode ? 'text-neutral-400' : 'text-gray-500'}`}>
+        <ul className="space-y-0.5 list-disc list-inside text-xs text-[#64748B] dark:text-[#94A3B8]">
           <li>Accepted formats: JPEG, PNG, WebP</li>
           <li>Maximum file size: 3MB</li>
           <li>Photos are automatically cropped to a square (512&times;512) and optimized</li>
@@ -1240,25 +1170,16 @@ function StatCard({ title, value, icon: Icon, color, onClick }: {
   color: string
   onClick?: () => void
 }) {
-  const { darkMode } = useTheme()
   return (
     <motion.div
       whileHover={{ y: -2 }}
       onClick={onClick}
-      className={`rounded-xl sm:rounded-2xl p-4 sm:p-6 ${onClick ? 'cursor-pointer' : ''}`}
-      style={{
-        background: darkMode ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.65)',
-        backdropFilter: 'blur(30px) saturate(180%)',
-        WebkitBackdropFilter: 'blur(30px) saturate(180%)',
-        border: darkMode ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(255,255,255,0.8)',
-        boxShadow: darkMode ? '0 8px 24px rgba(0,0,0,0.25)' : '0 6px 20px rgba(124,58,237,0.06)',
-        transition: 'box-shadow 0.2s, transform 0.2s',
-      }}
+      className={`rounded-[20px] p-4 sm:p-6 bg-[#FFFFFF] dark:bg-[#101C30] border border-[rgba(15,23,42,0.06)] dark:border-[rgba(255,255,255,0.06)] shadow-[0_4px_20px_rgba(15,23,42,0.02)] dark:shadow-[0_10px_30px_rgba(0,0,0,0.25)] transition-all ${onClick ? 'cursor-pointer hover:border-[rgba(15,23,42,0.15)] dark:hover:border-[rgba(255,255,255,0.12)]' : ''}`}
     >
       <div className="flex items-start justify-between">
         <div className="min-w-0 flex-1">
-          <p className={`text-xs sm:text-sm truncate ${darkMode ? 'text-neutral-400' : 'text-gray-500'}`}>{title}</p>
-          <p className={`text-xl sm:text-3xl font-bold mt-1 sm:mt-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>{value}</p>
+          <p className="text-xs sm:text-sm truncate text-[#475569] dark:text-[#94A3B8]">{title}</p>
+          <p className="text-xl sm:text-3xl font-bold mt-1 sm:mt-2 text-[#0F172A] dark:text-[#F8FAFC]">{value}</p>
         </div>
         <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl ${color} flex items-center justify-center flex-shrink-0`}>
           <Icon className="text-lg sm:text-xl text-white" />
@@ -1562,12 +1483,7 @@ function Dashboard() {
     <PortalThemeContext.Provider value={{ darkMode, toggleTheme }}>
     <div
       data-portal-theme={darkMode ? 'dark' : 'light'}
-      className="min-h-screen overflow-x-hidden max-w-[100vw] transition-colors duration-500"
-      style={{
-        background: darkMode
-          ? 'radial-gradient(ellipse at 20% 10%, rgba(124,58,237,0.18) 0%, transparent 55%), radial-gradient(ellipse at 80% 80%, rgba(99,102,241,0.12) 0%, transparent 50%), #06060a'
-          : 'radial-gradient(ellipse at 20% 10%, rgba(167,139,250,0.12) 0%, transparent 55%), radial-gradient(ellipse at 80% 80%, rgba(196,181,253,0.1) 0%, transparent 50%), #f5f3ff',
-      }}
+      className={`min-h-screen overflow-x-hidden max-w-[100vw] transition-colors duration-200 ${darkMode ? 'dark bg-[#07111F]' : 'bg-[#F5F7FB]'}`}
     >
       {/* Top Navigation */}
       <TopNavbar activeTab={activeTab} setActiveTab={setActiveTab} />

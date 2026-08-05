@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { useState, useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
@@ -254,25 +254,25 @@ export default function EventQRScanner() {
   // â”€â”€ EVENT SELECTION SCREEN â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   if (!selectedEvent) {
     return (
-      <div className="min-h-[calc(100vh-5rem)] bg-gradient-to-b from-[#0a1525] to-[#0d1830] p-4">
+      <div className="min-h-[calc(100vh-5rem)] bg-[#F5F7FB] dark:bg-gradient-to-b dark:from-[#0a1525] dark:to-[#0d1830] p-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="max-w-md mx-auto"
         >
           <div className="text-center mb-6">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-cyan-500/20 rounded-full mb-3">
-              <FaCalendarAlt className="text-3xl text-cyan-400" />
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-[#2563EB]/10 dark:bg-cyan-500/20 rounded-full mb-3">
+              <FaCalendarAlt className="text-3xl text-[#2563EB] dark:text-cyan-400" />
             </div>
-            <h1 className="text-2xl font-bold text-white mb-1">Event Check-In</h1>
-            <p className="text-gray-400 text-sm">Select an event to start scanning</p>
+            <h1 className="text-2xl font-bold text-[#0F172A] dark:text-white mb-1">Event Check-In</h1>
+            <p className="text-[#64748B] dark:text-gray-400 text-sm">Select an event to start scanning</p>
           </div>
 
-          <div className="bg-white/5 border border-cyan-500/30 rounded-2xl p-5 backdrop-blur-sm">
+          <div className="bg-[#FFFFFF] dark:bg-white/5 border border-[rgba(15,23,42,0.08)] dark:border-cyan-500/30 rounded-2xl p-5 dark:backdrop-blur-sm shadow-sm dark:shadow-none">
             {eventsLoading ? (
               <div className="text-center py-8">
-                <FaSpinner className="animate-spin text-3xl text-cyan-400 mx-auto mb-3" />
-                <p className="text-gray-400">Loading events...</p>
+                <FaSpinner className="animate-spin text-3xl text-[#2563EB] dark:text-cyan-400 mx-auto mb-3" />
+                <p className="text-[#64748B] dark:text-gray-400">Loading events...</p>
               </div>
             ) : (
               <div className="space-y-3">
@@ -280,26 +280,26 @@ export default function EventQRScanner() {
                   <button
                     key={event.id}
                     onClick={() => setSelectedEvent(event)}
-                    className="w-full text-left p-4 bg-white/5 hover:bg-cyan-500/10 border border-white/10 hover:border-cyan-500/40 rounded-xl transition-all group"
+                    className="w-full text-left p-4 bg-[#F8FAFC] dark:bg-white/5 hover:bg-[#F1F5F9] dark:hover:bg-cyan-500/10 border border-[rgba(15,23,42,0.06)] dark:border-white/10 hover:border-[#2563EB]/30 dark:hover:border-cyan-500/40 rounded-xl transition-all group"
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
-                        <p className="text-white font-semibold group-hover:text-cyan-300 transition-colors">{event.title}</p>
+                        <p className="text-[#0F172A] dark:text-white font-semibold group-hover:text-[#2563EB] dark:group-hover:text-cyan-300 transition-colors">{event.title}</p>
                         {event.date && (
-                          <p className="text-gray-400 text-sm mt-0.5">
+                          <p className="text-[#64748B] dark:text-gray-400 text-sm mt-0.5">
                             {new Date(event.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
                           </p>
                         )}
                         {event.isVibeCodeEvent && (
-                          <span className="inline-block mt-2 px-2 py-0.5 bg-cyan-500/20 text-cyan-400 text-xs rounded-full">VibeCode Event</span>
+                          <span className="inline-block mt-2 px-2 py-0.5 bg-[#2563EB]/10 dark:bg-cyan-500/20 text-[#1D4ED8] dark:text-cyan-400 text-xs rounded-full">VibeCode Event</span>
                         )}
                       </div>
-                      <FaQrcode className="text-gray-600 group-hover:text-cyan-400 transition-colors shrink-0 mt-1" />
+                      <FaQrcode className="text-[#94A3B8] dark:text-gray-600 group-hover:text-[#2563EB] dark:group-hover:text-cyan-400 transition-colors shrink-0 mt-1" />
                     </div>
                   </button>
                 ))}
                 {events.length === 0 && (
-                  <p className="text-gray-500 text-center py-6">No events found</p>
+                  <p className="text-[#94A3B8] dark:text-gray-500 text-center py-6">No events found</p>
                 )}
               </div>
             )}
@@ -311,7 +311,7 @@ export default function EventQRScanner() {
 
   // â”€â”€ SCANNER SCREEN â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   return (
-    <div className="min-h-[calc(100vh-5rem)] bg-gradient-to-b from-[#0a1525] to-[#0d1830] p-4">
+    <div className="min-h-[calc(100vh-5rem)] bg-[#F5F7FB] dark:bg-gradient-to-b dark:from-[#0a1525] dark:to-[#0d1830] p-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -319,13 +319,13 @@ export default function EventQRScanner() {
       >
         {/* Header */}
         <div className="text-center mb-6">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-cyan-500/20 rounded-full mb-3">
-            <FaQrcode className="text-3xl text-cyan-400" />
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-[#2563EB]/10 dark:bg-cyan-500/20 rounded-full mb-3">
+            <FaQrcode className="text-3xl text-[#2563EB] dark:text-cyan-400" />
           </div>
-          <h1 className="text-2xl font-bold text-white mb-1">{selectedEvent.title} Check-In</h1>
+          <h1 className="text-2xl font-bold text-[#0F172A] dark:text-white mb-1">{selectedEvent.title} Check-In</h1>
           <button
             onClick={handleChangeEvent}
-            className="inline-flex items-center gap-1.5 text-cyan-400 text-sm hover:text-cyan-300 transition-colors"
+            className="inline-flex items-center gap-1.5 text-[#2563EB] dark:text-cyan-400 text-sm hover:text-[#1D4ED8] dark:hover:text-cyan-300 transition-colors"
           >
             <FaChevronLeft className="text-xs" />
             Change Event
@@ -333,7 +333,7 @@ export default function EventQRScanner() {
         </div>
 
         {/* Main Card */}
-        <div className="bg-white/5 border border-cyan-500/30 rounded-2xl p-5 backdrop-blur-sm">
+        <div className="bg-[#FFFFFF] dark:bg-white/5 border border-[rgba(15,23,42,0.08)] dark:border-cyan-500/30 rounded-2xl p-5 dark:backdrop-blur-sm shadow-sm dark:shadow-none">
 
           {/* IDLE State */}
           {mode === 'idle' && (
@@ -342,10 +342,10 @@ export default function EventQRScanner() {
                 <button
                   onClick={startScanner}
                   disabled={!scannerReady}
-                  className="w-full flex items-center justify-center gap-3 px-6 py-4 bg-gradient-to-r from-cyan-500 to-blue-600 
-                           text-white font-bold text-lg rounded-xl hover:from-cyan-600 hover:to-blue-700 
+                  className="w-full flex items-center justify-center gap-3 px-6 py-4 bg-[#2563EB] hover:bg-[#1D4ED8] dark:bg-gradient-to-r dark:from-cyan-500 dark:to-blue-600 
+                           text-white font-bold text-lg rounded-xl dark:hover:from-cyan-600 dark:hover:to-blue-700 
                            disabled:opacity-50 disabled:cursor-not-allowed
-                           transition-all active:scale-95 shadow-lg shadow-cyan-500/30"
+                           transition-all active:scale-95 shadow-sm shadow-[#2563EB]/20 dark:shadow-lg dark:shadow-cyan-500/30"
                 >
                   <FaCamera className="text-xl" />
                   {scannerReady ? 'Scan QR Code' : 'Loading Scanner...'}
@@ -353,9 +353,9 @@ export default function EventQRScanner() {
 
                 <button
                   onClick={() => setMode('manual')}
-                  className="w-full flex items-center justify-center gap-3 px-6 py-4 bg-white/10 
-                           text-white font-semibold rounded-xl hover:bg-white/20 
-                           transition-all active:scale-95 border border-white/20"
+                  className="w-full flex items-center justify-center gap-3 px-6 py-4 bg-[#F8FAFC] dark:bg-white/10 
+                           text-[#0F172A] dark:text-white font-semibold rounded-xl hover:bg-[#F1F5F9] dark:hover:bg-white/20 
+                           transition-all active:scale-95 border border-[rgba(15,23,42,0.08)] dark:border-white/20"
                 >
                   <FaKeyboard className="text-xl" />
                   Enter Code Manually
@@ -369,33 +369,33 @@ export default function EventQRScanner() {
             <div>
               <div
                 id={scannerContainerId}
-                className="w-full rounded-xl overflow-hidden mb-4"
+                className="w-full rounded-xl overflow-hidden mb-4 border border-[rgba(15,23,42,0.06)] dark:border-none"
                 style={{ minHeight: '280px' }}
               />
               <div className="text-center">
-                <p className="text-cyan-400 animate-pulse mb-4">Point camera at QR code...</p>
+                <p className="text-[#2563EB] dark:text-cyan-400 animate-pulse mb-4">Point camera at QR code...</p>
                 <button
                   onClick={() => { stopScanner(); setMode('idle') }}
-                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-red-500/20 text-red-400 
-                           border border-red-500/30 rounded-xl hover:bg-red-500/30 transition-all"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-red-50 dark:bg-red-500/20 text-red-600 dark:text-red-400 
+                           border border-red-200 dark:border-red-500/30 rounded-xl hover:bg-red-100 dark:hover:bg-red-500/30 transition-all"
                 >
                   <FaStop />
                   Stop
                 </button>
               </div>
 
-              <div className="mt-6 pt-4 border-t border-white/10">
-                <p className="text-gray-500 text-center text-sm mb-3">Or enter code manually:</p>
+              <div className="mt-6 pt-4 border-t border-[rgba(15,23,42,0.08)] dark:border-white/10">
+                <p className="text-[#64748B] dark:text-gray-500 text-center text-sm mb-3">Or enter code manually:</p>
                 <form onSubmit={handleManualSubmit} className="space-y-3">
                   <input
                     type="text"
                     value={manualCode}
                     onChange={(e) => setManualCode(e.target.value.toUpperCase())}
                     placeholder={selectedEvent.isVibeCodeEvent ? 'VIBECODE-XXXXXXXXXX' : 'Enter code'}
-                    className="w-full px-4 py-3 bg-white/10 border border-cyan-500/30 rounded-xl text-white 
-                             placeholder:text-gray-500 focus:outline-none focus:border-cyan-400 text-center"
+                    className="w-full px-4 py-3 bg-[#F8FAFC] dark:bg-white/10 border border-[rgba(15,23,42,0.08)] dark:border-cyan-500/30 rounded-xl text-[#0F172A] dark:text-white 
+                             placeholder:text-[#94A3B8] dark:placeholder:text-gray-500 focus:outline-none focus:border-[#2563EB] dark:focus:border-cyan-400 text-center"
                   />
-                  <button type="submit" className="w-full py-3 bg-cyan-500 hover:bg-cyan-600 text-white font-semibold rounded-xl transition-all">
+                  <button type="submit" className="w-full py-3 bg-[#2563EB] hover:bg-[#1D4ED8] dark:bg-cyan-500 dark:hover:bg-cyan-600 text-white font-semibold rounded-xl transition-all">
                     Check
                   </button>
                 </form>
@@ -406,7 +406,7 @@ export default function EventQRScanner() {
           {/* MANUAL Entry State */}
           {mode === 'manual' && (
             <div className="py-4">
-              <p className="text-gray-400 text-center mb-4">
+              <p className="text-[#64748B] dark:text-gray-400 text-center mb-4">
                 {selectedEvent.isVibeCodeEvent ? "Enter the transaction code from the attendee's email" : "Enter the attendee's QR code"}
               </p>
               <form onSubmit={handleManualSubmit} className="space-y-4">
@@ -416,18 +416,18 @@ export default function EventQRScanner() {
                   onChange={(e) => setManualCode(e.target.value.toUpperCase())}
                   placeholder={selectedEvent.isVibeCodeEvent ? 'VIBECODE-XXXXXXXXXX' : 'Enter code'}
                   autoFocus
-                  className="w-full px-4 py-4 bg-white/10 border border-cyan-500/30 rounded-xl text-white text-lg
-                           placeholder:text-gray-500 focus:outline-none focus:border-cyan-400 text-center font-mono"
+                  className="w-full px-4 py-4 bg-[#F8FAFC] dark:bg-white/10 border border-[rgba(15,23,42,0.08)] dark:border-cyan-500/30 rounded-xl text-[#0F172A] dark:text-white text-lg
+                           placeholder:text-[#94A3B8] dark:placeholder:text-gray-500 focus:outline-none focus:border-[#2563EB] dark:focus:border-cyan-400 text-center font-mono"
                 />
                 <div className="flex gap-3">
                   <button
                     type="button"
                     onClick={() => setMode('idle')}
-                    className="flex-1 py-3 bg-white/10 text-white font-semibold rounded-xl hover:bg-white/20 transition-all"
+                    className="flex-1 py-3 bg-[#F8FAFC] dark:bg-white/10 text-[#0F172A] dark:text-white font-semibold rounded-xl hover:bg-[#F1F5F9] dark:hover:bg-white/20 transition-all border border-[rgba(15,23,42,0.08)] dark:border-none"
                   >
                     Back
                   </button>
-                  <button type="submit" className="flex-1 py-3 bg-cyan-500 hover:bg-cyan-600 text-white font-semibold rounded-xl transition-all">
+                  <button type="submit" className="flex-1 py-3 bg-[#2563EB] hover:bg-[#1D4ED8] dark:bg-cyan-500 dark:hover:bg-cyan-600 text-white font-semibold rounded-xl transition-all">
                     Check
                   </button>
                 </div>
@@ -438,8 +438,8 @@ export default function EventQRScanner() {
           {/* LOADING State */}
           {mode === 'loading' && (
             <div className="text-center py-12">
-              <FaSpinner className="animate-spin text-5xl text-cyan-400 mx-auto mb-4" />
-              <p className="text-gray-400">Processing...</p>
+              <FaSpinner className="animate-spin text-5xl text-[#2563EB] dark:text-cyan-400 mx-auto mb-4" />
+              <p className="text-[#64748B] dark:text-gray-400">Processing...</p>
             </div>
           )}
 
@@ -450,15 +450,15 @@ export default function EventQRScanner() {
               animate={{ opacity: 1, scale: 1 }}
               className="text-center py-8"
             >
-              <div className="inline-flex items-center justify-center w-20 h-20 bg-red-500/20 rounded-full mb-4">
-                <FaTimesCircle className="text-4xl text-red-400" />
+              <div className="inline-flex items-center justify-center w-20 h-20 bg-red-50 dark:bg-red-500/20 rounded-full mb-4">
+                <FaTimesCircle className="text-4xl text-red-500 dark:text-red-400" />
               </div>
-              <h3 className="text-xl font-bold text-red-400 mb-2">Not Found</h3>
-              <p className="text-gray-400 mb-6">{errorMessage}</p>
+              <h3 className="text-xl font-bold text-red-600 dark:text-red-400 mb-2">Not Found</h3>
+              <p className="text-[#64748B] dark:text-gray-400 mb-6">{errorMessage}</p>
               <button
                 onClick={handleScanAgain}
-                className="inline-flex items-center gap-2 px-6 py-3 bg-cyan-500 hover:bg-cyan-600
-                         text-white font-semibold rounded-xl transition-all"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-[#2563EB] hover:bg-[#1D4ED8] dark:bg-cyan-500 dark:hover:bg-cyan-600
+                         text-white font-semibold rounded-xl transition-all shadow-sm shadow-[#2563EB]/20 dark:shadow-none"
               >
                 <FaRedo />
                 Try Again
@@ -474,57 +474,57 @@ export default function EventQRScanner() {
               className="py-4"
             >
               <div className="text-center mb-5">
-                <div className="inline-flex items-center justify-center w-16 h-16 bg-green-500/20 rounded-full mb-3">
-                  <FaCheckCircle className="text-3xl text-green-400" />
+                <div className="inline-flex items-center justify-center w-16 h-16 bg-green-50 dark:bg-green-500/20 rounded-full mb-3">
+                  <FaCheckCircle className="text-3xl text-green-500 dark:text-green-400" />
                 </div>
-                <h3 className="text-xl font-bold text-green-400">Attendance Marked!</h3>
+                <h3 className="text-xl font-bold text-green-600 dark:text-green-400">Attendance Marked!</h3>
               </div>
 
-              <div className="bg-gradient-to-br from-cyan-500/10 to-blue-500/10 border border-cyan-500/30 rounded-xl p-4 mb-5">
+              <div className="bg-gradient-to-br from-[#2563EB]/5 to-blue-500/5 dark:from-cyan-500/10 dark:to-blue-500/10 border border-[#2563EB]/20 dark:border-cyan-500/30 rounded-xl p-4 mb-5">
                 <div className="text-center mb-4">
-                  <div className="inline-flex items-center justify-center w-12 h-12 bg-cyan-500/20 rounded-full mb-2">
-                    <FaUser className="text-xl text-cyan-400" />
+                  <div className="inline-flex items-center justify-center w-12 h-12 bg-[#2563EB]/10 dark:bg-cyan-500/20 rounded-full mb-2">
+                    <FaUser className="text-xl text-[#2563EB] dark:text-cyan-400" />
                   </div>
-                  <h2 className="text-2xl font-bold text-white">{attendeeInfo.name}</h2>
+                  <h2 className="text-2xl font-bold text-[#0F172A] dark:text-white">{attendeeInfo.name}</h2>
                   {attendeeInfo.rollNumber && (
-                    <p className="text-cyan-400 text-sm">{attendeeInfo.rollNumber}</p>
+                    <p className="text-[#2563EB] dark:text-cyan-400 text-sm">{attendeeInfo.rollNumber}</p>
                   )}
                 </div>
 
                 {(attendeeInfo.college || attendeeInfo.branch) && (
                   <div className="grid grid-cols-2 gap-3">
                     {attendeeInfo.college && (
-                      <div className="bg-white/5 rounded-lg p-3">
-                        <div className="flex items-center gap-1.5 text-gray-400 text-xs mb-1">
+                      <div className="bg-[#FFFFFF] dark:bg-white/5 border border-[rgba(15,23,42,0.06)] dark:border-none rounded-lg p-3">
+                        <div className="flex items-center gap-1.5 text-[#64748B] dark:text-gray-400 text-xs mb-1">
                           <FaUniversity className="text-[10px]" />
                           College
                         </div>
-                        <p className="text-white text-sm font-medium truncate">{attendeeInfo.college}</p>
+                        <p className="text-[#0F172A] dark:text-white text-sm font-medium truncate">{attendeeInfo.college}</p>
                       </div>
                     )}
                     {attendeeInfo.branch && (
-                      <div className="bg-white/5 rounded-lg p-3">
-                        <div className="flex items-center gap-1.5 text-gray-400 text-xs mb-1">
+                      <div className="bg-[#FFFFFF] dark:bg-white/5 border border-[rgba(15,23,42,0.06)] dark:border-none rounded-lg p-3">
+                        <div className="flex items-center gap-1.5 text-[#64748B] dark:text-gray-400 text-xs mb-1">
                           <FaCodeBranch className="text-[10px]" />
                           Branch
                         </div>
-                        <p className="text-white text-sm font-medium truncate">{attendeeInfo.branch}</p>
+                        <p className="text-[#0F172A] dark:text-white text-sm font-medium truncate">{attendeeInfo.branch}</p>
                       </div>
                     )}
                   </div>
                 )}
 
-                <div className="mt-3 bg-white/5 rounded-lg p-3 text-center">
-                  <p className="text-gray-400 text-xs mb-1">Code</p>
-                  <p className="text-cyan-400 font-mono text-sm break-all">{attendeeInfo.transactionCode}</p>
+                <div className="mt-3 bg-[#FFFFFF] dark:bg-white/5 border border-[rgba(15,23,42,0.06)] dark:border-none rounded-lg p-3 text-center">
+                  <p className="text-[#64748B] dark:text-gray-400 text-xs mb-1">Code</p>
+                  <p className="text-[#2563EB] dark:text-cyan-400 font-mono text-sm break-all">{attendeeInfo.transactionCode}</p>
                 </div>
               </div>
 
               <button
                 onClick={handleScanAgain}
-                className="w-full py-4 bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-bold 
-                         rounded-xl hover:from-cyan-600 hover:to-blue-700 transition-all active:scale-[0.98] 
-                         shadow-lg shadow-cyan-500/30"
+                className="w-full py-4 bg-[#2563EB] hover:bg-[#1D4ED8] dark:bg-gradient-to-r dark:from-cyan-500 dark:to-blue-600 text-white font-bold 
+                         rounded-xl dark:hover:from-cyan-600 dark:hover:to-blue-700 transition-all active:scale-[0.98] 
+                         shadow-sm shadow-[#2563EB]/20 dark:shadow-lg dark:shadow-cyan-500/30"
               >
                 <span className="flex items-center justify-center gap-2">
                   <FaRedo />
@@ -535,7 +535,7 @@ export default function EventQRScanner() {
           )}
         </div>
 
-        <div className="mt-4 text-center text-gray-500 text-xs">
+        <div className="mt-4 text-center text-[#64748B] dark:text-gray-500 text-xs">
           <p>Scan the QR code from the attendee's confirmation</p>
           {selectedEvent.isVibeCodeEvent && <p className="mt-1">Transaction codes start with "VIBECODE-"</p>}
         </div>

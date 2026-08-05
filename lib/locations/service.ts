@@ -15,6 +15,17 @@ import {
   serverTimestamp,
 } from 'firebase/firestore';
 
+import { DISTRICTS } from './constants';
+
+function slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .replace(/–/g, '-') // Replace en-dash with standard hyphen
+    .replace(/\s+/g, '-')
+    .replace(/[^a-z0-9-]/g, '');
+}
+
+
 // Keep location data in memory for fast access
 interface CachedLocations {
   countries: Country[];
@@ -109,6 +120,15 @@ export async function getStatesByCountry(country: string): Promise<State[]> {
 
 // Get districts for a state
 export async function getDistrictsByState(state: string): Promise<District[]> {
+  if (state.toLowerCase() === 'telangana') {
+    return DISTRICTS.Telangana.map(name => ({
+      id: slugify(name),
+      name,
+      state: 'telangana',
+      country: 'india',
+      code: name.toUpperCase().replace(/[^A-Z]/g, '').slice(0, 4)
+    })).sort((a, b) => a.name.localeCompare(b.name));
+  }
   const locations = await initializeLocations();
   return locations.districts.filter(d => d.state === state);
 }

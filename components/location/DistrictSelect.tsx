@@ -36,7 +36,7 @@ export function DistrictSelect({ value, onChange, state, disabled }: DistrictSel
         const data = await res.json()
         setDistricts(data)
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to fetch districts')
+        setError('Unable to load districts. Please try again.')
       } finally {
         setLoading(false)
       }

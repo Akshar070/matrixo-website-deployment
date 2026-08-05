@@ -166,6 +166,7 @@ export default function ProfilePage() {
     if (!editData.fullName.trim()) e.fullName = 'Required'
     if (!editData.phone.trim()) e.phone = 'Required'
     else if (!/^[6-9]\d{9}$/.test(editData.phone.trim())) e.phone = 'Enter valid 10-digit number'
+    if (!location.district) e.district = 'Please select your district.'
     if (!location.collegeId) e.college = 'Please select your college'
     if (!editData.year) e.year = 'Required'
     if (!editData.branch) e.branch = 'Required'
@@ -506,6 +507,7 @@ export default function ProfilePage() {
                         onChange={setLocation}
                         disabled={saving}
                       />
+                      {errors.district && <p className="text-red-400 text-xs mt-1">{errors.district}</p>}
                       {errors.college && <p className="text-red-400 text-xs mt-1">{errors.college}</p>}
                     </div>
                     <div className="grid grid-cols-2 gap-4">

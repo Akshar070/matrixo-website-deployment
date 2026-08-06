@@ -54,6 +54,24 @@ export function CollegeSelect({
       return
     }
 
+    if (district === 'TS-HYD') {
+      setLoading(true)
+      setError(null)
+      import('@/lib/data/eamcet-colleges').then((module) => {
+        const hyderabadColleges = module.COLLEGES.Telangana.Hyderabad.map(name => ({
+          id: name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+          name,
+          city: 'Hyderabad'
+        }))
+        setColleges(hyderabadColleges)
+      }).catch(err => {
+        setError('Unable to load colleges. Please try again.')
+      }).finally(() => {
+        setLoading(false)
+      })
+      return
+    }
+
     const fetchColleges = async () => {
       setLoading(true)
       setError(null)
@@ -63,7 +81,7 @@ export function CollegeSelect({
         const data = await res.json()
         setColleges(data)
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to fetch colleges')
+        setError('Unable to load colleges. Please try again.')
       } finally {
         setLoading(false)
       }

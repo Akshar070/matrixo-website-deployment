@@ -3,12 +3,12 @@
 import { useState, useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { 
-  FaUser, 
-  FaLock, 
-  FaSignOutAlt, 
-  FaCalendarCheck, 
-  FaChartLine, 
+import {
+  FaUser,
+  FaLock,
+  FaSignOutAlt,
+  FaCalendarCheck,
+  FaChartLine,
   FaHistory,
   FaCheckCircle,
   FaTimesCircle,
@@ -111,7 +111,7 @@ function LoginForm() {
       toast.error('Please enter both Employee ID and Password')
       return
     }
-    
+
     setLoading(true)
     try {
       await signIn(employeeId, password)
@@ -145,9 +145,9 @@ function LoginForm() {
       >
         <div className="text-center mb-8">
           <Link href="/" className="inline-block">
-            <motion.img 
-              src="/logos/logo-dark.png" 
-              alt="matriXO" 
+            <motion.img
+              src="/logos/logo-dark.png"
+              alt="matriXO"
               className="h-12 mx-auto mb-4"
               whileHover={{ scale: 1.05 }}
             />
@@ -262,10 +262,10 @@ const navigationItems = [
 // TOP NAVIGATION BAR
 // ============================================
 
-function TopNavbar({ 
-  activeTab, 
-  setActiveTab 
-}: { 
+function TopNavbar({
+  activeTab,
+  setActiveTab
+}: {
   activeTab: string
   setActiveTab: (tab: string) => void
 }) {
@@ -286,7 +286,7 @@ function TopNavbar({
     const q = query(collection(db, 'applications'), where('status', '==', 'pending'))
     const unsub = onSnapshot(q, (snap) => {
       setPendingAppCount(snap.docs.length)
-    }, () => {})
+    }, () => { })
     return () => unsub()
   }, [isAdmin])
 
@@ -332,7 +332,7 @@ function TopNavbar({
   const handleUserMenuClick = (e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
-    
+
     if (!userMenuOpen && userMenuButtonRef.current) {
       const rect = userMenuButtonRef.current.getBoundingClientRect()
       const isMobile = window.innerWidth < 640
@@ -374,7 +374,7 @@ function TopNavbar({
     >
       {/* Gradient accent line */}
       <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary-600 via-primary-400 to-primary-600" />
-      
+
       <div className="max-w-[100vw] px-4 md:px-6 mx-auto">
         <div className="flex items-center justify-between h-16 gap-2 md:gap-4 overflow-hidden">
           {/* Logo */}
@@ -395,8 +395,8 @@ function TopNavbar({
                   onClick={() => setActiveTab(item.id)}
                   className={`
                     relative flex items-center gap-2 px-3 py-2 rounded-xl transition-all duration-200 font-medium text-sm whitespace-nowrap
-                    ${activeTab === item.id 
-                      ? 'bg-gradient-to-r from-primary-600 to-primary-500 text-white shadow-lg shadow-primary-500/30' 
+                    ${activeTab === item.id
+                      ? 'bg-gradient-to-r from-primary-600 to-primary-500 text-white shadow-lg shadow-primary-500/30'
                       : darkMode
                         ? 'text-neutral-400 hover:text-white hover:bg-white/8'
                         : 'text-gray-600 hover:text-gray-900 hover:bg-black/6'
@@ -412,7 +412,7 @@ function TopNavbar({
                   )}
                 </button>
               ))}
-              
+
               {isAdmin && (
                 <>
                   <div className="w-px h-6 bg-white/10 mx-1" />
@@ -522,7 +522,7 @@ function TopNavbar({
               {mounted && userMenuOpen && createPortal(
                 <div
                   ref={userMenuDropdownRef}
-                  style={{ 
+                  style={{
                     position: 'fixed',
                     top: userMenuPosition.top,
                     right: userMenuPosition.isMobile ? 8 : userMenuPosition.right,
@@ -565,7 +565,7 @@ function TopNavbar({
                         <FaUserCircle />
                         <span>My Profile</span>
                       </button>
-                    <button
+                      <button
                         onClick={handleLogout}
                         className="w-full flex items-center gap-3 px-4 py-3 text-red-500 hover:bg-red-500/10 rounded-xl transition-colors"
                       >
@@ -606,8 +606,8 @@ function TopNavbar({
                     onClick={() => { setActiveTab(item.id); setMobileMenuOpen(false) }}
                     className={`
                       relative flex items-center gap-2.5 px-4 py-3 rounded-xl transition-all font-medium text-sm
-                      ${activeTab === item.id 
-                        ? 'bg-primary-500/20 text-primary-500 border border-primary-500/20' 
+                      ${activeTab === item.id
+                        ? 'bg-primary-500/20 text-primary-500 border border-primary-500/20'
                         : darkMode
                           ? 'text-neutral-400 hover:text-white hover:bg-white/5 border border-transparent'
                           : 'text-gray-600 hover:text-gray-900 hover:bg-black/5 border border-transparent'
@@ -623,7 +623,7 @@ function TopNavbar({
                     )}
                   </button>
                 ))}
-                
+
                 {isAdmin && (
                   <button
                     onClick={() => { setActiveTab('subscriptions'); setMobileMenuOpen(false) }}
@@ -696,14 +696,14 @@ function DashboardOverview({ onTaskClick, onShowMyTasks }: { onTaskClick?: (task
     }
     fetchAttendance()
   }, [getAttendanceRecords])
-  
+
   const presentDays = attendanceRecords.filter(r => r.status === 'P').length
   const absentDays = attendanceRecords.filter(r => r.status === 'A').length
   const onDutyDays = attendanceRecords.filter(r => r.status === 'O').length
   const totalDays = attendanceRecords.length
   // FIXED: Match Admin formula - (present + onDuty) / total
-  const attendancePercentage = totalDays > 0 
-    ? Math.round(((presentDays + onDutyDays) / totalDays) * 100) 
+  const attendancePercentage = totalDays > 0
+    ? Math.round(((presentDays + onDutyDays) / totalDays) * 100)
     : 0
 
   // Safely filter tasks - handle both array and string for assignedTo
@@ -787,14 +787,14 @@ function DashboardOverview({ onTaskClick, onShowMyTasks }: { onTaskClick?: (task
             className="w-12 h-12 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl object-cover border-2 border-primary-500"
             onError={(e) => { (e.target as HTMLImageElement).src = DEFAULT_AVATAR }}
           />
-            <div className="min-w-0 flex-1">
+          <div className="min-w-0 flex-1">
             <h2 className={`text-lg sm:text-2xl font-bold truncate ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                Welcome back, {employee?.name?.split(' ')[0]}!
-              </h2>
-              <p className={`text-sm sm:text-base truncate ${darkMode ? 'text-neutral-400' : 'text-gray-500'}`}>
-                {employee?.department} • {employee?.designation}
-              </p>
-            </div>
+              Welcome back, {employee?.name?.split(' ')[0]}!
+            </h2>
+            <p className={`text-sm sm:text-base truncate ${darkMode ? 'text-neutral-400' : 'text-gray-500'}`}>
+              {employee?.department} • {employee?.designation}
+            </p>
+          </div>
         </div>
       </div>
 
@@ -848,8 +848,8 @@ function DashboardOverview({ onTaskClick, onShowMyTasks }: { onTaskClick?: (task
           ) : (
             <div className="space-y-2 sm:space-y-3">
               {myTasks.slice(0, 4).map((task) => (
-                <div 
-                  key={task.id} 
+                <div
+                  key={task.id}
                   className={`flex items-center justify-between p-2.5 sm:p-3 rounded-lg sm:rounded-xl cursor-pointer transition-colors gap-2 ${darkMode ? 'bg-white/5 hover:bg-white/10' : 'bg-black/4 hover:bg-black/8'}`}
                   style={{ border: darkMode ? '1px solid rgba(255,255,255,0.07)' : '1px solid rgba(0,0,0,0.06)' }}
                   onClick={() => onTaskClick?.(task.id!)}
@@ -864,8 +864,8 @@ function DashboardOverview({ onTaskClick, onShowMyTasks }: { onTaskClick?: (task
                     px-2 py-1 text-xs rounded-full font-medium flex-shrink-0
                     ${task.priority === 'urgent' ? 'bg-red-500/20 text-red-400' :
                       task.priority === 'high' ? 'bg-amber-500/20 text-amber-400' :
-                      task.priority === 'medium' ? 'bg-blue-500/20 text-blue-400' :
-                      'bg-neutral-500/20 text-neutral-400'}
+                        task.priority === 'medium' ? 'bg-blue-500/20 text-blue-400' :
+                          'bg-neutral-500/20 text-neutral-400'}
                   `}>
                     {task.priority}
                   </span>
@@ -889,7 +889,7 @@ function DashboardOverview({ onTaskClick, onShowMyTasks }: { onTaskClick?: (task
             <FaListAlt className="text-primary-500" />
             My Todo List
           </h3>
-          
+
           {/* Add Todo Input */}
           <div className="flex gap-2 mb-3 sm:mb-4">
             <input
@@ -918,31 +918,28 @@ function DashboardOverview({ onTaskClick, onShowMyTasks }: { onTaskClick?: (task
           ) : (
             <div className="space-y-2 max-h-48 overflow-y-auto">
               {sortedTodos.slice(0, 6).map((todo) => (
-                <div 
-                  key={todo.id} 
-                  className={`flex items-center justify-between p-3 rounded-xl transition-all ${
-                    todo.status === 'completed' 
+                <div
+                  key={todo.id}
+                  className={`flex items-center justify-between p-3 rounded-xl transition-all ${todo.status === 'completed'
                       ? darkMode ? 'bg-white/3' : 'bg-black/3'
                       : darkMode ? 'bg-white/7' : 'bg-black/5'
-                  }`}
+                    }`}
                   style={{ border: darkMode ? '1px solid rgba(255,255,255,0.07)' : '1px solid rgba(0,0,0,0.06)' }}
                 >
                   <div className="flex items-center gap-3 flex-1 min-w-0">
                     <button
                       onClick={() => todo.id && handleToggleTodo(todo.id, todo.status)}
-                      className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${
-                        todo.status === 'completed' 
-                          ? 'bg-green-500 border-green-500 text-white' 
+                      className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${todo.status === 'completed'
+                          ? 'bg-green-500 border-green-500 text-white'
                           : darkMode ? 'border-neutral-500 hover:border-primary-500' : 'border-gray-400 hover:border-primary-500'
-                      }`}
+                        }`}
                     >
                       {todo.status === 'completed' && <FaCheckCircle className="text-xs" />}
                     </button>
-                    <span className={`text-sm truncate ${
-                      todo.status === 'completed' 
+                    <span className={`text-sm truncate ${todo.status === 'completed'
                         ? darkMode ? 'text-neutral-500 line-through' : 'text-gray-400 line-through'
                         : darkMode ? 'text-white' : 'text-gray-900'
-                    }`}>
+                      }`}>
                       {todo.title}
                     </span>
                   </div>
@@ -1251,7 +1248,7 @@ function ProfileTab() {
 // STAT CARD COMPONENT
 // ============================================
 
-function StatCard({ title, value, icon: Icon, color, onClick }: { 
+function StatCard({ title, value, icon: Icon, color, onClick }: {
   title: string
   value: string | number
   icon: any
@@ -1368,7 +1365,7 @@ function Dashboard() {
   const meetingSyncRef = useRef(false)
   useEffect(() => {
     if (!employee?.employeeId || meetingSyncRef.current) return
-    
+
     const syncMeetingTasksBackground = async () => {
       try {
         // 1. Fetch meetings from Fathom API
@@ -1428,17 +1425,17 @@ function Dashboard() {
           const primary = group[0]
           const mergedIds = new Set<string>(primary.data.assignedTo || [])
           const mergedNames = new Map<string, string>()
-          ;(primary.data.assignedTo || []).forEach((id: string, idx: number) => {
-            mergedNames.set(id, (primary.data.assignedToNames || [])[idx] || id)
-          })
+            ; (primary.data.assignedTo || []).forEach((id: string, idx: number) => {
+              mergedNames.set(id, (primary.data.assignedToNames || [])[idx] || id)
+            })
           for (let j = 1; j < group.length; j++) {
             const dup = group[j]
-            ;(dup.data.assignedTo || []).forEach((id: string, idx: number) => {
-              if (!mergedIds.has(id)) {
-                mergedIds.add(id)
-                mergedNames.set(id, (dup.data.assignedToNames || [])[idx] || id)
-              }
-            })
+              ; (dup.data.assignedTo || []).forEach((id: string, idx: number) => {
+                if (!mergedIds.has(id)) {
+                  mergedIds.add(id)
+                  mergedNames.set(id, (dup.data.assignedToNames || [])[idx] || id)
+                }
+              })
             // Delete duplicate
             await deleteDoc(doc(db, 'tasks', dup.id))
             existingIds.delete(dup.id)
@@ -1497,7 +1494,7 @@ function Dashboard() {
               if (item.assignee) {
                 const matched = allEmployees.find(
                   (emp: any) => (item.assignee.email && emp.email?.toLowerCase() === item.assignee.email.toLowerCase()) ||
-                         (item.assignee.name && emp.name?.toLowerCase() === item.assignee.name.toLowerCase())
+                    (item.assignee.name && emp.name?.toLowerCase() === item.assignee.name.toLowerCase())
                 )
                 if (matched && !addedIds.has(matched.employeeId)) {
                   assigneeIds.push(matched.employeeId)
@@ -1511,7 +1508,7 @@ function Dashboard() {
             if (assigneeIds.length === 0 && meeting.recorded_by) {
               const recorder = allEmployees.find(
                 (emp: any) => emp.email?.toLowerCase() === (meeting.recorded_by?.email || '').toLowerCase() ||
-                       emp.name?.toLowerCase() === (meeting.recorded_by?.name || '').toLowerCase()
+                  emp.name?.toLowerCase() === (meeting.recorded_by?.name || '').toLowerCase()
               )
               if (recorder) {
                 assigneeIds.push(recorder.employeeId)
@@ -1572,60 +1569,60 @@ function Dashboard() {
     // Small delay to not block initial render
     const timer = setTimeout(syncMeetingTasksBackground, 2000)
     return () => clearTimeout(timer)
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [employee?.employeeId])
 
   return (
     <PortalThemeContext.Provider value={{ darkMode, toggleTheme }}>
-    <div
-      data-portal-theme={darkMode ? 'dark' : 'light'}
-      className="min-h-screen overflow-x-hidden max-w-[100vw] transition-colors duration-500"
-      style={{
-        background: darkMode
-          ? 'radial-gradient(ellipse at 20% 10%, rgba(124,58,237,0.18) 0%, transparent 55%), radial-gradient(ellipse at 80% 80%, rgba(99,102,241,0.12) 0%, transparent 50%), #06060a'
-          : 'radial-gradient(ellipse at 20% 10%, rgba(167,139,250,0.12) 0%, transparent 55%), radial-gradient(ellipse at 80% 80%, rgba(196,181,253,0.1) 0%, transparent 50%), #f5f3ff',
-      }}
-    >
-      {/* Top Navigation */}
-      <TopNavbar activeTab={activeTab} setActiveTab={setActiveTab} />
-      
-      {/* Main Content - pt-20 compensates for fixed navbar height */}
-      <main className="max-w-7xl mx-auto px-4 py-6 pt-20">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={activeTab}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.2 }}
-            className="w-full"
-          >
-            {activeTab === 'attendance' && <Attendance />}
-            {activeTab === 'dashboard' && <DashboardOverview onTaskClick={handlePendingTaskClick} onShowMyTasks={handleShowMyTasks} />}
-            {activeTab === 'history' && <HistoryTab />}
-            {activeTab === 'calendar' && <Calendar />}
-            {activeTab === 'tasks' && <Tasks selectedTaskId={selectedTaskId} onTaskOpened={() => setSelectedTaskId(null)} showOnlyMyTasks={showOnlyMyTasks} />}
-            {activeTab === 'discussions' && <Discussions />}
-            {activeTab === 'meetings' && <Meetings />}
-            {activeTab === 'event-checkin' && <EventQRScanner />}
-            {activeTab === 'profile' && <ProfileTab />}
-            {activeTab === 'job-postings' && isAdmin && <JobPostings />}
-            {activeTab === 'subscriptions' && isAdmin && <SubscriptionAdmin />}
-            {activeTab === 'admin' && isAdmin && <AdminPanel />}
-          </motion.div>
-        </AnimatePresence>
-      </main>
-
-      {/* Footer */}
-      <footer
-        className="py-6 mt-auto"
-        style={{ borderTop: darkMode ? '1px solid rgba(255,255,255,0.06)' : '1px solid rgba(0,0,0,0.08)' }}
+      <div
+        data-portal-theme={darkMode ? 'dark' : 'light'}
+        className="min-h-screen overflow-x-hidden max-w-[100vw] transition-colors duration-500"
+        style={{
+          background: darkMode
+            ? 'radial-gradient(ellipse at 20% 10%, rgba(124,58,237,0.18) 0%, transparent 55%), radial-gradient(ellipse at 80% 80%, rgba(99,102,241,0.12) 0%, transparent 50%), #06060a'
+            : 'radial-gradient(ellipse at 20% 10%, rgba(167,139,250,0.12) 0%, transparent 55%), radial-gradient(ellipse at 80% 80%, rgba(196,181,253,0.1) 0%, transparent 50%), #f5f3ff',
+        }}
       >
-        <p className={`text-center text-sm ${darkMode ? 'text-neutral-500' : 'text-gray-400'}`}>
-          © {new Date().getFullYear()} matriXO Employee Portal. All rights reserved.
-        </p>
-      </footer>
-    </div>
+        {/* Top Navigation */}
+        <TopNavbar activeTab={activeTab} setActiveTab={setActiveTab} />
+
+        {/* Main Content - pt-20 compensates for fixed navbar height */}
+        <main className="max-w-7xl mx-auto px-4 py-6 pt-20">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeTab}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.2 }}
+              className="w-full"
+            >
+              {activeTab === 'attendance' && <Attendance />}
+              {activeTab === 'dashboard' && <DashboardOverview onTaskClick={handlePendingTaskClick} onShowMyTasks={handleShowMyTasks} />}
+              {activeTab === 'history' && <HistoryTab />}
+              {activeTab === 'calendar' && <Calendar />}
+              {activeTab === 'tasks' && <Tasks selectedTaskId={selectedTaskId} onTaskOpened={() => setSelectedTaskId(null)} showOnlyMyTasks={showOnlyMyTasks} />}
+              {activeTab === 'discussions' && <Discussions />}
+              {activeTab === 'meetings' && <Meetings />}
+              {activeTab === 'event-checkin' && <EventQRScanner />}
+              {activeTab === 'profile' && <ProfileTab />}
+              {activeTab === 'job-postings' && isAdmin && <JobPostings />}
+              {activeTab === 'subscriptions' && isAdmin && <SubscriptionAdmin />}
+              {activeTab === 'admin' && isAdmin && <AdminPanel />}
+            </motion.div>
+          </AnimatePresence>
+        </main>
+
+        {/* Footer */}
+        <footer
+          className="py-6 mt-auto"
+          style={{ borderTop: darkMode ? '1px solid rgba(255,255,255,0.06)' : '1px solid rgba(0,0,0,0.08)' }}
+        >
+          <p className={`text-center text-sm ${darkMode ? 'text-neutral-500' : 'text-gray-400'}`}>
+            © {new Date().getFullYear()} matriXO Employee Portal. All rights reserved.
+          </p>
+        </footer>
+      </div>
     </PortalThemeContext.Provider>
   )
 }

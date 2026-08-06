@@ -6,10 +6,14 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { FaCalendar, FaMapMarkerAlt, FaTicketAlt, FaSearch, FaFilter, FaClock, FaStar } from 'react-icons/fa'
 import eventsData from '@/data/events.json'
-import { format, isFuture, isPast, compareDesc, compareAsc } from 'date-fns'
+import { format, isFuture, compareDesc, compareAsc } from 'date-fns'
 import HeadingHighlight from '@/components/HeadingHighlight'
 
 type SortOption = 'upcoming' | 'latest' | 'all'
+
+// Program-type categories that have dedicated filter chips.
+// Anything NOT in this set is considered a generic "event".
+const PROGRAM_TYPE_CATEGORIES = new Set(['course', 'workshop', 'hackathon', 'bootcamp'])
 
 export default function EventsListing() {
   const [categoryFilter, setCategoryFilter] = useState('all')
@@ -17,21 +21,47 @@ export default function EventsListing() {
   const [searchTerm, setSearchTerm] = useState('')
 
   const filteredAndSortedEvents = useMemo(() => {
+    // ── Step 1: filter by program type (category chip) ──────────────────────
     let filtered = eventsData.filter(event => {
-      const matchesCategory = categoryFilter === 'all' || event.category.toLowerCase() === categoryFilter.toLowerCase()
-      const matchesSearch = event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                            event.tagline.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                            event.location.toLowerCase().includes(searchTerm.toLowerCase())
-      return matchesCategory && matchesSearch
+      if (categoryFilter === 'all') return true
+
+      const cat = event.category.toLowerCase()
+
+      if (categoryFilter === 'event') {
+        // "Events" chip: show anything that is NOT a standard program type
+        return !PROGRAM_TYPE_CATEGORIES.has(cat)
+      }
+
+      // Standard program-type chips: exact match
+      return cat === categoryFilter.toLowerCase()
     })
 
-    // Sort based on selected option
+    // ── Step 2: filter / sort by status (sort-option chip) ──────────────────
     if (sortOption === 'upcoming') {
-      filtered = filtered
-        .filter(event => isFuture(new Date(event.date)))
-        .sort((a, b) => compareAsc(new Date(a.date), new Date(b.date)))
+      // Use the status field as the source of truth so that events whose
+      // dates may be in the past but are still marked "upcoming" are shown.
+      filtered = filtered.filter(event => event.status === 'upcoming')
+      // Secondary sort: soonest first
+      filtered = filtered.sort((a, b) => compareAsc(new Date(a.date), new Date(b.date)))
     } else if (sortOption === 'latest') {
+      // "Latest" = events marked as latest, OR fall back to most-recently dated
+      const hasLatestStatus = filtered.some(e => e.status === 'latest')
+      if (hasLatestStatus) {
+        filtered = filtered.filter(event => event.status === 'latest')
+      }
+      // Always sort by date descending so newest appear first
       filtered = filtered.sort((a, b) => compareDesc(new Date(a.date), new Date(b.date)))
+    }
+    // sortOption === 'all' → no status filtering, keep all
+
+    // ── Step 3: filter by search term ────────────────────────────────────────
+    if (searchTerm.trim()) {
+      const q = searchTerm.toLowerCase()
+      filtered = filtered.filter(event =>
+        event.title.toLowerCase().includes(q) ||
+        event.tagline.toLowerCase().includes(q) ||
+        event.location.toLowerCase().includes(q)
+      )
     }
 
     return filtered

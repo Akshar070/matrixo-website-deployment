@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
@@ -13,21 +13,16 @@ import { useProfile } from '@/lib/ProfileContext'
 import { toast } from 'sonner'
 import { getFirestore, collection, query, where, getDocs } from 'firebase/firestore'
 
-const navLinksBeforeFeatures = [
+const mainNavLinks = [
   { name: 'Home', href: '/' },
+  { name: 'Events', href: '/events' },
+]
+
+const menuDropdownLinks = [
   { name: 'About', href: '/about' },
   { name: 'Team', href: '/team' },
   { name: 'Services', href: '/services' },
-]
-
-const navLinksAfterFeatures = [
-  { name: 'Events', href: '/events' },
-]
-
-const tabletMoreLinks = [
-  { name: 'About', href: '/about' },
-  { name: 'Team', href: '/team' },
-  { name: 'Events', href: '/events' },
+  { name: 'Career', href: '/careers' },
 ]
 
 const talkWithUsClassName =
@@ -42,9 +37,11 @@ export default function Navbar() {
   const [darkMode, setDarkMode] = useState(false)
   const [mounted, setMounted] = useState(false)
   const [isBeta, setIsBeta] = useState(false)
-  const [showMoreDropdown, setShowMoreDropdown] = useState(false)
+  const [showMenuDropdown, setShowMenuDropdown] = useState(false)
   const [showUserDropdown, setShowUserDropdown] = useState(false)
   const [isEmployee, setIsEmployee] = useState(false)
+
+  const menuDropdownRef = useRef<HTMLDivElement>(null)
 
   const { user, logout } = useAuth()
   const { profile } = useProfile()
@@ -106,6 +103,27 @@ export default function Navbar() {
       localStorage.setItem('theme', 'light')
     }
   }, [darkMode, mounted])
+
+  // Close menu dropdown on click outside or Escape
+  useEffect(() => {
+    if (!showMenuDropdown) return
+
+    const handleClickOutside = (e: MouseEvent) => {
+      if (menuDropdownRef.current && !menuDropdownRef.current.contains(e.target as Node)) {
+        setShowMenuDropdown(false)
+      }
+    }
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setShowMenuDropdown(false)
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    document.addEventListener('keydown', handleEscape)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+      document.removeEventListener('keydown', handleEscape)
+    }
+  }, [showMenuDropdown])
 
   const handleLogout = async () => {
     try {
@@ -175,12 +193,12 @@ export default function Navbar() {
 
           {/* Desktop / Tablet Navigation */}
           <div className="hidden md:flex items-center gap-6 lg:gap-8 whitespace-nowrap min-w-0 flex-1 justify-center">
-            <div className="flex items-center gap-6 lg:gap-8 whitespace-nowrap min-w-0 overflow-hidden">
-              {navLinksBeforeFeatures.map((link, index) => {
+            <div className="flex items-center gap-6 lg:gap-8 whitespace-nowrap min-w-0 overflow-visible">
+              {/* Main nav links: Home & Events */}
+              {mainNavLinks.map((link, index) => {
                 const isActive = link.href === '/'
                   ? pathname === '/'
                   : pathname === link.href || pathname.startsWith(link.href + '/')
-                const isDesktopOnly = link.name === 'About' || link.name === 'Team'
                 return (
                   <motion.div
                     key={link.name}
@@ -191,7 +209,6 @@ export default function Navbar() {
                       duration: 0.3,
                       ease: [0.4, 0, 0.2, 1]
                     }}
-                    className={isDesktopOnly ? 'hidden lg:block' : ''}
                   >
                     <Link
                       href={link.href}
@@ -202,77 +219,74 @@ export default function Navbar() {
                   </motion.div>
                 )
               })}
-            </div>
 
-            {navLinksAfterFeatures.map((link, index) => {
-              const isActive = link.href === '/'
-                ? pathname === '/'
-                : pathname === link.href || pathname.startsWith(link.href + '/')
-              return (
-                <motion.div
-                  key={link.name}
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{
-                    delay: (navLinksBeforeFeatures.length + index) * 0.05,
-                    duration: 0.3,
-                    ease: [0.4, 0, 0.2, 1]
-                  }}
-                  className="hidden lg:block"
-                >
-                  <Link
-                    href={link.href}
-                    className={`nav-link ${isActive ? 'nav-link-active' : ''}`}
-                  >
-                    {link.name}
-                  </Link>
-                </motion.div>
-              )
-            })}
-
-            <div
-              className="relative lg:hidden flex-shrink-0"
-              onMouseEnter={() => setShowMoreDropdown(true)}
-              onMouseLeave={() => setShowMoreDropdown(false)}
-            >
-              <button
-                className="flex items-center gap-1 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white 
-                           whitespace-nowrap transition-all duration-300 ease-out px-2.5 py-1.5 rounded-lg hover:bg-gray-50 dark:hover:bg-white/5"
+              {/* Menu ☰ dropdown */}
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{
+                  delay: mainNavLinks.length * 0.05,
+                  duration: 0.3,
+                  ease: [0.4, 0, 0.2, 1]
+                }}
+                className="relative flex-shrink-0"
+                ref={menuDropdownRef}
               >
-                More
-                <FaChevronDown className={`text-xs transition-transform duration-300 ease-out ${showMoreDropdown ? 'rotate-180' : ''}`} />
-              </button>
+                <button
+                  onClick={() => setShowMenuDropdown((prev) => !prev)}
+                  aria-haspopup="true"
+                  aria-expanded={showMenuDropdown}
+                  aria-label="Open menu"
+                  className={`flex items-center gap-1.5 text-sm font-semibold transition-all duration-300 ease-out px-2.5 py-1.5 rounded-lg
+                    ${showMenuDropdown
+                      ? 'text-gray-900 dark:text-white bg-gray-50 dark:bg-white/5'
+                      : 'text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-white/5'
+                    } whitespace-nowrap`}
+                >
+                  {/* Animated hamburger icon */}
+                  <span className="flex flex-col gap-[4px] w-4 flex-shrink-0" aria-hidden="true">
+                    <span className={`block h-[2px] w-full rounded-full bg-current transition-all duration-300 origin-center ${showMenuDropdown ? 'rotate-45 translate-y-[6px]' : ''}`} />
+                    <span className={`block h-[2px] w-full rounded-full bg-current transition-all duration-300 ${showMenuDropdown ? 'opacity-0 scale-x-0' : ''}`} />
+                    <span className={`block h-[2px] w-full rounded-full bg-current transition-all duration-300 origin-center ${showMenuDropdown ? '-rotate-45 -translate-y-[6px]' : ''}`} />
+                  </span>
+                  Menu
+                  <FaChevronDown
+                    className={`text-[10px] transition-transform duration-300 ease-out ${showMenuDropdown ? 'rotate-180' : ''}`}
+                  />
+                </button>
 
-              <AnimatePresence>
-                {showMoreDropdown && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 8, scale: 0.96 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: 8, scale: 0.96 }}
-                    transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
-                    className="absolute top-full right-0 mt-2 w-44 glass-card-elevated overflow-hidden"
-                  >
-                    {tabletMoreLinks.map((link) => {
-                      const isActive = link.href === '/'
-                        ? pathname === '/'
-                        : pathname === link.href || pathname.startsWith(link.href + '/')
-                      return (
-                        <Link
-                          key={link.name}
-                          href={link.href}
-                          onClick={() => setShowMoreDropdown(false)}
-                          className={`block px-4 py-2.5 text-sm transition-colors ${isActive
-                            ? 'text-gray-900 dark:text-white bg-white/40 dark:bg-white/[0.06]'
-                            : 'text-gray-700 dark:text-gray-300 hover:bg-white/40 dark:hover:bg-white/[0.06]'
-                            }`}
-                        >
-                          {link.name}
-                        </Link>
-                      )
-                    })}
-                  </motion.div>
-                )}
-              </AnimatePresence>
+                <AnimatePresence>
+                  {showMenuDropdown && (
+                    <motion.div
+                      role="menu"
+                      aria-label="Menu navigation"
+                      initial={{ opacity: 0, y: 8, scale: 0.96 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 8, scale: 0.96 }}
+                      transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
+                      className="absolute top-full left-0 mt-2 w-48 glass-card-elevated overflow-hidden rounded-2xl"
+                    >
+                      {menuDropdownLinks.map((link) => {
+                        const isActive = pathname === link.href || pathname.startsWith(link.href + '/')
+                        return (
+                          <Link
+                            key={link.name}
+                            href={link.href}
+                            role="menuitem"
+                            onClick={() => setShowMenuDropdown(false)}
+                            className={`block px-4 py-2.5 text-sm font-medium transition-colors ${isActive
+                              ? 'text-gray-900 dark:text-white bg-white/40 dark:bg-white/[0.06]'
+                              : 'text-gray-700 dark:text-gray-300 hover:bg-white/40 dark:hover:bg-white/[0.06] hover:text-gray-900 dark:hover:text-white'
+                              }`}
+                          >
+                            {link.name}
+                          </Link>
+                        )
+                      })}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
             </div>
           </div>
 
@@ -338,31 +352,31 @@ export default function Navbar() {
                       </div>
 
                       <div className="space-y-1.5">
-                      <Link
-                        href="/profile"
-                        className="flex items-center gap-2 p-2 rounded-lg hover:bg-white/10 text-white transition"
-                      >
-                        <FaUser className="text-sm" />
-                        <span>Profile</span>
-                      </Link>
-                      {isEmployee && (
-                        <a
-                          href={EMPLOYEE_PORTAL_URL}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex items-center gap-2 p-2 rounded-lg hover:bg-white/10 text-purple-300 transition"
+                        <Link
+                          href="/profile"
+                          className="flex items-center gap-2 p-2 rounded-lg hover:bg-white/10 text-white transition"
                         >
-                          <FaIdBadge />
-                          <span>Employee Portal</span>
-                        </a>
-                      )}
-                      <button
-                        onClick={handleLogout}
-                        className="w-full flex items-center gap-2 p-2 rounded-lg hover:bg-red-500/20 text-red-400 transition"
-                      >
-                        <FaSignOutAlt />
-                        <span>Logout</span>
-                      </button>
+                          <FaUser className="text-sm" />
+                          <span>Profile</span>
+                        </Link>
+                        {isEmployee && (
+                          <a
+                            href={EMPLOYEE_PORTAL_URL}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-2 p-2 rounded-lg hover:bg-white/10 text-purple-300 transition"
+                          >
+                            <FaIdBadge />
+                            <span>Employee Portal</span>
+                          </a>
+                        )}
+                        <button
+                          onClick={handleLogout}
+                          className="w-full flex items-center gap-2 p-2 rounded-lg hover:bg-red-500/20 text-red-400 transition"
+                        >
+                          <FaSignOutAlt />
+                          <span>Logout</span>
+                        </button>
                       </div>
                     </motion.div>
                   )}
@@ -465,134 +479,139 @@ export default function Navbar() {
               aria-hidden={!isOpen}
             >
               <div className="max-h-[70vh] overflow-y-auto flex flex-col gap-y-4 p-4">
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-semibold text-gray-800 dark:text-gray-200">Menu</span>
-                <button
-                  onClick={() => setIsOpen(false)}
-                  className="w-8 h-8 flex items-center justify-center rounded-lg bg-white/10 dark:bg-black/20 hover:bg-white/20 dark:hover:bg-black/30 transition-all duration-200"
-                  aria-label="Close menu"
-                >
-                  <FaTimes className="w-4 h-4 text-gray-800 dark:text-gray-200" />
-                </button>
-              </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-semibold text-gray-800 dark:text-gray-200">Menu</span>
+                  <button
+                    onClick={() => setIsOpen(false)}
+                    className="w-8 h-8 flex items-center justify-center rounded-lg bg-white/10 dark:bg-black/20 hover:bg-white/20 dark:hover:bg-black/30 transition-all duration-200"
+                    aria-label="Close menu"
+                  >
+                    <FaTimes className="w-4 h-4 text-gray-800 dark:text-gray-200" />
+                  </button>
+                </div>
 
-              <div className="flex flex-col gap-y-4">
-                {navLinksBeforeFeatures.map((link) => {
-                  const isActive = link.href === '/'
-                    ? pathname === '/'
-                    : pathname === link.href || pathname.startsWith(link.href + '/')
-                  return (
-                    <Link
-                      key={link.name}
-                      href={link.href}
-                      onClick={() => setIsOpen(false)}
-                      className={`flex items-center gap-3 px-4 py-2 rounded-lg transition-all duration-200 cursor-pointer ${isActive
-                        ? 'bg-blue-500/15 dark:bg-blue-400/10 text-blue-600 dark:text-blue-400 font-semibold'
-                        : 'text-gray-700 dark:text-gray-300 hover:bg-white/10 dark:hover:bg-white/[0.06]'
-                        }`}
-                    >
-                      {link.name}
-                    </Link>
-                  )
-                })}
+                <div className="flex flex-col gap-y-1">
+                  {/* Main links: Home & Events */}
+                  {mainNavLinks.map((link) => {
+                    const isActive = link.href === '/'
+                      ? pathname === '/'
+                      : pathname === link.href || pathname.startsWith(link.href + '/')
+                    return (
+                      <Link
+                        key={link.name}
+                        href={link.href}
+                        onClick={() => setIsOpen(false)}
+                        className={`flex items-center gap-3 px-4 py-2 rounded-lg transition-all duration-200 cursor-pointer ${isActive
+                          ? 'bg-blue-500/15 dark:bg-blue-400/10 text-blue-600 dark:text-blue-400 font-semibold'
+                          : 'text-gray-700 dark:text-gray-300 hover:bg-white/10 dark:hover:bg-white/[0.06]'
+                          }`}
+                      >
+                        {link.name}
+                      </Link>
+                    )
+                  })}
 
-                {navLinksAfterFeatures.map((link) => {
-                  const isActive = link.href === '/'
-                    ? pathname === '/'
-                    : pathname === link.href || pathname.startsWith(link.href + '/')
-                  return (
-                    <Link
-                      key={link.name}
-                      href={link.href}
-                      onClick={() => setIsOpen(false)}
-                      className={`flex items-center gap-3 px-4 py-2 rounded-lg transition-all duration-200 cursor-pointer ${isActive
-                        ? 'bg-blue-500/15 dark:bg-blue-400/10 text-blue-600 dark:text-blue-400 font-semibold'
-                        : 'text-gray-700 dark:text-gray-300 hover:bg-white/10 dark:hover:bg-white/[0.06]'
-                        }`}
-                    >
-                      {link.name}
-                    </Link>
-                  )
-                })}
-
-                <Link
-                  href="/contact"
-                  onClick={() => setIsOpen(false)}
-                  className="flex items-center gap-3 px-4 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-white/10 dark:hover:bg-white/[0.06] transition-all duration-200 cursor-pointer"
-                >
-                  Talk With Us
-                </Link>
-              </div>
-
-              <div className="pt-4 border-t border-gray-200/30 dark:border-white/[0.06] flex flex-col gap-y-3">
-                {user ? (
-                  <>
-                    <div className="px-4 py-3 bg-white/50 dark:bg-white/[0.04] rounded-2xl flex items-center gap-3 backdrop-blur-sm">
-                      {profile?.profilePhoto ? (
-                        <div className="w-10 h-10 rounded-xl overflow-hidden flex-shrink-0">
-                          <Image src={profile.profilePhoto} alt="" width={40} height={40} className="object-cover w-full h-full" unoptimized />
-                        </div>
-                      ) : (
-                        <div className="w-10 h-10 rounded-xl bg-gray-200 dark:bg-gray-700 flex items-center justify-center flex-shrink-0">
-                          <span className="text-sm font-bold text-gray-600 dark:text-gray-300">{profile?.fullName?.charAt(0)?.toUpperCase() || 'U'}</span>
-                        </div>
-                      )}
-                      <div className="min-w-0">
-                        <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">
-                          {firstName}
-                        </p>
-                        {profile?.username && (
-                          <p className="text-xs text-gray-500 dark:text-gray-400 truncate">@{profile.username}</p>
-                        )}
-                      </div>
+                  {/* Divider + More section */}
+                  <div className="border-t border-gray-200/30 dark:border-white/[0.06] pt-3 mt-2">
+                    <span className="px-4 text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">More</span>
+                    <div className="mt-2 flex flex-col gap-y-1">
+                      {menuDropdownLinks.map((link) => {
+                        const isActive = pathname === link.href || pathname.startsWith(link.href + '/')
+                        return (
+                          <Link
+                            key={link.name}
+                            href={link.href}
+                            onClick={() => setIsOpen(false)}
+                            className={`flex items-center gap-3 px-4 py-2 rounded-lg transition-all duration-200 cursor-pointer ${isActive
+                              ? 'bg-blue-500/15 dark:bg-blue-400/10 text-blue-600 dark:text-blue-400 font-semibold'
+                              : 'text-gray-700 dark:text-gray-300 hover:bg-white/10 dark:hover:bg-white/[0.06]'
+                              }`}
+                          >
+                            {link.name}
+                          </Link>
+                        )
+                      })}
                     </div>
-                    <Link
-                      href="/profile"
-                      onClick={() => setIsOpen(false)}
-                      className="flex items-center justify-center gap-2 w-full px-4 py-2.5 glass-card-thin text-gray-700 dark:text-gray-300
+                  </div>
+
+                  <Link
+                    href="/contact"
+                    onClick={() => setIsOpen(false)}
+                    className="flex items-center gap-3 px-4 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-white/10 dark:hover:bg-white/[0.06] transition-all duration-200 cursor-pointer mt-1"
+                  >
+                    Talk With Us
+                  </Link>
+                </div>
+
+                <div className="pt-4 border-t border-gray-200/30 dark:border-white/[0.06] flex flex-col gap-y-3">
+                  {user ? (
+                    <>
+                      <div className="px-4 py-3 bg-white/50 dark:bg-white/[0.04] rounded-2xl flex items-center gap-3 backdrop-blur-sm">
+                        {profile?.profilePhoto ? (
+                          <div className="w-10 h-10 rounded-xl overflow-hidden flex-shrink-0">
+                            <Image src={profile.profilePhoto} alt="" width={40} height={40} className="object-cover w-full h-full" unoptimized />
+                          </div>
+                        ) : (
+                          <div className="w-10 h-10 rounded-xl bg-gray-200 dark:bg-gray-700 flex items-center justify-center flex-shrink-0">
+                            <span className="text-sm font-bold text-gray-600 dark:text-gray-300">{profile?.fullName?.charAt(0)?.toUpperCase() || 'U'}</span>
+                          </div>
+                        )}
+                        <div className="min-w-0">
+                          <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">
+                            {firstName}
+                          </p>
+                          {profile?.username && (
+                            <p className="text-xs text-gray-500 dark:text-gray-400 truncate">@{profile.username}</p>
+                          )}
+                        </div>
+                      </div>
+                      <Link
+                        href="/profile"
+                        onClick={() => setIsOpen(false)}
+                        className="flex items-center justify-center gap-2 w-full px-4 py-2.5 glass-card-thin text-gray-700 dark:text-gray-300
                                rounded-full font-semibold hover:scale-[1.02] transition-all duration-200"
+                      >
+                        <FaUser className="text-sm" />
+                        Profile
+                      </Link>
+                      {isEmployee && (
+                        <a
+                          href={EMPLOYEE_PORTAL_URL}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={() => setIsOpen(false)}
+                          className="flex items-center justify-center gap-2 w-full px-4 py-2.5 border-2 border-purple-500 text-purple-600 dark:text-purple-400 
+                                 rounded-full font-semibold hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-all duration-200"
+                        >
+                          <FaIdBadge className="text-sm" />
+                          Employee Portal
+                        </a>
+                      )}
+                      <button
+                        onClick={() => {
+                          handleLogout()
+                          setIsOpen(false)
+                        }}
+                        className="flex items-center justify-center gap-2 w-full px-4 py-2.5 border-2 border-red-500 text-red-600 dark:text-red-400 
+                               rounded-full font-semibold hover:bg-red-50 dark:hover:bg-red-900/20 transition-all duration-200"
+                      >
+                        <FaSignOutAlt className="text-sm" />
+                        Logout
+                      </button>
+                    </>
+                  ) : (
+                    <Link
+                      href="/auth"
+                      onClick={handleLoginClick}
+                      className="flex items-center justify-center gap-2 w-full px-4 py-2.5 border-2 border-purple-500 text-purple-600 dark:text-purple-400 
+                             rounded-full font-semibold hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-all duration-200"
                     >
                       <FaUser className="text-sm" />
-                      Profile
+                      Login
                     </Link>
-                    {isEmployee && (
-                      <a
-                        href={EMPLOYEE_PORTAL_URL}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        onClick={() => setIsOpen(false)}
-                        className="flex items-center justify-center gap-2 w-full px-4 py-2.5 border-2 border-purple-500 text-purple-600 dark:text-purple-400 
-                                 rounded-full font-semibold hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-all duration-200"
-                      >
-                        <FaIdBadge className="text-sm" />
-                        Employee Portal
-                      </a>
-                    )}
-                    <button
-                      onClick={() => {
-                        handleLogout()
-                        setIsOpen(false)
-                      }}
-                      className="flex items-center justify-center gap-2 w-full px-4 py-2.5 border-2 border-red-500 text-red-600 dark:text-red-400 
-                               rounded-full font-semibold hover:bg-red-50 dark:hover:bg-red-900/20 transition-all duration-200"
-                    >
-                      <FaSignOutAlt className="text-sm" />
-                      Logout
-                    </button>
-                  </>
-                ) : (
-                  <Link
-                    href="/auth"
-                    onClick={handleLoginClick}
-                    className="flex items-center justify-center gap-2 w-full px-4 py-2.5 border-2 border-purple-500 text-purple-600 dark:text-purple-400 
-                             rounded-full font-semibold hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-all duration-200"
-                  >
-                    <FaUser className="text-sm" />
-                    Login
-                  </Link>
-                )}
+                  )}
+                </div>
               </div>
-            </div>
             </motion.div>
           )}
         </AnimatePresence>

@@ -115,6 +115,10 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
   const createProfile = async (data: Omit<UserProfile, 'uid' | 'email' | 'createdAt' | 'updatedAt'>) => {
     if (!user) throw new Error('User not authenticated')
 
+    if (!data.profilePhoto) {
+      throw new Error('Profile picture is required')
+    }
+
     // Verify username is still available
     const usernameAvailable = await checkUsernameAvailable(data.username)
     if (!usernameAvailable) {

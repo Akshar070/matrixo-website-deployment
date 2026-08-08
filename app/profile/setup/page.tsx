@@ -107,6 +107,9 @@ export default function ProfileSetupPage() {
       const reader = new FileReader()
       reader.onloadend = () => setProfilePhotoPreview(reader.result as string)
       reader.readAsDataURL(compressedBlob)
+      if (errors.profilePhoto) {
+        setErrors(prev => ({ ...prev, profilePhoto: '' }))
+      }
     } catch {
       toast.error('Failed to process image. Please try another photo.')
     }
@@ -115,6 +118,8 @@ export default function ProfileSetupPage() {
   const validateStep1 = (): boolean => {
     const newErrors: Record<string, string> = {}
     const username = formData.username.trim().toLowerCase()
+
+    if (!profilePhotoFile) newErrors.profilePhoto = 'Profile picture is required'
 
     if (!username) newErrors.username = 'Username is required'
     else if (username.length < 3) newErrors.username = 'Username must be at least 3 characters'
@@ -244,7 +249,7 @@ export default function ProfileSetupPage() {
               {/* Profile Photo */}
               <div className="flex flex-col items-center mb-2">
                 <label htmlFor="photo-upload" className="cursor-pointer group">
-                  <div className="relative w-24 h-24 rounded-2xl overflow-hidden border-2 border-dashed border-white/20 dark:border-white/[0.12] group-hover:border-blue-400/50 dark:group-hover:border-blue-400/30 transition-colors">
+                  <div className={`relative w-24 h-24 rounded-2xl overflow-hidden border-2 border-dashed ${errors.profilePhoto ? 'border-red-500' : 'border-white/20 dark:border-white/[0.12] group-hover:border-blue-400/50 dark:group-hover:border-blue-400/30'} transition-colors`}>
                     {profilePhotoPreview ? (
                       <Image src={profilePhotoPreview} alt="Profile" fill className="object-cover" />
                     ) : (
@@ -256,7 +261,9 @@ export default function ProfileSetupPage() {
                   </div>
                 </label>
                 <input id="photo-upload" type="file" accept="image/*" onChange={handlePhotoSelect} className="hidden" />
-                <p className="text-xs text-gray-400 mt-2">Optional · Max 2MB</p>
+                <p className={`text-xs mt-2 ${errors.profilePhoto ? 'text-red-500' : 'text-gray-400'}`}>
+                  {errors.profilePhoto ? errors.profilePhoto : 'Required · Max 2MB'}
+                </p>
               </div>
 
               {/* Username */}

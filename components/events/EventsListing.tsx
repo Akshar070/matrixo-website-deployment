@@ -14,26 +14,52 @@ type SortOption = 'upcoming' | 'latest' | 'all'
 
 export default function EventsListing() {
   const [categoryFilter, setCategoryFilter] = useState('all')
-  const [sortOption, setSortOption] = useState<SortOption>('upcoming')
+  const [sortOption, setSortOption] = useState<SortOption>('all')
   const [searchTerm, setSearchTerm] = useState('')
   const { visibilityMap, loading: visibilityLoading } = useEventVisibility()
 
   const filteredAndSortedEvents = useMemo(() => {
-    let filtered = eventsData.filter(event => {
+    // 1. Base dataset filter: Only keep Event programs
+    const eventPrograms = eventsData.filter(event => {
+      const cat = event.category?.toLowerCase() || ''
+      const tags = event.tags?.map((t: string) => t.toLowerCase()) || []
+      
+      // Allow specific examples cited by user (DevAgentic is an event despite 'workshop' category)
+      if (event.id === 'devagents-1-0') return true
+      
+      // Exclude non-event types explicitly forbidden by user
+      const nonEventKeywords = ['workshop', 'hackathon', 'course', 'bootcamp', 'webinar', 'competition']
+      const hasNonEventKeyword = nonEventKeywords.some(kw => cat.includes(kw) || tags.some(t => t.includes(kw)))
+      if (hasNonEventKeyword) return false
+
+      return true
+    })
+
+    // 2. Apply user-selected filters to the Event dataset
+    let filtered = eventPrograms.filter(event => {
       const isHidden = visibilityMap[event.slug]?.hidden === true
       if (isHidden) return false
 
-      const matchesCategory = categoryFilter === 'all' || event.category.toLowerCase() === categoryFilter.toLowerCase()
-      const matchesSearch = event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                            event.tagline.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                            event.location.toLowerCase().includes(searchTerm.toLowerCase())
+      const cat = categoryFilter.toLowerCase()
+      // Since page is Events-only, "Events" and "All Programs" chips both show all events.
+      // Other chips (e.g. workshops) will return 0 results since they were stripped in step 1.
+      const isEventFilter = cat === 'event' || cat === 'all'
+      const matchesCategory = isEventFilter || 
+                              (event.category?.toLowerCase().includes(cat)) || 
+                              (event.tags?.some((t: string) => t.toLowerCase().includes(cat))) || false
+
+      const searchLower = searchTerm.toLowerCase()
+      const matchesSearch = !searchTerm || 
+                            (event.title?.toLowerCase().includes(searchLower)) ||
+                            (event.tagline?.toLowerCase().includes(searchLower)) ||
+                            (event.location?.toLowerCase().includes(searchLower)) || false
       return matchesCategory && matchesSearch
     })
 
     // Sort based on selected option
     if (sortOption === 'upcoming') {
       filtered = filtered
-        .filter(event => isFuture(new Date(event.date)))
+        .filter(event => event.status === 'upcoming' || isFuture(new Date(event.date)))
         .sort((a, b) => compareAsc(new Date(a.date), new Date(b.date)))
     } else if (sortOption === 'latest') {
       filtered = filtered.sort((a, b) => compareDesc(new Date(a.date), new Date(b.date)))

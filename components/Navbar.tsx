@@ -240,7 +240,7 @@ export default function Navbar() {
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: 8, scale: 0.96 }}
                       transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
-                      className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-44 glass-card-elevated overflow-hidden"
+                      className={`absolute top-full left-1/2 -translate-x-1/2 mt-2 w-44 overflow-hidden ${darkMode ? 'glass-card-elevated' : 'bg-white border border-gray-200 shadow-lg rounded-[var(--glass-radius-lg)]'}`}
                       role="menu"
                     >
                       {menuDropdownLinks.map((link) => {
@@ -253,8 +253,8 @@ export default function Navbar() {
                             onClick={() => setShowMenuDropdown(false)}
                             className={`block px-4 py-2.5 text-sm transition-colors ${
                               isActive
-                                ? 'text-gray-900 dark:text-white bg-white/40 dark:bg-white/[0.06]'
-                                : 'text-gray-700 dark:text-gray-300 hover:bg-white/40 dark:hover:bg-white/[0.06]'
+                                ? 'text-gray-900 dark:text-white bg-gray-100 dark:bg-white/[0.06]'
+                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/[0.06]'
                             }`}
                           >
                             {link.name}
@@ -321,19 +321,19 @@ export default function Navbar() {
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: 8, scale: 0.96 }}
                       transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
-                      className="absolute right-0 mt-3 w-72 rounded-2xl bg-[#0A0F2C]/70 backdrop-blur-2xl backdrop-saturate-150 backdrop-brightness-75 border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-4 z-[999] isolate"
+                      className="absolute right-0 mt-3 w-72 rounded-2xl bg-white dark:bg-[#0A0F2C]/70 dark:backdrop-blur-2xl dark:backdrop-saturate-150 dark:backdrop-brightness-75 border border-gray-200 dark:border-white/10 shadow-lg dark:shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-4 z-[999] isolate"
                     >
-                      <div className="absolute inset-0 rounded-2xl bg-[#0A0F2C]/40 -z-10" />
+                      <div className="absolute inset-0 rounded-2xl hidden dark:block dark:bg-[#0A0F2C]/40 -z-10" />
 
-                      <div className="text-white font-semibold truncate">{displayName}</div>
-                      <div className="text-gray-400 text-sm mb-3 truncate">
+                      <div className="text-gray-900 dark:text-white font-semibold truncate">{displayName}</div>
+                      <div className="text-gray-500 dark:text-gray-400 text-sm mb-3 truncate">
                         @{profile?.username || 'username'}
                       </div>
 
                       <div className="space-y-1.5">
                         <Link
                           href="/profile"
-                          className="flex items-center gap-2 p-2 rounded-lg hover:bg-white/10 text-white transition"
+                          className="flex items-center gap-2 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-white/10 text-gray-700 dark:text-white transition"
                         >
                           <FaUser className="text-sm" />
                           <span>Profile</span>
@@ -343,7 +343,7 @@ export default function Navbar() {
                             href={EMPLOYEE_PORTAL_URL}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex items-center gap-2 p-2 rounded-lg hover:bg-white/10 text-purple-300 transition"
+                            className="flex items-center gap-2 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-white/10 text-purple-600 dark:text-purple-300 transition"
                           >
                             <FaIdBadge />
                             <span>Employee Portal</span>
@@ -351,7 +351,7 @@ export default function Navbar() {
                         )}
                         <button
                           onClick={handleLogout}
-                          className="w-full flex items-center gap-2 p-2 rounded-lg hover:bg-red-500/20 text-red-400 transition"
+                          className="w-full flex items-center gap-2 p-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-500/20 text-red-600 dark:text-red-400 transition"
                         >
                           <FaSignOutAlt />
                           <span>Logout</span>

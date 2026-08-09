@@ -4,11 +4,15 @@ import { useState, useMemo } from 'react'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import Image from 'next/image'
-import { FaCalendar, FaMapMarkerAlt, FaTicketAlt, FaSearch, FaFilter, FaClock, FaStar } from 'react-icons/fa'
+import { FaCalendar, FaMapMarkerAlt, FaTicketAlt, FaSearch, FaFilter, FaClock, FaStar, FaGoogle, FaEye, FaEyeSlash, FaUser, FaLock } from 'react-icons/fa'
 import eventsData from '@/data/events.json'
 import HeadingHighlight from '@/components/HeadingHighlight'
 import { useEventVisibility } from '@/lib/eventVisibility'
 import { format, isFuture, isPast, compareDesc, compareAsc } from 'date-fns'
+import { useAuth } from '@/lib/AuthContext'
+import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
+import { firebaseReady } from '@/lib/firebaseConfig'
 
 type SortOption = 'upcoming' | 'latest' | 'all'
 
@@ -17,6 +21,59 @@ export default function EventsListing() {
   const [sortOption, setSortOption] = useState<SortOption>('all')
   const [searchTerm, setSearchTerm] = useState('')
   const { visibilityMap, loading: visibilityLoading } = useEventVisibility()
+
+  // Auth State
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
+  const [rememberMe, setRememberMe] = useState(false)
+  const [authLoading, setAuthLoading] = useState(false)
+  
+  const { user, signIn, signInWithGoogle } = useAuth()
+  const router = useRouter()
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setAuthLoading(true)
+    try {
+      await signIn(email, password)
+      toast.success('Welcome back!')
+      router.push('/profile')
+    } catch (error: any) {
+      console.error('Login error:', error)
+      if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+        toast.error('Invalid email or password')
+      } else {
+        toast.error(error.message || 'Login failed')
+      }
+    } finally {
+      setAuthLoading(false)
+    }
+  }
+
+  const handleGoogleSignIn = async () => {
+    setAuthLoading(true)
+    try {
+      if (!firebaseReady) {
+        toast.error('Authentication is not configured. Please try again later.')
+        return
+      }
+      const signInMethod = await signInWithGoogle()
+      if (signInMethod === 'redirect') return
+      toast.success('Signed in successfully!')
+      router.push('/profile')
+    } catch (error: any) {
+      console.error('Google Auth Error:', error)
+      const code = error?.code || 'unknown'
+      if (code === 'auth/popup-closed-by-user') {
+        toast.info('Sign-in cancelled')
+      } else {
+        toast.error('Google sign-in failed. Please try again.')
+      }
+    } finally {
+      setAuthLoading(false)
+    }
+  }
 
   const filteredAndSortedEvents = useMemo(() => {
     // 1. Base dataset filter: Only keep Event programs
@@ -72,24 +129,135 @@ export default function EventsListing() {
     'bg-[#4B5563] text-white shadow-[0_2px_6px_rgba(0,0,0,0.08)] hover:bg-[#2F3542] dark:bg-white dark:text-[#111111] dark:shadow-[0_2px_8px_rgba(255,255,255,0.08)] dark:hover:bg-[#F3F3F3]'
 
   return (
-    <div className="min-h-screen pt-5 pb-20">
+    <div className="min-h-screen pt-0 pb-16">
       {/* Header */}
-      <section className="relative bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-950 dark:via-gray-900 dark:to-black text-gray-900 dark:text-white py-16 sm:py-20 overflow-hidden">
-        <div className="absolute top-1/3 -right-32 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/3 -left-32 w-80 h-80 bg-purple-500/10 rounded-full blur-3xl" />
+      <section className="relative bg-gradient-to-br from-indigo-50/50 via-purple-50/30 to-blue-50/40 dark:from-gray-950 dark:via-gray-900 dark:to-black pt-20 pb-8 sm:pt-[104px] sm:pb-10 overflow-hidden">
+        <div className="absolute top-0 right-1/4 w-[600px] h-[600px] bg-blue-300/10 dark:bg-blue-600/10 rounded-full blur-[120px] pointer-events-none" />
+        <div className="absolute bottom-0 left-1/4 w-[500px] h-[500px] bg-purple-300/10 dark:bg-purple-600/10 rounded-full blur-[100px] pointer-events-none" />
         <div className="container-custom px-4 sm:px-6 relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-center max-w-4xl mx-auto"
-          >
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-display font-bold mb-4 sm:mb-6">
-              <HeadingHighlight text="Explore Programs" />
-            </h1>
-            <p className="text-base sm:text-lg md:text-xl text-gray-600 dark:text-gray-300">
-              Workshops, hackathons, bootcamps, and technical events designed to accelerate your tech career
-            </p>
-          </motion.div>
+          <div className="flex flex-col lg:flex-row justify-between items-center max-w-[1050px] mx-auto gap-12 lg:gap-8">
+            {/* Left: Content */}
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="text-left flex-1 max-w-[500px]"
+            >
+              <h1 className="text-4xl sm:text-5xl md:text-6xl font-display font-bold mb-3 sm:mb-4 text-gray-900 dark:text-white">
+                <HeadingHighlight text="Explore Programs" />
+              </h1>
+              <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300 leading-relaxed">
+                Workshops, hackathons, bootcamps, and technical events designed to accelerate your tech career
+              </p>
+            </motion.div>
+
+            {/* Right: Login Card */}
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="w-full max-w-[320px] lg:mr-8 shrink-0"
+            >
+              {!user ? (
+                <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-[20px] shadow-[0_8px_30px_rgb(0,0,0,0.06)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] p-6">
+                  <div className="mb-5">
+                    <h2 className="text-[20px] font-bold text-gray-900 dark:text-white">Student Login</h2>
+                  </div>
+                  
+                  <form onSubmit={handleLogin} className="space-y-3.5">
+                    <div className="relative">
+                      <FaUser className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-[13px]" />
+                      <input
+                        type="email"
+                        placeholder="Email or College ID"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-[13px]"
+                        required
+                      />
+                    </div>
+                    <div className="relative">
+                      <FaLock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-[13px]" />
+                      <input
+                        type={showPassword ? 'text' : 'password'}
+                        placeholder="Password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        className="w-full pl-9 pr-9 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-[13px]"
+                        required
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 p-1"
+                      >
+                        {showPassword ? <FaEyeSlash size={14} /> : <FaEye size={14} />}
+                      </button>
+                    </div>
+
+                    <div className="flex items-center justify-between text-[12px] pt-1">
+                      <label className="flex items-center gap-1.5 cursor-pointer text-gray-700 dark:text-gray-300 font-medium">
+                        <input
+                          type="checkbox"
+                          checked={rememberMe}
+                          onChange={(e) => setRememberMe(e.target.checked)}
+                          className="rounded border-gray-300 text-blue-600 focus:ring-blue-500 w-3.5 h-3.5"
+                        />
+                        <span>Remember me</span>
+                      </label>
+                      <Link href="/auth?mode=forgot" className="text-blue-600 dark:text-blue-400 font-medium hover:underline">
+                        Forgot password?
+                      </Link>
+                    </div>
+
+                    <button
+                      type="submit"
+                      disabled={authLoading}
+                      className="w-full py-2.5 mt-1 rounded-xl bg-[#2563EB] hover:bg-blue-700 text-white font-medium transition-colors text-[14px] disabled:opacity-70 shadow-sm shadow-blue-500/30"
+                    >
+                      {authLoading ? 'Logging in...' : 'Login'}
+                    </button>
+                  </form>
+
+                  <div className="flex items-center gap-3 my-4">
+                    <div className="h-px bg-gray-100 dark:bg-gray-700 flex-1" />
+                    <span className="text-[11px] text-gray-400 font-medium lowercase">or</span>
+                    <div className="h-px bg-gray-100 dark:bg-gray-700 flex-1" />
+                  </div>
+
+                  <button
+                    onClick={handleGoogleSignIn}
+                    disabled={authLoading}
+                    className="w-full flex items-center justify-center gap-2 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 font-medium transition-colors text-[13px] disabled:opacity-70 shadow-[0_1px_2px_rgba(0,0,0,0.03)]"
+                  >
+                    <FaGoogle className="text-[14px]" />
+                    Sign in with Google
+                  </button>
+
+                  <div className="mt-5 text-center text-[12px] text-gray-600 dark:text-gray-400">
+                    New here?{' '}
+                    <Link href="/auth?mode=register" className="text-blue-600 dark:text-blue-400 font-semibold hover:underline">
+                      Register now
+                    </Link>
+                  </div>
+                </div>
+              ) : (
+                <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-[20px] shadow-[0_8px_30px_rgb(0,0,0,0.06)] p-6 text-center flex flex-col items-center justify-center min-h-[280px]">
+                  <div className="w-14 h-14 bg-blue-50 dark:bg-blue-500/10 rounded-full flex items-center justify-center mb-3 mx-auto">
+                    <span className="text-xl font-bold text-blue-600 dark:text-blue-400">
+                      {user.displayName?.charAt(0)?.toUpperCase() || user.email?.charAt(0)?.toUpperCase() || 'U'}
+                    </span>
+                  </div>
+                  <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">Welcome back!</h3>
+                  <p className="text-[13px] text-gray-500 dark:text-gray-400 mb-5 truncate max-w-full px-2">You are logged in as {user.email}</p>
+                  <Link
+                    href="/profile"
+                    className="px-6 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-medium transition-colors text-[13px]"
+                  >
+                    Go to Profile
+                  </Link>
+                </div>
+              )}
+            </motion.div>
+          </div>
         </div>
       </section>
 

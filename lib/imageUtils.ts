@@ -213,3 +213,22 @@ export async function getImageDimensions(file: File): Promise<{ width: number; h
     img.src = url
   })
 }
+
+/**
+ * Ensures that image URLs are valid for rendering.
+ * Specifically fixes paths starting with '/public/' or 'public/' by removing it,
+ * as Next.js mounts the public folder at the root path '/'.
+ */
+export function getValidImageUrl(url?: string): string {
+  if (!url) return ''
+  
+  if (url.startsWith('/public/')) {
+    return url.replace(/^\/public\//, '/')
+  }
+  
+  if (url.startsWith('public/')) {
+    return url.replace(/^public\//, '/')
+  }
+  
+  return url
+}

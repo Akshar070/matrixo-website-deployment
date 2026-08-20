@@ -11,6 +11,7 @@ import { db } from '@/lib/firebaseConfig'
 import { UserProfile, PrivacySettings, DEFAULT_PRIVACY } from '@/lib/ProfileContext'
 import Link from 'next/link'
 import Image from 'next/image'
+import { getValidImageUrl } from '@/lib/imageUtils'
 
 export default function PublicProfile({ username }: { username: string }) {
   const [profile, setProfile] = useState<UserProfile | null>(null)
@@ -124,7 +125,7 @@ export default function PublicProfile({ username }: { username: string }) {
           <div className="p-6 sm:p-8 text-center">
             <div className="w-24 h-24 mx-auto rounded-2xl overflow-hidden bg-gray-100 dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.08] mb-4">
               {profile?.profilePhoto ? (
-                <Image src={profile.profilePhoto} alt={profile.fullName} width={96} height={96} className="object-cover w-full h-full" />
+                <Image src={getValidImageUrl(profile.profilePhoto)} alt={profile.fullName} width={96} height={96} className="object-cover w-full h-full" />
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-3xl font-bold text-gray-400">
                   {profile?.fullName?.charAt(0)?.toUpperCase() || 'U'}

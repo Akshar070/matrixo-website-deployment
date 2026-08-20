@@ -14,7 +14,7 @@ import { useProfile, DEFAULT_PRIVACY, PrivacySettings } from '@/lib/ProfileConte
 import { toast } from 'sonner'
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
 import { storage } from '@/lib/firebaseConfig'
-import { compressImage } from '@/lib/imageUtils'
+import { compressImage, getValidImageUrl } from '@/lib/imageUtils'
 import Link from 'next/link'
 import { getCollegeName } from '@/lib/colleges'
 import { LocationSelection, LocationSelectionState } from '@/components/location/LocationSelection'
@@ -355,7 +355,7 @@ export default function ProfilePage() {
             <div className="relative w-full aspect-[3/1] bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 overflow-hidden group">
               {profile?.coverPhoto ? (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img src={profile.coverPhoto} alt="Cover" className="object-cover w-full h-full" />
+                <img src={getValidImageUrl(profile.coverPhoto)} alt="Cover" className="object-cover w-full h-full" />
               ) : (
                 <div className="w-full h-full bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600" />
               )}
@@ -373,7 +373,7 @@ export default function ProfilePage() {
                 <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full overflow-hidden bg-gray-800 border-4 border-white dark:border-gray-900 shadow-xl">
                   {profile?.profilePhoto ? (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={profile.profilePhoto} alt={profile.fullName} className="object-cover w-full h-full" />
+                    <img src={getValidImageUrl(profile.profilePhoto)} alt={profile.fullName} className="object-cover w-full h-full" />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-3xl sm:text-4xl font-bold text-white bg-gradient-to-br from-blue-500 to-purple-600">
                       {profile?.fullName?.charAt(0)?.toUpperCase() || 'U'}
@@ -648,7 +648,7 @@ export default function ProfilePage() {
                       <div className="w-14 h-14 rounded-xl overflow-hidden bg-gradient-to-br from-blue-500/20 to-purple-500/20 flex-shrink-0">
                         {profile?.profilePhoto ? (
                           // eslint-disable-next-line @next/next/no-img-element
-                          <img src={profile.profilePhoto} alt={profile.fullName} className="object-cover w-full h-full" />
+                          <img src={getValidImageUrl(profile.profilePhoto)} alt={profile.fullName} className="object-cover w-full h-full" />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center text-xl font-bold text-gray-400">{profile?.fullName?.charAt(0)?.toUpperCase()}</div>
                         )}

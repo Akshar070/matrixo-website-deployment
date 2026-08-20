@@ -11,6 +11,7 @@ import { useAuth } from '@/lib/AuthContext'
 import { useProfile } from '@/lib/ProfileContext'
 import { toast } from 'sonner'
 import { getFirestore, collection, query, where, getDocs } from 'firebase/firestore'
+import { getValidImageUrl } from '@/lib/imageUtils'
 
 // Standalone nav link (no dropdown)
 const standaloneNavLinks = [
@@ -302,15 +303,17 @@ export default function Navbar() {
                   className="inline-flex items-center gap-x-2 px-2.5 py-1 glass-card-thin text-gray-700 dark:text-gray-300 
                            rounded-full font-semibold text-sm min-w-0 max-w-[170px] whitespace-nowrap hover:scale-[1.02] transition-all duration-300"
                 >
+                  <div className="relative group p-1.5 hover:bg-white/[0.04] rounded-2xl transition-all cursor-pointer">
                   {profile?.profilePhoto ? (
-                    <div className="w-7 h-7 rounded-xl overflow-hidden flex-shrink-0">
-                      <Image src={profile.profilePhoto} alt="" width={28} height={28} className="object-cover w-full h-full rounded-xl" unoptimized />
+                    <div className="w-8 h-8 rounded-xl overflow-hidden shadow-sm">
+                      <Image src={getValidImageUrl(profile.profilePhoto)} alt="" width={28} height={28} className="object-cover w-full h-full rounded-xl" unoptimized />
                     </div>
                   ) : (
                     <div className="w-7 h-7 rounded-xl bg-gray-200 dark:bg-gray-700 flex items-center justify-center flex-shrink-0">
                       <span className="text-xs font-bold text-gray-600 dark:text-gray-300">{profile?.fullName?.charAt(0)?.toUpperCase() || 'U'}</span>
                     </div>
                   )}
+                  </div>
                   <span className="hidden sm:inline max-w-[110px] truncate">{firstName}</span>
                 </motion.button>
 
@@ -410,15 +413,17 @@ export default function Navbar() {
                 className="flex items-center gap-x-2 flex-shrink-0 p-1.5 rounded-full glass-card-thin text-gray-700 dark:text-gray-300"
                 aria-label="Profile"
               >
+                <div className="flex items-center justify-center p-1 hover:bg-gray-100 dark:hover:bg-white/[0.04] rounded-full transition-colors">
                 {profile?.profilePhoto ? (
-                  <div className="w-6 h-6 rounded-full overflow-hidden flex-shrink-0">
-                    <Image src={profile.profilePhoto} alt="" width={24} height={24} className="object-cover w-full h-full" unoptimized />
+                  <div className="w-6 h-6 rounded-full overflow-hidden">
+                    <Image src={getValidImageUrl(profile.profilePhoto)} alt="" width={24} height={24} className="object-cover w-full h-full" unoptimized />
                   </div>
                 ) : (
                   <div className="w-6 h-6 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center flex-shrink-0">
                     <span className="text-xs font-bold text-gray-600 dark:text-gray-300">{profile?.fullName?.charAt(0)?.toUpperCase() || 'U'}</span>
                   </div>
                 )}
+                </div>
               </Link>
             ) : (
               <Link
@@ -576,7 +581,7 @@ export default function Navbar() {
                         {profile?.profilePhoto ? (
                           <div className="w-10 h-10 rounded-xl overflow-hidden flex-shrink-0">
                             {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img src={profile.profilePhoto} alt="" className="object-cover w-full h-full" />
+                            <img src={getValidImageUrl(profile.profilePhoto)} alt="" className="object-cover w-full h-full" />
                           </div>
                         ) : (
                           <div className="w-10 h-10 rounded-xl bg-gray-200 dark:bg-gray-700 flex items-center justify-center flex-shrink-0">

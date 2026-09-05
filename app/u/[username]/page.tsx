@@ -21,6 +21,7 @@ import { getScoreGrade, getScoreColor, getScoreGradient } from '@/lib/skilldna/s
 import ProfileDownload from '@/components/skilldna/ProfileDownload'
 import Link from 'next/link'
 import Image from 'next/image'
+import { getValidImageUrl } from '@/lib/imageUtils'
 
 // ============================================================
 // Full LinkedIn-Style Public Profile Page — Liquid Glass UI
@@ -282,7 +283,7 @@ export default function PublicProfilePage() {
                 }}
               >
                 {userProfile.profilePhoto ? (
-                  <Image src={userProfile.profilePhoto} alt={userProfile.fullName} width={112} height={112} className="object-cover w-full h-full" />
+                  <Image src={getValidImageUrl(userProfile.profilePhoto)} alt={userProfile.fullName} width={112} height={112} className="object-cover w-full h-full" />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-3xl sm:text-4xl font-bold bg-gradient-to-br from-purple-500/20 to-blue-500/20 text-gray-400">
                     {userProfile.fullName?.charAt(0)?.toUpperCase() || 'U'}

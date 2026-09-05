@@ -129,6 +129,7 @@ export default function ProfileSetupPage() {
     if (!formData.phone.trim()) newErrors.phone = 'Phone number is required'
     else if (!/^[6-9]\d{9}$/.test(formData.phone.trim())) newErrors.phone = 'Enter a valid 10-digit phone number'
 
+    if (!location.district) newErrors.district = 'Please select your district.'
     if (!location.collegeId) newErrors.college = 'Please select your college'
     if (!formData.year) newErrors.year = 'Select your year'
     if (formData.year === 'Graduate' && !formData.graduationYear.trim()) {
@@ -365,6 +366,7 @@ export default function ProfileSetupPage() {
                   onChange={setLocation}
                   disabled={loading}
                 />
+                {errors.district && <p className="text-red-500 text-xs mt-1">{errors.district}</p>}
                 {errors.college && <p className="text-red-500 text-xs mt-1">{errors.college}</p>}
               </div>
 

@@ -11,30 +11,19 @@ import { useAuth } from '@/lib/AuthContext'
 import { useProfile } from '@/lib/ProfileContext'
 import { toast } from 'sonner'
 import { getFirestore, collection, query, where, getDocs } from 'firebase/firestore'
+import { getValidImageUrl } from '@/lib/imageUtils'
 
-const navLinksBeforeFeatures = [
-  { name: 'Home', href: '/' },
+// Standalone nav link (no dropdown)
+const standaloneNavLinks = [
+  { name: 'Events', href: '/events' },
+]
+
+// All links that live inside the "Menu" dropdown
+const menuDropdownLinks = [
+  { name: 'Home', href: '/home' },
   { name: 'About', href: '/about' },
   { name: 'Team', href: '/team' },
   { name: 'Services', href: '/services' },
-]
-
-const navLinksAfterFeatures = [
-  { name: 'Events', href: '/events' },
-]
-
-const tabletMoreLinks = [
-  { name: 'About', href: '/about' },
-  { name: 'Team', href: '/team' },
-  { name: 'Events', href: '/events' },
-]
-
-const betaLinks = [
-  {
-    name: 'Events',
-    href: '/events',
-    description: 'Browse workshops, hackathons, and featured programs',
-  },
 ]
 
 const talkWithUsClassName =
@@ -48,11 +37,10 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [darkMode, setDarkMode] = useState(false)
   const [mounted, setMounted] = useState(false)
-  const [isBeta, setIsBeta] = useState(false)
-  const [showMoreDropdown, setShowMoreDropdown] = useState(false)
+  const [showMenuDropdown, setShowMenuDropdown] = useState(false)
   const [showUserDropdown, setShowUserDropdown] = useState(false)
   const [isEmployee, setIsEmployee] = useState(false)
-  const [showMobileFeaturesDropdown, setShowMobileFeaturesDropdown] = useState(false)
+  const [showMobileMenuDropdown, setShowMobileMenuDropdown] = useState(false)
 
   const { user, logout } = useAuth()
   const { profile } = useProfile()
@@ -63,7 +51,6 @@ export default function Navbar() {
 
   useEffect(() => {
     setMounted(true)
-    setIsBeta(true)
     const handleScroll = () => {
       setScrolled(window.scrollY > 20)
     }
@@ -87,6 +74,14 @@ export default function Navbar() {
   useEffect(() => {
     setIsOpen(false)
   }, [pathname])
+
+  // Close Menu dropdown when clicking outside
+  useEffect(() => {
+    if (!showMenuDropdown) return
+    const handleClickOutside = () => setShowMenuDropdown(false)
+    document.addEventListener('click', handleClickOutside, { capture: true })
+    return () => document.removeEventListener('click', handleClickOutside, { capture: true })
+  }, [showMenuDropdown])
 
   // Check if user is an employee in Firebase
   useEffect(() => {
@@ -146,7 +141,7 @@ export default function Navbar() {
 
   const closeMobileMenu = () => {
     setIsOpen(false)
-    setShowMobileFeaturesDropdown(false)
+    setShowMobileMenuDropdown(false)
   }
 
   return (
@@ -192,12 +187,11 @@ export default function Navbar() {
 
           {/* ─── Desktop / Tablet Navigation ─── */}
           <div className="hidden md:flex items-center gap-6 lg:gap-8 whitespace-nowrap min-w-0 flex-1 justify-center">
-            <div className="flex items-center gap-6 lg:gap-8 whitespace-nowrap min-w-0 overflow-hidden">
-              {navLinksBeforeFeatures.map((link, index) => {
-                const isActive = link.href === '/'
-                  ? pathname === '/'
-                  : pathname === link.href || pathname.startsWith(link.href + '/')
-                const isDesktopOnly = link.name === 'About' || link.name === 'Team'
+            <div className="flex items-center gap-6 lg:gap-8 whitespace-nowrap min-w-0">
+
+              {/* Standalone nav links (Events) */}
+              {standaloneNavLinks.map((link, index) => {
+                const isActive = pathname === '/' || pathname === '/events' || pathname.startsWith('/events/')
                 return (
                   <motion.div
                     key={link.name}
@@ -208,7 +202,6 @@ export default function Navbar() {
                       duration: 0.3,
                       ease: [0.4, 0, 0.2, 1]
                     }}
-                    className={isDesktopOnly ? 'hidden lg:block' : ''}
                   >
                     <Link
                       href={link.href}
@@ -219,77 +212,61 @@ export default function Navbar() {
                   </motion.div>
                 )
               })}
-            </div>
 
-            {navLinksAfterFeatures.map((link, index) => {
-              const isActive = link.href === '/'
-                ? pathname === '/'
-                : pathname === link.href || pathname.startsWith(link.href + '/')
-              return (
-                <motion.div
-                  key={link.name}
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{
-                    delay: (navLinksBeforeFeatures.length + index) * 0.05,
-                    duration: 0.3,
-                    ease: [0.4, 0, 0.2, 1]
-                  }}
-                  className="hidden lg:block"
-                >
-                  <Link
-                    href={link.href}
-                    className={`nav-link ${isActive ? 'nav-link-active' : ''}`}
-                  >
-                    {link.name}
-                  </Link>
-                </motion.div>
-              )
-            })}
-
-            <div
-              className="relative lg:hidden flex-shrink-0"
-              onMouseEnter={() => setShowMoreDropdown(true)}
-              onMouseLeave={() => setShowMoreDropdown(false)}
-            >
-              <button
-                className="flex items-center gap-1 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white 
-                           whitespace-nowrap transition-all duration-300 ease-out px-2.5 py-1.5 rounded-lg hover:bg-gray-50 dark:hover:bg-white/5"
+              {/* Menu dropdown */}
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: standaloneNavLinks.length * 0.05, duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+                className="relative flex-shrink-0"
+                onMouseEnter={() => setShowMenuDropdown(true)}
+                onMouseLeave={() => setShowMenuDropdown(false)}
               >
-                More
-                <FaChevronDown className={`text-xs transition-transform duration-300 ease-out ${showMoreDropdown ? 'rotate-180' : ''}`} />
-              </button>
+                <button
+                  aria-haspopup="true"
+                  aria-expanded={showMenuDropdown}
+                  onClick={() => setShowMenuDropdown(!showMenuDropdown)}
+                  className={`nav-link flex items-center gap-1 ${menuDropdownLinks.some(l => pathname === l.href || pathname.startsWith(l.href + '/')) ? 'nav-link-active' : ''}`}
+                >
+                  Menu
+                  <FaChevronDown
+                    className={`text-xs transition-transform duration-300 ease-out ${showMenuDropdown ? 'rotate-180' : ''}`}
+                  />
+                </button>
 
-              <AnimatePresence>
-                {showMoreDropdown && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 8, scale: 0.96 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: 8, scale: 0.96 }}
-                    transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
-                    className="absolute top-full right-0 mt-2 w-44 glass-card-elevated overflow-hidden"
-                  >
-                    {tabletMoreLinks.map((link) => {
-                      const isActive = link.href === '/'
-                        ? pathname === '/'
-                        : pathname === link.href || pathname.startsWith(link.href + '/')
-                      return (
-                        <Link
-                          key={link.name}
-                          href={link.href}
-                          onClick={() => setShowMoreDropdown(false)}
-                          className={`block px-4 py-2.5 text-sm transition-colors ${isActive
-                            ? 'text-gray-900 dark:text-white bg-white/40 dark:bg-white/[0.06]'
-                            : 'text-gray-700 dark:text-gray-300 hover:bg-white/40 dark:hover:bg-white/[0.06]'
+                <AnimatePresence>
+                  {showMenuDropdown && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 8, scale: 0.96 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 8, scale: 0.96 }}
+                      transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
+                      className={`absolute top-full left-1/2 -translate-x-1/2 mt-2 w-44 overflow-hidden ${darkMode ? 'glass-card-elevated' : 'bg-white border border-gray-200 shadow-lg rounded-[var(--glass-radius-lg)]'}`}
+                      role="menu"
+                    >
+                      {menuDropdownLinks.map((link) => {
+                        const isActive = pathname === link.href || pathname.startsWith(link.href + '/')
+                        return (
+                          <Link
+                            key={link.name}
+                            href={link.href}
+                            role="menuitem"
+                            onClick={() => setShowMenuDropdown(false)}
+                            className={`block px-4 py-2.5 text-sm transition-colors ${
+                              isActive
+                                ? 'text-gray-900 dark:text-white bg-gray-100 dark:bg-white/[0.06]'
+                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/[0.06]'
                             }`}
-                        >
-                          {link.name}
-                        </Link>
-                      )
-                    })}
-                  </motion.div>
-                )}
-              </AnimatePresence>
+                          >
+                            {link.name}
+                          </Link>
+                        )
+                      })}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
+
             </div>
           </div>
 
@@ -326,15 +303,17 @@ export default function Navbar() {
                   className="inline-flex items-center gap-x-2 px-2.5 py-1 glass-card-thin text-gray-700 dark:text-gray-300 
                            rounded-full font-semibold text-sm min-w-0 max-w-[170px] whitespace-nowrap hover:scale-[1.02] transition-all duration-300"
                 >
+                  <div className="relative group p-1.5 hover:bg-white/[0.04] rounded-2xl transition-all cursor-pointer">
                   {profile?.profilePhoto ? (
-                    <div className="w-7 h-7 rounded-xl overflow-hidden flex-shrink-0">
-                      <Image src={profile.profilePhoto} alt="" width={28} height={28} className="object-cover w-full h-full rounded-xl" unoptimized />
+                    <div className="w-8 h-8 rounded-xl overflow-hidden shadow-sm">
+                      <Image src={getValidImageUrl(profile.profilePhoto)} alt="" width={28} height={28} className="object-cover w-full h-full rounded-xl" unoptimized />
                     </div>
                   ) : (
                     <div className="w-7 h-7 rounded-xl bg-gray-200 dark:bg-gray-700 flex items-center justify-center flex-shrink-0">
                       <span className="text-xs font-bold text-gray-600 dark:text-gray-300">{profile?.fullName?.charAt(0)?.toUpperCase() || 'U'}</span>
                     </div>
                   )}
+                  </div>
                   <span className="hidden sm:inline max-w-[110px] truncate">{firstName}</span>
                 </motion.button>
 
@@ -345,19 +324,19 @@ export default function Navbar() {
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: 8, scale: 0.96 }}
                       transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
-                      className="absolute right-0 mt-3 w-72 rounded-2xl bg-[#0A0F2C]/70 backdrop-blur-2xl backdrop-saturate-150 backdrop-brightness-75 border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-4 z-[999] isolate"
+                      className="absolute right-0 mt-3 w-72 rounded-2xl bg-white dark:bg-[#0A0F2C]/70 dark:backdrop-blur-2xl dark:backdrop-saturate-150 dark:backdrop-brightness-75 border border-gray-200 dark:border-white/10 shadow-lg dark:shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-4 z-[999] isolate"
                     >
-                      <div className="absolute inset-0 rounded-2xl bg-[#0A0F2C]/40 -z-10" />
+                      <div className="absolute inset-0 rounded-2xl hidden dark:block dark:bg-[#0A0F2C]/40 -z-10" />
 
-                      <div className="text-white font-semibold truncate">{displayName}</div>
-                      <div className="text-gray-400 text-sm mb-3 truncate">
+                      <div className="text-gray-900 dark:text-white font-semibold truncate">{displayName}</div>
+                      <div className="text-gray-500 dark:text-gray-400 text-sm mb-3 truncate">
                         @{profile?.username || 'username'}
                       </div>
 
                       <div className="space-y-1.5">
                         <Link
                           href="/profile"
-                          className="flex items-center gap-2 p-2 rounded-lg hover:bg-white/10 text-white transition"
+                          className="flex items-center gap-2 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-white/10 text-gray-700 dark:text-white transition"
                         >
                           <FaUser className="text-sm" />
                           <span>Profile</span>
@@ -367,7 +346,7 @@ export default function Navbar() {
                             href={EMPLOYEE_PORTAL_URL}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex items-center gap-2 p-2 rounded-lg hover:bg-white/10 text-purple-300 transition"
+                            className="flex items-center gap-2 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-white/10 text-purple-600 dark:text-purple-300 transition"
                           >
                             <FaIdBadge />
                             <span>Employee Portal</span>
@@ -375,7 +354,7 @@ export default function Navbar() {
                         )}
                         <button
                           onClick={handleLogout}
-                          className="w-full flex items-center gap-2 p-2 rounded-lg hover:bg-red-500/20 text-red-400 transition"
+                          className="w-full flex items-center gap-2 p-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-500/20 text-red-600 dark:text-red-400 transition"
                         >
                           <FaSignOutAlt />
                           <span>Logout</span>
@@ -434,15 +413,17 @@ export default function Navbar() {
                 className="flex items-center gap-x-2 flex-shrink-0 p-1.5 rounded-full glass-card-thin text-gray-700 dark:text-gray-300"
                 aria-label="Profile"
               >
+                <div className="flex items-center justify-center p-1 hover:bg-gray-100 dark:hover:bg-white/[0.04] rounded-full transition-colors">
                 {profile?.profilePhoto ? (
-                  <div className="w-6 h-6 rounded-full overflow-hidden flex-shrink-0">
-                    <Image src={profile.profilePhoto} alt="" width={24} height={24} className="object-cover w-full h-full" unoptimized />
+                  <div className="w-6 h-6 rounded-full overflow-hidden">
+                    <Image src={getValidImageUrl(profile.profilePhoto)} alt="" width={24} height={24} className="object-cover w-full h-full" unoptimized />
                   </div>
                 ) : (
                   <div className="w-6 h-6 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center flex-shrink-0">
                     <span className="text-xs font-bold text-gray-600 dark:text-gray-300">{profile?.fullName?.charAt(0)?.toUpperCase() || 'U'}</span>
                   </div>
                 )}
+                </div>
               </Link>
             ) : (
               <Link
@@ -521,11 +502,9 @@ export default function Navbar() {
               <div className="mobile-menu-inner mx-3 rounded-2xl overflow-hidden">
                 <div className="overflow-y-auto max-h-[calc(100dvh-100px)] px-4 py-4 space-y-1">
 
-                  {/* ── Nav Links ── */}
-                  {[...navLinksBeforeFeatures, ...navLinksAfterFeatures].map((link, index) => {
-                    const isActive = link.href === '/'
-                      ? pathname === '/'
-                      : pathname === link.href || pathname.startsWith(link.href + '/')
+                  {/* ── Standalone Nav Links (Events) ── */}
+                  {standaloneNavLinks.map((link, index) => {
+                    const isActive = pathname === '/' || pathname === '/events' || pathname.startsWith('/events/')
                     return (
                       <motion.div
                         key={link.name}
@@ -536,10 +515,11 @@ export default function Navbar() {
                         <Link
                           href={link.href}
                           onClick={closeMobileMenu}
-                          className={`mobile-nav-item flex items-center px-4 rounded-xl transition-all duration-200 ease-out font-medium text-base ${isActive
-                            ? 'bg-blue-500/15 dark:bg-blue-400/10 text-blue-600 dark:text-blue-400 font-semibold'
-                            : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100/80 dark:hover:bg-white/[0.06]'
-                            }`}
+                          className={`mobile-nav-item flex items-center px-4 rounded-xl transition-all duration-200 ease-out font-medium text-base ${
+                            isActive
+                              ? 'bg-blue-500/15 dark:bg-blue-400/10 text-blue-600 dark:text-blue-400 font-semibold'
+                              : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100/80 dark:hover:bg-white/[0.06]'
+                          }`}
                         >
                           {link.name}
                         </Link>
@@ -547,49 +527,48 @@ export default function Navbar() {
                     )
                   })}
 
-                  {/* ── Features Accordion ── */}
-                  {isBeta && (
-                    <div className="pt-1">
-                      <button
-                        onClick={() => setShowMobileFeaturesDropdown(!showMobileFeaturesDropdown)}
-                        className="mobile-nav-item w-full flex items-center justify-between px-4 rounded-xl text-gray-700 dark:text-gray-200 font-bold hover:bg-gray-100/80 dark:hover:bg-white/[0.06] transition-colors"
-                      >
-                        <span>Features</span>
-                        <FaChevronDown className={`text-xs transition-transform duration-200 ${showMobileFeaturesDropdown ? 'rotate-180' : ''}`} />
-                      </button>
+                  {/* ── Menu Accordion ── */}
+                  <div className="pt-1">
+                    <button
+                      onClick={() => setShowMobileMenuDropdown(!showMobileMenuDropdown)}
+                      className="mobile-nav-item w-full flex items-center justify-between px-4 rounded-xl text-gray-700 dark:text-gray-200 font-medium text-base hover:bg-gray-100/80 dark:hover:bg-white/[0.06] transition-colors"
+                    >
+                      <span>Menu</span>
+                      <FaChevronDown className={`text-xs transition-transform duration-200 ${showMobileMenuDropdown ? 'rotate-180' : ''}`} />
+                    </button>
 
-                      <AnimatePresence>
-                        {showMobileFeaturesDropdown && (
-                          <motion.div
-                            initial={{ opacity: 0, height: 0 }}
-                            animate={{ opacity: 1, height: 'auto' }}
-                            exit={{ opacity: 0, height: 0 }}
-                            transition={{ duration: 0.2 }}
-                            className="overflow-hidden"
-                          >
-                            <div className="mt-1 space-y-1 pl-2">
-                              {betaLinks.map((link) => (
+                    <AnimatePresence>
+                      {showMobileMenuDropdown && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: 'auto' }}
+                          exit={{ opacity: 0, height: 0 }}
+                          transition={{ duration: 0.2 }}
+                          className="overflow-hidden"
+                        >
+                          <div className="mt-1 space-y-0.5 pl-2">
+                            {menuDropdownLinks.map((link) => {
+                              const isActive = pathname === link.href || pathname.startsWith(link.href + '/')
+                              return (
                                 <Link
                                   key={link.name}
                                   href={link.href}
                                   onClick={closeMobileMenu}
-                                  className="block px-4 py-3 bg-gray-100/60 dark:bg-white/[0.04] hover:bg-gray-100 dark:hover:bg-white/[0.08] 
-                                           rounded-xl transition-colors"
+                                  className={`mobile-nav-item flex items-center px-4 rounded-xl transition-all duration-200 ease-out font-medium text-base ${
+                                    isActive
+                                      ? 'bg-blue-500/15 dark:bg-blue-400/10 text-blue-600 dark:text-blue-400 font-semibold'
+                                      : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100/80 dark:hover:bg-white/[0.06]'
+                                  }`}
                                 >
-                                  <div className="font-bold text-gray-900 dark:text-white text-sm mb-0.5">
-                                    {link.name}
-                                  </div>
-                                  <div className="text-xs text-gray-500 dark:text-gray-400">
-                                    {link.description}
-                                  </div>
+                                  {link.name}
                                 </Link>
-                              ))}
-                            </div>
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
-                    </div>
-                  )}
+                              )
+                            })}
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
 
                   {/* ── Divider ── */}
                   <div className="border-t border-gray-200/60 dark:border-white/[0.08] !mt-3 !mb-2" />
@@ -602,7 +581,7 @@ export default function Navbar() {
                         {profile?.profilePhoto ? (
                           <div className="w-10 h-10 rounded-xl overflow-hidden flex-shrink-0">
                             {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img src={profile.profilePhoto} alt="" className="object-cover w-full h-full" />
+                            <img src={getValidImageUrl(profile.profilePhoto)} alt="" className="object-cover w-full h-full" />
                           </div>
                         ) : (
                           <div className="w-10 h-10 rounded-xl bg-gray-200 dark:bg-gray-700 flex items-center justify-center flex-shrink-0">

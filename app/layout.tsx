@@ -120,13 +120,13 @@ export default async function RootLayout({
         {/* Theme color for PWA */}
         <meta name="theme-color" content="#0a0a0a" />
 
-        {/* Dark Mode Script - Default to DARK mode */}
+        {/* Dark Mode Script - Default to LIGHT mode */}
         <script
           dangerouslySetInnerHTML={{
             __html: `
               try {
-                // Apply dark mode unless light mode was explicitly saved
-                if (localStorage.getItem('theme') !== 'light') {
+                // Apply dark mode only if it was explicitly saved
+                if (localStorage.getItem('theme') === 'dark') {
                   document.documentElement.classList.add('dark')
                 } else {
                   document.documentElement.classList.remove('dark')
@@ -151,7 +151,7 @@ export default async function RootLayout({
           `}
         </Script>
 
-        <ThemeProvider defaultTheme="dark" enableSystem={false}>
+        <ThemeProvider defaultTheme="light" enableSystem={false}>
           <AuthProvider>
             <ProfileProvider>
               {!isEmployeePortal && <Navbar />}

@@ -102,6 +102,12 @@ export default async function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${spaceGrotesk.variable}`} suppressHydrationWarning>
       <head>
+        <script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2402360356645801"
+          crossOrigin="anonymous"
+        />
+
         {/* PWA Manifest */}
         <link rel="manifest" href="/manifest.json" />
 

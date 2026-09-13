@@ -241,8 +241,10 @@ export default function ProfileSetupPage() {
         transition={{ duration: 0.5 }}
         className="relative z-10 w-full max-w-lg"
       >
-        <div className="rounded-3xl p-5 sm:p-8 overflow-hidden" style={{ background: 'rgba(255,255,255,0.04)', backdropFilter: 'blur(40px) saturate(180%)', WebkitBackdropFilter: 'blur(40px) saturate(180%)', border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 16px 48px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1)' }}>
-          <div className="h-1 -mx-5 sm:-mx-8 -mt-5 sm:-mt-8 mb-5 sm:mb-8 bg-gradient-to-r from-blue-500 via-purple-500 to-blue-500" />
+        <div className="rounded-3xl p-5 sm:p-8" style={{ background: 'rgba(255,255,255,0.04)', backdropFilter: 'blur(40px) saturate(180%)', WebkitBackdropFilter: 'blur(40px) saturate(180%)', border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 16px 48px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1)' }}>
+          <div className="overflow-hidden rounded-t-3xl -mx-5 sm:-mx-8 -mt-5 sm:-mt-8 mb-5 sm:mb-8">
+            <div className="h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-blue-500" />
+          </div>
           {/* Step Indicator */}
           <div className="flex items-center justify-center gap-3 mb-6">
             <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${step >= 1 ? 'bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-lg shadow-blue-500/20' : 'bg-white/5 dark:bg-white/[0.06] text-gray-500'}`}>1</div>

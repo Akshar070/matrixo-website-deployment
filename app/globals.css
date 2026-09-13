@@ -40,6 +40,32 @@
         --surface-elevated: rgba(255, 255, 255, 0.8);
         --surface-tint-blue: rgba(59, 130, 246, 0.06);
         --surface-tint-purple: rgba(139, 92, 246, 0.06);
+
+        /* Auth page theme — Light Mode */
+        --auth-bg: #F6F8FC;
+        --auth-card: #FFFFFF;
+        --auth-card-border: #D9E0EA;
+        --auth-card-shadow: 0 24px 64px rgba(0, 0, 0, 0.08);
+        --auth-input: #EEF2F7;
+        --auth-input-border: #D5DCE7;
+        --auth-tab-bg: #EEF2F7;
+        --auth-tab-border: #D9E0EA;
+        --auth-text-primary: #172033;
+        --auth-text-secondary: #5F6B7A;
+        --auth-text-muted: #7B8797;
+        --auth-border: #D9E0EA;
+        --auth-divider: #D9E0EA;
+        --auth-primary: #4A82D1;
+        --auth-primary-hover: #5A91DE;
+        --auth-primary-active: #3F73BE;
+        --auth-accent: #4A82D1;
+        --auth-accent-hover: #3A6FBA;
+        --auth-google-bg: #FFFFFF;
+        --auth-google-text: #172033;
+        --auth-google-border: #D9E0EA;
+        --auth-icon-bg: #E7EFFB;
+        --auth-icon-color: #4A82D1;
+        --auth-grid-color: rgba(210, 220, 235, 0.5);
     }
 
     .dark {
@@ -71,6 +97,32 @@
         --surface-elevated: rgba(25, 25, 40, 0.8);
         --surface-tint-blue: rgba(59, 130, 246, 0.08);
         --surface-tint-purple: rgba(139, 92, 246, 0.08);
+
+        /* Auth page theme — Dark Mode */
+        --auth-bg: #080D18;
+        --auth-card: #111827;
+        --auth-card-border: #263248;
+        --auth-card-shadow: 0 24px 64px rgba(0, 0, 0, 0.4);
+        --auth-input: #29354A;
+        --auth-input-border: #3A465B;
+        --auth-tab-bg: #0B1220;
+        --auth-tab-border: #263248;
+        --auth-text-primary: #F5F7FA;
+        --auth-text-secondary: #AAB4C5;
+        --auth-text-muted: #7E899C;
+        --auth-border: #263248;
+        --auth-divider: #263248;
+        --auth-primary: #4A82D1;
+        --auth-primary-hover: #5A91DE;
+        --auth-primary-active: #3F73BE;
+        --auth-accent: #78A9E8;
+        --auth-accent-hover: #9DC2F0;
+        --auth-google-bg: #F5F5F5;
+        --auth-google-text: #172033;
+        --auth-google-border: transparent;
+        --auth-icon-bg: rgba(74, 130, 209, 0.12);
+        --auth-icon-color: #78A9E8;
+        --auth-grid-color: rgba(38, 50, 72, 0.3);
     }
 
     * {
@@ -114,6 +166,136 @@
 }
 
 @layer components {
+    /* ======================================================
+       Auth Page Theme Classes
+       All colors reference --auth-* CSS variables defined
+       in :root (light) and .dark (dark) above.
+       ====================================================== */
+    .auth-page {
+        background: var(--auth-bg);
+        color: var(--auth-text-primary);
+    }
+
+    .auth-grid {
+        background-image:
+            linear-gradient(to right, var(--auth-grid-color) 1px, transparent 1px),
+            linear-gradient(to bottom, var(--auth-grid-color) 1px, transparent 1px);
+        background-size: 4rem 4rem;
+        mask-image: radial-gradient(ellipse 80% 50% at 50% 0%, #000 70%, transparent 110%);
+        -webkit-mask-image: radial-gradient(ellipse 80% 50% at 50% 0%, #000 70%, transparent 110%);
+    }
+
+    .auth-card {
+        background: var(--auth-card);
+        border: 1px solid var(--auth-card-border);
+        border-radius: 24px;
+        box-shadow: var(--auth-card-shadow);
+    }
+
+    .auth-heading-primary {
+        color: var(--auth-text-primary);
+    }
+
+    .auth-heading-accent {
+        color: var(--auth-accent);
+    }
+
+    .auth-text-secondary {
+        color: var(--auth-text-secondary);
+    }
+
+    .auth-text-muted {
+        color: var(--auth-text-muted);
+    }
+
+    .auth-feature-icon {
+        background: var(--auth-icon-bg);
+        color: var(--auth-icon-color);
+    }
+
+    .auth-tab-container {
+        background: var(--auth-tab-bg);
+        border: 1px solid var(--auth-tab-border);
+    }
+
+    .auth-tab-active {
+        background: var(--auth-primary) !important;
+        color: #FFFFFF !important;
+        box-shadow: 0 4px 12px rgba(74, 130, 209, 0.3);
+    }
+
+    .auth-tab-inactive {
+        color: var(--auth-text-muted);
+    }
+    .auth-tab-inactive:hover {
+        color: var(--auth-text-primary);
+    }
+
+    .auth-input {
+        background: var(--auth-input);
+        border: 1px solid var(--auth-input-border);
+        color: var(--auth-text-primary);
+    }
+    .auth-input::placeholder {
+        color: var(--auth-text-muted);
+    }
+    .auth-input:focus {
+        border-color: var(--auth-primary);
+        box-shadow: 0 0 0 3px rgba(74, 130, 209, 0.15);
+    }
+
+    .auth-btn-primary {
+        background: var(--auth-primary);
+        color: #FFFFFF;
+    }
+    .auth-btn-primary:hover:not(:disabled) {
+        background: var(--auth-primary-hover);
+    }
+    .auth-btn-primary:active:not(:disabled) {
+        background: var(--auth-primary-active);
+    }
+
+    .auth-btn-outline {
+        background: transparent;
+        border: 1px solid var(--auth-border);
+        color: var(--auth-text-secondary);
+    }
+    .auth-btn-outline:hover:not(:disabled) {
+        background: rgba(74, 130, 209, 0.06);
+    }
+
+    .auth-btn-google {
+        background: var(--auth-google-bg);
+        color: var(--auth-google-text);
+        border: 1px solid var(--auth-google-border);
+    }
+
+    .auth-divider {
+        border-top: 1px solid var(--auth-divider);
+    }
+
+    .auth-divider-text {
+        background: var(--auth-card);
+        color: var(--auth-text-muted);
+    }
+
+    .auth-link {
+        color: var(--auth-accent);
+    }
+    .auth-link:hover {
+        color: var(--auth-accent-hover);
+    }
+
+    .auth-info-box {
+        background: rgba(74, 130, 209, 0.06);
+        border: 1px solid rgba(74, 130, 209, 0.15);
+    }
+
+    .auth-info-heading {
+        color: var(--auth-accent);
+    }
+
+
     /* Premium navy-to-royal gradient text */
     .gradient-text,
     .premium-gradient {

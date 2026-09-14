@@ -144,7 +144,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <AuthContext.Provider value={value}>
-      {!loading && children}
+      {/* Always render children. Withholding them until `loading` flips meant the
+          server produced an empty <body> (the effect below only runs on the
+          client), so nothing painted until Firebase Auth had fully initialised.
+          Consumers that care about the pre-resolution state read `loading` from
+          this context instead. */}
+      {children}
     </AuthContext.Provider>
   )
 }

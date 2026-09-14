@@ -102,6 +102,12 @@ export default async function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${spaceGrotesk.variable}`} suppressHydrationWarning>
       <head>
+        {/* Warm up the connections that sit on the critical path. */}
+        <link rel="preconnect" href="https://matrixo-in-auth.firebaseapp.com" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://www.googletagmanager.com" />
+        <link rel="preconnect" href="https://pagead2.googlesyndication.com" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://fundingchoicesmessages.google.com" />
+
         <script
           async
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2402360356645801"
@@ -150,6 +156,7 @@ export default async function RootLayout({
             gtag('config', 'G-KFF7KV3Z11');
           `}
         </Script>
+
 
         <ThemeProvider defaultTheme="light" enableSystem={false}>
           <AuthProvider>

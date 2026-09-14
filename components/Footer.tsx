@@ -12,15 +12,23 @@ export default function Footer() {
           <div>
             <div className="relative h-10 w-auto mb-4">
               {/* Light Mode Logo (Black) */}
-              <img 
-                src="/logos/logo-light.png" 
-                alt="matriXO" 
+              <img
+                src="/logos/logo-light.png"
+                alt="matriXO"
+                width={1000}
+                height={230}
+                loading="lazy"
+                decoding="async"
                 className="h-10 w-auto rounded-lg block dark:hidden"
               />
               {/* Dark Mode Logo (White) */}
-              <img 
-                src="/logos/logo-dark.png" 
-                alt="matriXO" 
+              <img
+                src="/logos/logo-dark.png"
+                alt="matriXO"
+                width={1000}
+                height={232}
+                loading="lazy"
+                decoding="async"
                 className="h-10 w-auto rounded-lg absolute top-0 left-0 hidden dark:block"
               />
             </div>
@@ -56,11 +64,11 @@ export default function Footer() {
           {/* Socials */}
           <div>
             <h4 className="text-gray-900 dark:text-white font-semibold mb-4">Socials</h4>
-            <ul className="space-y-3 text-gray-400">
+            <ul className="space-y-3 text-gray-700 dark:text-gray-300">
               <li>
                 <a
                   href="mailto:hello@matrixo.in"
-                  className="flex items-center gap-2 hover:text-white transition-colors"
+                  className="flex items-center gap-2 hover:text-gray-900 dark:hover:text-white transition-colors"
                 >
                   <FaEnvelope className="text-gray-500 dark:text-gray-400" />
                   hello@matrixo.in
@@ -71,7 +79,7 @@ export default function Footer() {
                   href="https://www.instagram.com/matrixo_in?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw=="
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2 hover:text-white transition-colors"
+                  className="flex items-center gap-2 hover:text-gray-900 dark:hover:text-white transition-colors"
                 >
                   <FaInstagram className="text-gray-500 dark:text-gray-400" />
                   Instagram
@@ -82,7 +90,7 @@ export default function Footer() {
                   href="https://linkedin.com/company/matrixo"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2 hover:text-white transition-colors"
+                  className="flex items-center gap-2 hover:text-gray-900 dark:hover:text-white transition-colors"
                 >
                   <FaLinkedin className="text-gray-500 dark:text-gray-400" />
                   LinkedIn

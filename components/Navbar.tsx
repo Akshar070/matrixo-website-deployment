@@ -183,12 +183,19 @@ export default function Navbar() {
                 <img
                   src="/logos/logo-light.png"
                   alt="matriXO Logo"
+                  width={1000}
+                  height={230}
+                  decoding="async"
+                  fetchPriority="high"
                   className="h-8 sm:h-10 w-auto object-contain dark:hidden cursor-pointer"
                 />
                 {/* Dark Mode Logo (White) */}
                 <img
                   src="/logos/logo-dark.png"
                   alt="matriXO Logo"
+                  width={1000}
+                  height={232}
+                  decoding="async"
                   className="h-8 sm:h-10 w-auto object-contain hidden dark:block cursor-pointer"
                 />
               </motion.div>

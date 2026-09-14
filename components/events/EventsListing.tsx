@@ -4,7 +4,7 @@ import { useState, useMemo } from 'react'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import Image from 'next/image'
-import { FaCalendar, FaMapMarkerAlt, FaTicketAlt, FaSearch, FaFilter, FaClock, FaStar, FaGoogle, FaEye, FaEyeSlash, FaUser, FaLock } from 'react-icons/fa'
+import { FaCalendar, FaMapMarkerAlt, FaTicketAlt, FaSearch, FaFilter, FaClock, FaStar, FaGoogle, FaEye, FaEyeSlash, FaUser, FaLock, FaSpinner } from 'react-icons/fa'
 import eventsData from '@/data/events.json'
 import HeadingHighlight from '@/components/HeadingHighlight'
 import { useEventVisibility } from '@/lib/eventVisibility'
@@ -29,7 +29,10 @@ export default function EventsListing() {
   const [rememberMe, setRememberMe] = useState(false)
   const [authLoading, setAuthLoading] = useState(false)
   
-  const { user, signIn, signInWithGoogle } = useAuth()
+  // `authResolving` is true until Firebase reports the current session. The card
+  // shows a placeholder until then so a signed-in visitor never sees the
+  // logged-out form flash past.
+  const { user, loading: authResolving, signIn, signInWithGoogle } = useAuth()
   const router = useRouter()
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -137,25 +140,24 @@ export default function EventsListing() {
         <div className="container-custom px-4 sm:px-6 relative z-10">
           <div className="flex flex-col lg:flex-row justify-between items-center max-w-[1050px] mx-auto gap-12 lg:gap-8">
             {/* Left: Content */}
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              className="text-left flex-1 max-w-[500px]"
-            >
+            {/* CSS-driven enter animation (same motion as before) so the LCP
+                heading paints immediately instead of after hydration. */}
+            <div className="text-left flex-1 max-w-[500px] animate-enter-left">
               <h1 className="text-4xl sm:text-5xl md:text-6xl font-display font-bold mb-3 sm:mb-4 text-gray-900 dark:text-white">
                 <HeadingHighlight text="Explore Programs" />
               </h1>
               <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300 leading-relaxed">
                 Workshops, hackathons, bootcamps, and technical events designed to accelerate your tech career
               </p>
-            </motion.div>
+            </div>
 
             {/* Right: Login Card */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              className="w-full max-w-[320px] lg:mr-8 shrink-0"
-            >
+            <div className="w-full max-w-[320px] lg:mr-8 shrink-0 animate-enter-right">
+              {/* While the session is still resolving the real card is rendered but
+                  hidden, so it reserves its exact final height (no layout shift) and
+                  a signed-in visitor never sees the logged-out form flash past. */}
+              <div className="relative">
+                <div className={authResolving ? 'invisible' : undefined} aria-hidden={authResolving || undefined}>
               {!user ? (
                 <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-[20px] shadow-[0_8px_30px_rgb(0,0,0,0.06)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] p-6">
                   <div className="mb-5">
@@ -187,9 +189,12 @@ export default function EventsListing() {
                       <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 p-1"
+                        aria-label={showPassword ? 'Hide password' : 'Show password'}
+                        aria-pressed={showPassword}
+                        title={showPassword ? 'Hide password' : 'Show password'}
+                        className="absolute right-1.5 top-1/2 -translate-y-1/2 flex items-center justify-center w-7 h-7 rounded-md text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
                       >
-                        {showPassword ? <FaEyeSlash size={14} /> : <FaEye size={14} />}
+                        {showPassword ? <FaEyeSlash size={14} aria-hidden="true" /> : <FaEye size={14} aria-hidden="true" />}
                       </button>
                     </div>
 
@@ -256,7 +261,18 @@ export default function EventsListing() {
                   </Link>
                 </div>
               )}
-            </motion.div>
+                </div>
+                {authResolving && (
+                  <div
+                    className="absolute inset-0 flex items-center justify-center"
+                    role="status"
+                    aria-label="Checking your session"
+                  >
+                    <FaSpinner className="animate-spin text-gray-300 dark:text-gray-600 text-2xl" aria-hidden="true" />
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -380,6 +396,7 @@ export default function EventsListing() {
                               src={event.images.thumbnail}
                               alt={event.title}
                               fill
+                              sizes="(max-width: 767px) 100vw, (max-width: 1023px) 50vw, 33vw"
                               className="object-cover object-center"
                             />
                           ) : (

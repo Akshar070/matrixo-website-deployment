@@ -50,10 +50,17 @@ export default function Template({ children }: { children: React.ReactNode }) {
         prevRouteIndex = currIndex
     }, [currIndex])
 
+    // On the very first load there is no previous route to slide from, so skip the
+    // enter animation entirely. This keeps the server-rendered markup visible at
+    // first paint instead of holding it at opacity:0 until framer-motion hydrates
+    // (which otherwise pushes LCP out by seconds). Client-side route changes still
+    // get the identical slide + fade below.
+    const isFirstLoad = prevRouteIndex === -1
+
     return (
         <motion.div
             key={pathname}
-            initial={{ x: direction * SLIDE_DISTANCE, opacity: 0 }}
+            initial={isFirstLoad ? false : { x: direction * SLIDE_DISTANCE, opacity: 0 }}
             animate={{
                 x: 0,
                 opacity: 1,

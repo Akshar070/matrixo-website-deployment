@@ -582,8 +582,15 @@ export default function Navbar() {
                   {/* ── Auth / Profile Section ── */}
                   {user ? (
                     <div className="space-y-2 pt-1">
-                      {/* Profile Card */}
-                      <div className="px-4 py-3 bg-gray-100/70 dark:bg-white/[0.05] rounded-xl flex items-center gap-3">
+                      {/* Profile card — the card IS the link. It previously sat
+                          above a separate "Profile" button that went to the same
+                          place; merging them frees a row on the most cramped
+                          screen and leaves one obvious tap target. */}
+                      <Link
+                        href="/profile"
+                        onClick={closeMobileMenu}
+                        className="px-4 py-3 bg-gray-100/70 dark:bg-white/[0.05] rounded-xl flex items-center gap-3 w-full active:bg-gray-200/70 dark:active:bg-white/[0.09] transition-colors"
+                      >
                         {profile?.profilePhoto ? (
                           <div className="w-10 h-10 rounded-xl overflow-hidden flex-shrink-0">
                             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -602,16 +609,8 @@ export default function Navbar() {
                             <p className="text-xs text-gray-500 dark:text-gray-400 truncate">@{profile.username}</p>
                           )}
                         </div>
-                      </div>
-
-                      {/* Profile Button */}
-                      <Link
-                        href="/profile"
-                        onClick={closeMobileMenu}
-                        className="mobile-nav-item flex items-center justify-center gap-2 w-full rounded-full glass-card-thin text-gray-700 dark:text-gray-300 font-semibold hover:scale-[1.01] transition-all duration-200"
-                      >
-                        <FaUser className="text-sm" />
-                        Profile
+                        {/* Chevron so the card reads as tappable, not just a header. */}
+                        <FaChevronDown className="-rotate-90 text-xs text-gray-400 dark:text-gray-500 flex-shrink-0" />
                       </Link>
 
                       {/* Employee Portal */}

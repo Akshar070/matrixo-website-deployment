@@ -166,7 +166,7 @@ export default function OfferForm({ offer, authedFetch, onDone, onCancel }: Prop
             type="button"
             onClick={() => submit(true)}
             disabled={saving || !confirmed}
-            className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700 disabled:opacity-50"
+            className="inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold disabled:opacity-50 cta-glass"
           >
             {saving && <FaSpinner className="animate-spin" aria-hidden="true" />}
             Publish offer

@@ -95,7 +95,7 @@ export default function SkillDNAPage() {
           </p>
           <Link
             href="/auth"
-            className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-bold rounded-full hover:shadow-xl hover:shadow-purple-500/30 transition-all"
+            className="inline-flex items-center gap-2 px-8 py-4 font-bold rounded-full cta-glass"
           >
             <FaSignInAlt />
             Sign In to Start
@@ -132,7 +132,7 @@ export default function SkillDNAPage() {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
             <button
               onClick={handleRetry}
-              className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-bold rounded-full hover:shadow-xl hover:shadow-purple-500/30 transition-all"
+              className="inline-flex items-center gap-2 px-8 py-4 font-bold rounded-full cta-glass"
             >
               <FaRedo />
               Retry Analysis
@@ -175,7 +175,7 @@ export default function SkillDNAPage() {
                 setAnalysisError('No onboarding data found. Please start over.')
               }
             }}
-            className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-bold rounded-full hover:shadow-xl hover:shadow-purple-500/30 transition-all"
+            className="inline-flex items-center gap-2 px-8 py-4 font-bold rounded-full cta-glass"
           >
             <FaRedo />
             Generate SkillDNA™

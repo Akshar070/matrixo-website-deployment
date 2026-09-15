@@ -89,7 +89,7 @@ export default function ProfileEditSection({ profile, onSave, onAddSkill }: Prof
           <button
             onClick={handleAddSkill}
             disabled={isSaving || !newSkillName.trim()}
-            className="px-6 py-3 bg-purple-600 text-white rounded-xl hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-2 font-medium"
+            className="px-6 py-3 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 font-medium cta-glass"
           >
             {isSaving ? <FaSpinner className="animate-spin" /> : <FaPlus />}
             Add

@@ -358,7 +358,7 @@ export default function VibeCodeRegistrationForm({ event, ticket, onClose }: Vib
                   const currentUrl = window.location.pathname
                   window.location.href = `/auth?returnUrl=${encodeURIComponent(currentUrl)}`
                 }}
-                className="px-8 py-3 bg-cyan-500 hover:bg-cyan-600 text-white font-semibold rounded-xl transition-all"
+                className="px-8 py-3 font-semibold rounded-xl cta-glass"
               >
                 Go to Login
               </button>
@@ -377,7 +377,7 @@ export default function VibeCodeRegistrationForm({ event, ticket, onClose }: Vib
               </p>
               <button
                 onClick={requestClose}
-                className="px-8 py-3 bg-cyan-500 hover:bg-cyan-600 text-white font-semibold rounded-xl transition-all"
+                className="px-8 py-3 font-semibold rounded-xl cta-glass"
               >
                 Close
               </button>
@@ -590,9 +590,7 @@ export default function VibeCodeRegistrationForm({ event, ticket, onClose }: Vib
             <button
               type="submit"
               disabled={isSubmitting || isProcessing}
-              className="flex-1 px-6 py-4 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-xl text-white
-                       font-bold shadow-lg shadow-cyan-500/30 hover:shadow-cyan-500/50 transition-all
-                       disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="flex-1 px-6 py-4 rounded-xl font-bold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 cta-glass"
             >
               {isSubmitting || isProcessing ? (
                 <>

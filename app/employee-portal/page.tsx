@@ -846,7 +846,7 @@ function DashboardOverview({ onTaskClick, onShowMyTasks }: { onTaskClick?: (task
             <button
               onClick={handleAddTodo}
               disabled={addingTodo || !newTodoTitle.trim()}
-              className="px-3 py-2 bg-[#2563EB] hover:bg-[#1D4ED8] disabled:bg-[#94A3B8] disabled:dark:bg-neutral-700 disabled:cursor-not-allowed text-white rounded-lg sm:rounded-xl transition-colors flex-shrink-0"
+              className="px-3 py-2 hover:bg-[#1D4ED8] disabled:bg-[#94A3B8] disabled:dark:bg-neutral-700 disabled:cursor-not-allowed rounded-lg sm:rounded-xl flex-shrink-0 cta-glass"
             >
               {addingTodo ? <FaSpinner className="animate-spin" /> : <FaPlus />}
             </button>

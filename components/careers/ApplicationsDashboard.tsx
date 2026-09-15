@@ -356,7 +356,7 @@ export default function ApplicationsDashboard() {
             <div className="flex justify-center">
               <button
                 onClick={() => setSelectedApp(null)}
-                className="px-8 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-lg font-semibold hover:shadow-lg transition-all"
+                className="px-8 py-3 rounded-lg font-semibold cta-glass"
               >
                 Close
               </button>

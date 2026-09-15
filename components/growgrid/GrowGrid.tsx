@@ -331,7 +331,7 @@ export default function GrowGrid() {
                           <motion.button
                             whileHover={{ scale: 1.1 }}
                             whileTap={{ scale: 0.9 }}
-                            className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white p-3 rounded-full hover:shadow-lg"
+                            className="p-3 rounded-full cta-glass"
                           >
                             <FaPlay />
                           </motion.button>

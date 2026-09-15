@@ -633,7 +633,7 @@ export default function ProfilePage() {
                 {profile?.username && (
                   <div className="mb-6">
                     <Link href={`/u/${profile.username}`}
-                      className="group relative w-full py-4 px-5 rounded-2xl font-semibold transition-all flex items-center justify-center gap-3 overflow-hidden bg-gradient-to-r from-purple-600 to-blue-500 text-white shadow-lg shadow-purple-500/20 hover:shadow-xl hover:shadow-purple-500/30 hover:scale-[1.02]">
+                      className="group relative w-full py-4 px-5 rounded-2xl font-semibold flex items-center justify-center gap-3 overflow-hidden cta-glass">
                       <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-blue-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                       <FaEye className="relative z-10 text-lg" />
                       <span className="relative z-10 text-base">Preview Your Profile</span>

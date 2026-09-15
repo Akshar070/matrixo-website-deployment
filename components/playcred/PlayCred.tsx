@@ -346,7 +346,7 @@ export default function PlayCred() {
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    className="flex-1 bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-6 py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:shadow-lg"
+                    className="flex-1 from-yellow-500 px-6 py-3 rounded-xl font-bold flex items-center justify-center gap-2 cta-glass"
                   >
                     <FaDownload /> Download
                   </motion.button>

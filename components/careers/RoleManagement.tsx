@@ -240,7 +240,7 @@ export default function RoleManagement() {
                   expiryDate: '',
                 })
               }}
-              className="bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:shadow-lg transition-all flex items-center"
+              className="px-6 py-3 rounded-lg font-semibold flex items-center cta-glass"
             >
               <FaPlus className="mr-2" />
               Create New Role
@@ -385,7 +385,7 @@ export default function RoleManagement() {
                 <div className="flex space-x-4">
                   <button
                     type="submit"
-                    className="flex-1 bg-gradient-to-r from-cyan-500 to-blue-600 text-white py-3 rounded-lg font-semibold hover:shadow-lg transition-all"
+                    className="flex-1 py-3 rounded-lg font-semibold cta-glass"
                   >
                     {editingRole ? 'Update Role' : 'Create Role'}
                   </button>

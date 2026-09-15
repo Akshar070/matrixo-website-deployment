@@ -120,7 +120,7 @@ export default function ForgotPasswordPage() {
                     >
                       Resend Email
                     </button>
-                    <Link href="/auth?mode=login" className="block w-full py-3 px-5 bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-500 text-white rounded-xl font-bold text-center hover:shadow-2xl hover:shadow-purple-500/50 transition-all transform hover:scale-[1.02] active:scale-[0.98]">
+                    <Link href="/auth?mode=login" className="block w-full py-3 px-5 via-pink-500 rounded-xl font-bold text-center transform active:scale-[0.98] cta-glass">
                       Back to Login
                     </Link>
                   </div>
@@ -168,7 +168,7 @@ export default function ForgotPasswordPage() {
                     <button
                       type="submit"
                       disabled={loading || !email}
-                      className="w-full py-3 px-5 bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-500 text-white rounded-xl font-bold text-lg hover:shadow-2xl hover:shadow-purple-500/50 transition-all transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 group mt-2"
+                      className="w-full py-3 px-5 via-pink-500 rounded-xl font-bold text-lg transform active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 group mt-2 cta-glass"
                     >
                       {loading ? (
                         <>

@@ -176,9 +176,7 @@ export default function VibeCodeEventDetail({ event }: { event: any }) {
                 onClick={() => handleRegisterNow(event.googleFormLink ? null : event.tickets[0])}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="group relative px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-full font-bold text-lg text-white
-                         shadow-lg shadow-cyan-500/30 hover:shadow-cyan-500/50 transition-all duration-300
-                         overflow-hidden"
+                className="group relative px-8 py-4 rounded-full font-bold text-lg overflow-hidden cta-glass"
               >
                 <span className="relative z-10 flex items-center gap-2">
                   {event.googleFormLink ? 'Register Now' : 'Register Now – ₹69 Only'}
@@ -448,9 +446,7 @@ export default function VibeCodeEventDetail({ event }: { event: any }) {
                 onClick={() => handleRegisterNow(null)}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="w-full md:w-auto px-12 py-4 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-full
-                         font-bold text-lg text-white shadow-lg shadow-cyan-500/30 hover:shadow-cyan-500/50
-                         transition-all duration-300"
+                className="w-full md:w-auto px-12 py-4 rounded-full font-bold text-lg cta-glass"
               >
                 Register Now
               </motion.button>
@@ -518,9 +514,7 @@ export default function VibeCodeEventDetail({ event }: { event: any }) {
                 onClick={() => handleRegisterNow(event.tickets[0])}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="w-full md:w-auto px-12 py-4 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-full
-                         font-bold text-lg text-white shadow-lg shadow-cyan-500/30 hover:shadow-cyan-500/50
-                         transition-all duration-300"
+                className="w-full md:w-auto px-12 py-4 rounded-full font-bold text-lg cta-glass"
               >
                 Register Now
               </motion.button>
@@ -818,9 +812,7 @@ export default function VibeCodeEventDetail({ event }: { event: any }) {
                 onClick={() => handleRegisterNow(event.tickets[0])}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="group relative px-10 py-5 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-full 
-                         font-bold text-xl text-white shadow-lg shadow-cyan-500/30 hover:shadow-cyan-500/50 
-                         transition-all duration-300 overflow-hidden"
+                className="group relative px-10 py-5 rounded-full font-bold text-xl overflow-hidden cta-glass"
               >
                 <span className="relative z-10 flex items-center gap-3">
                   {event.googleFormLink ? 'Register Now' : 'Register Now – ₹69 Only'}

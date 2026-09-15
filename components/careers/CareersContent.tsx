@@ -368,7 +368,7 @@ export default function CareersContent() {
                     <button
                       type="submit"
                       disabled={submitting}
-                      className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 text-white py-4 rounded-lg font-bold text-lg hover:shadow-lg hover:shadow-cyan-500/50 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="w-full py-4 rounded-lg font-bold text-lg disabled:opacity-50 disabled:cursor-not-allowed cta-glass"
                     >
                       {submitting ? 'Submitting...' : 'Submit Application'}
                     </button>
@@ -412,7 +412,7 @@ export default function CareersContent() {
                   </div>
 
                   <Link href={`/careers/apply/${role.id}`}>
-                    <button className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 text-white py-3 rounded-lg font-semibold hover:shadow-lg hover:shadow-cyan-500/50 transition-all duration-300 flex items-center justify-center group">
+                    <button className="w-full py-3 rounded-lg font-semibold flex items-center justify-center group cta-glass">
                       Apply Now
                       <FaArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
                     </button>

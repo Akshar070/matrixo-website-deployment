@@ -343,10 +343,7 @@ export default function EventQRScanner() {
                 <button
                   onClick={startScanner}
                   disabled={!scannerReady}
-                  className="w-full flex items-center justify-center gap-3 px-6 py-4 bg-[#2563EB] hover:bg-[#1D4ED8] dark:bg-gradient-to-r dark:from-cyan-500 dark:to-blue-600 
-                           text-white font-bold text-lg rounded-xl dark:hover:from-cyan-600 dark:hover:to-blue-700 
-                           disabled:opacity-50 disabled:cursor-not-allowed
-                           transition-all active:scale-95 shadow-sm shadow-[#2563EB]/20 dark:shadow-lg dark:shadow-cyan-500/30"
+                  className="w-full flex items-center justify-center gap-3 px-6 py-4 hover:bg-[#1D4ED8] dark:bg-gradient-to-r dark:from-cyan-500 dark:to-blue-600 font-bold text-lg rounded-xl dark:hover:from-cyan-600 dark:hover:to-blue-700 disabled:opacity-50 disabled:cursor-not-allowed active:scale-95 shadow-[#2563EB]/20 dark:shadow-lg dark:shadow-cyan-500/30 cta-glass"
                 >
                   <FaCamera className="text-xl" />
                   {scannerReady ? 'Scan QR Code' : 'Loading Scanner...'}
@@ -396,7 +393,7 @@ export default function EventQRScanner() {
                     className="w-full px-4 py-3 bg-[#F8FAFC] dark:bg-white/10 border border-[rgba(15,23,42,0.08)] dark:border-cyan-500/30 rounded-xl text-[#0F172A] dark:text-white 
                              placeholder:text-[#94A3B8] dark:placeholder:text-gray-500 focus:outline-none focus:border-[#2563EB] dark:focus:border-cyan-400 text-center"
                   />
-                  <button type="submit" className="w-full py-3 bg-[#2563EB] hover:bg-[#1D4ED8] dark:bg-cyan-500 dark:hover:bg-cyan-600 text-white font-semibold rounded-xl transition-all">
+                  <button type="submit" className="w-full py-3 hover:bg-[#1D4ED8] dark:bg-cyan-500 dark:hover:bg-cyan-600 font-semibold rounded-xl cta-glass">
                     Check
                   </button>
                 </form>
@@ -428,7 +425,7 @@ export default function EventQRScanner() {
                   >
                     Back
                   </button>
-                  <button type="submit" className="flex-1 py-3 bg-[#2563EB] hover:bg-[#1D4ED8] dark:bg-cyan-500 dark:hover:bg-cyan-600 text-white font-semibold rounded-xl transition-all">
+                  <button type="submit" className="flex-1 py-3 hover:bg-[#1D4ED8] dark:bg-cyan-500 dark:hover:bg-cyan-600 font-semibold rounded-xl cta-glass">
                     Check
                   </button>
                 </div>
@@ -458,8 +455,7 @@ export default function EventQRScanner() {
               <p className="text-[#64748B] dark:text-gray-400 mb-6">{errorMessage}</p>
               <button
                 onClick={handleScanAgain}
-                className="inline-flex items-center gap-2 px-6 py-3 bg-[#2563EB] hover:bg-[#1D4ED8] dark:bg-cyan-500 dark:hover:bg-cyan-600
-                         text-white font-semibold rounded-xl transition-all shadow-sm shadow-[#2563EB]/20 dark:shadow-none"
+                className="inline-flex items-center gap-2 px-6 py-3 hover:bg-[#1D4ED8] dark:bg-cyan-500 dark:hover:bg-cyan-600 font-semibold rounded-xl shadow-[#2563EB]/20 dark:shadow-none cta-glass"
               >
                 <FaRedo />
                 Try Again
@@ -523,9 +519,7 @@ export default function EventQRScanner() {
 
               <button
                 onClick={handleScanAgain}
-                className="w-full py-4 bg-[#2563EB] hover:bg-[#1D4ED8] dark:bg-gradient-to-r dark:from-cyan-500 dark:to-blue-600 text-white font-bold 
-                         rounded-xl dark:hover:from-cyan-600 dark:hover:to-blue-700 transition-all active:scale-[0.98] 
-                         shadow-sm shadow-[#2563EB]/20 dark:shadow-lg dark:shadow-cyan-500/30"
+                className="w-full py-4 hover:bg-[#1D4ED8] dark:bg-gradient-to-r dark:from-cyan-500 dark:to-blue-600 font-bold rounded-xl dark:hover:from-cyan-600 dark:hover:to-blue-700 active:scale-[0.98] shadow-[#2563EB]/20 dark:shadow-lg dark:shadow-cyan-500/30 cta-glass"
               >
                 <span className="flex items-center justify-center gap-2">
                   <FaRedo />

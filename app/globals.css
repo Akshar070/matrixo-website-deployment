@@ -1593,11 +1593,23 @@ body.printing-profile .min-h-screen {
         0% {
             transform: rotate(0deg) translateX(1.45em) rotate(0deg);
         }
-        55% {
+        52% {
             transform: rotate(360deg) translateX(1.45em) rotate(-360deg);
         }
-        /* Tuck in beside the X: now it reads "XO". */
-        70%,
+        /* Arrive beside the X, overshooting slightly past the resting gap... */
+        62% {
+            transform: rotate(360deg) translateX(0.48em) rotate(-360deg);
+        }
+        /* ...rebound out a touch... */
+        70% {
+            transform: rotate(360deg) translateX(0.74em) rotate(-360deg);
+        }
+        /* ...a smaller second bounce... */
+        75% {
+            transform: rotate(360deg) translateX(0.56em) rotate(-360deg);
+        }
+        /* ...and settle into "XO", holding the beat. */
+        80%,
         88% {
             transform: rotate(360deg) translateX(0.62em) rotate(-360deg);
         }
@@ -1607,45 +1619,10 @@ body.printing-profile .min-h-screen {
         }
     }
 
-    /* Eight dots marking the orbit, pulsing in sequence behind the O. */
-    .xo-dot {
-        position: absolute;
-        width: 0.28em;
-        height: 0.28em;
-        border-radius: 9999px;
-        background: currentColor;
-        color: #1e3a8a;
-        opacity: 0.18;
-        transform: rotate(calc(var(--i) * 45deg)) translateX(1.9em);
-        animation: xoDot 2.2s linear infinite;
-        animation-delay: calc(var(--i) * 0.0687s);
-    }
-
-    .dark .xo-dot {
-        color: #60a5fa;
-    }
-
-    @keyframes xoDot {
-        0%,
-        55%,
-        100% {
-            opacity: 0.5;
-        }
-        20%,
-        75% {
-            opacity: 0.12;
-        }
-    }
-
     @media (prefers-reduced-motion: reduce) {
         .xo-o {
             animation: none;
             transform: translateX(0.62em);
-        }
-
-        .xo-dot {
-            animation: none;
-            opacity: 0.2;
         }
     }
 }

@@ -512,9 +512,8 @@ export default function EventsListing() {
                                 <motion.button
                                   whileHover={{ scale: 1.05 }}
                                   whileTap={{ scale: 0.95 }}
-                                  className="flex items-center space-x-1.5 sm:space-x-2 bg-gradient-to-r from-neon-blue to-neon-purple 
-                                           text-white px-3 sm:px-4 py-2 rounded-full font-semibold text-xs sm:text-sm shadow-lg 
-                                           hover:shadow-neon-blue/50 transition-shadow"
+                                  className="flex items-center space-x-1.5 sm:space-x-2 cta-glass
+                                           px-3 sm:px-4 py-2 rounded-full font-semibold text-xs sm:text-sm"
                                 >
                                   <FaTicketAlt className="text-xs sm:text-sm" />
                                   <span>Book</span>

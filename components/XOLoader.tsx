@@ -16,16 +16,6 @@ export default function XOLoader({ size = 16, label, className = '' }: XOLoaderP
     return (
         <div className={`flex flex-col items-center gap-4 ${className}`} role="status" aria-live="polite">
             <div className="xo-loader font-display" style={{ fontSize: `${size}px` }}>
-                {/* Dots tracing the orbit path. */}
-                {Array.from({ length: 8 }).map((_, i) => (
-                    <span
-                        key={i}
-                        className="xo-dot"
-                        style={{ ['--i' as string]: i }}
-                        aria-hidden="true"
-                    />
-                ))}
-
                 <span className="xo-glyph xo-x" aria-hidden="true">X</span>
                 <span className="xo-glyph xo-o" aria-hidden="true">O</span>
             </div>

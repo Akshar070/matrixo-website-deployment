@@ -49,7 +49,7 @@ export default function ProfileDownload({ targetRef, userName }: ProfileDownload
         <div className="flex items-center gap-3 print:hidden">
             <button
                 onClick={handlePDFDownload}
-                className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-red-600 to-rose-600 text-white rounded-xl font-medium text-sm hover:from-red-500 hover:to-rose-500 transition-all shadow-lg shadow-red-500/20 hover:shadow-red-500/30"
+                className="inline-flex items-center gap-2 px-5 py-2.5 from-red-600 to-rose-600 rounded-xl font-medium text-sm cta-glass"
             >
                 <FaFilePdf />
                 Download PDF

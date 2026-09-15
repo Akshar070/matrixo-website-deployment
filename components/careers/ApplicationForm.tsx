@@ -747,7 +747,7 @@ export default function ApplicationForm({ roleId }: ApplicationFormProps) {
                   <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="pt-4 border-t border-gray-200 dark:border-neutral-800">
                     <button
                       onClick={handleApplyClick}
-                      className="w-full sm:w-auto bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-8 py-4 rounded-xl font-bold text-lg hover:shadow-lg hover:shadow-cyan-500/30 transition-all duration-300 flex items-center justify-center gap-2 group"
+                      className="w-full sm:w-auto px-8 py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-2 group cta-glass"
                     >
                       {user ? 'Apply Now' : 'Sign in & Apply'} <FaArrowRight className="group-hover:translate-x-1 transition-transform" />
                     </button>
@@ -926,10 +926,12 @@ export default function ApplicationForm({ roleId }: ApplicationFormProps) {
                   {/* Submit */}
                   <div className="pt-4 border-t border-gray-200 dark:border-neutral-800">
                     <button type="submit" disabled={submitting || isUploading}
-                      className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 text-white py-4 rounded-xl font-bold text-lg hover:shadow-lg hover:shadow-cyan-500/30 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
+                      className="w-full py-4 rounded-xl font-bold text-lg disabled:opacity-50 disabled:cursor-not-allowed cta-glass">
                       {submitting ? (
                         <span className="flex items-center justify-center gap-3">
-                          <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                          {/* Dark-on-light: the submit button is a pale glass pill
+                              now, so a white spinner would be invisible on it. */}
+                          <div className="w-5 h-5 border-2 border-gray-400/30 border-t-gray-700 rounded-full animate-spin" />
                           {isUploading ? `Uploading resume... ${uploadProgress}%` : 'Submitting application...'}
                         </span>
                       ) : isUploading ? (

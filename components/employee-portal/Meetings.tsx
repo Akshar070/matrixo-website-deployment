@@ -819,7 +819,7 @@ function MeetingDetailModal({
                                 }
                                 setEditingTaskIndex(null)
                               }}
-                              className="px-4 py-2 bg-amber-600 hover:bg-amber-500 text-white text-sm rounded-lg transition-colors"
+                              className="px-4 py-2 text-sm rounded-lg cta-glass"
                             >
                               Save
                             </button>

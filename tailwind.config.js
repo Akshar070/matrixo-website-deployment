@@ -21,10 +21,15 @@ module.exports = {
           800: '#075985',
           900: '#0c4a6e',
         },
+        // Remapped to the CTA button palette (the same three stops the
+        // .cta-glass hover gradient sweeps through), so every `neon-*` class
+        // across the site now renders in the button colour instead of the old
+        // blue/violet/pink. Kept under the `neon` name so no markup had to
+        // change: text, borders and backgrounds pick it up automatically.
         neon: {
-          blue: '#2563eb',
-          purple: '#7c3aed',
-          pink: '#db2777',
+          blue: '#194569',
+          purple: '#5f84a2',
+          pink: '#91aec4',
         },
       },
       fontFamily: {

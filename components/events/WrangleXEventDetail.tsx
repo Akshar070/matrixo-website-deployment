@@ -242,8 +242,7 @@ export default function WrangleXEventDetail({ event }: { event: any }) {
                   onClick={scrollToEvents}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="group relative px-8 py-4 bg-gradient-to-r from-purple-500 to-blue-600 rounded-full font-bold text-lg text-white
-                           shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 transition-all duration-300 overflow-hidden"
+                  className="group relative px-8 py-4 rounded-full font-bold text-lg overflow-hidden cta-glass"
                 >
                   <span className="relative z-10 flex items-center gap-2">
                     Explore Events
@@ -378,9 +377,7 @@ export default function WrangleXEventDetail({ event }: { event: any }) {
                       rel="noopener noreferrer"
                       whileHover={{ scale: 1.03 }}
                       whileTap={{ scale: 0.97 }}
-                      className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-500 to-blue-600
-                               text-white font-bold rounded-full shadow-lg shadow-purple-500/20
-                               hover:shadow-purple-500/40 transition-all duration-300 w-full sm:w-auto text-center"
+                      className="inline-flex items-center justify-center gap-2 px-6 py-3 font-bold rounded-full w-full sm:w-auto text-center cta-glass"
                     >
                       Register Now
                       <FaExternalLinkAlt className="text-xs" />
@@ -532,7 +529,7 @@ export default function WrangleXEventDetail({ event }: { event: any }) {
                         href={currentEvent?.registrationLink || '#'}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white font-semibold rounded-xl transition-all shadow-lg shadow-purple-500/25 hover:shadow-purple-500/40 w-full sm:w-auto"
+                        className="inline-flex items-center justify-center gap-2 px-6 py-3 font-semibold rounded-xl w-full sm:w-auto cta-glass"
                       >
                         Register Now <FaExternalLinkAlt className="text-sm" />
                       </a>
@@ -676,7 +673,7 @@ export default function WrangleXEventDetail({ event }: { event: any }) {
               href="https://datawranglers-jbiet.in/wranglex/"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white font-bold rounded-xl transition-all shadow-xl shadow-purple-500/25 hover:shadow-purple-500/40 text-lg"
+              className="inline-flex items-center gap-2 px-8 py-4 font-bold rounded-xl text-lg cta-glass"
             >
               Visit WRANGLEX Website <FaExternalLinkAlt />
             </a>

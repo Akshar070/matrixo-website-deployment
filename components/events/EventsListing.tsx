@@ -10,6 +10,8 @@ import HeadingHighlight from '@/components/HeadingHighlight'
 import { useEventVisibility } from '@/lib/eventVisibility'
 import { format, isFuture, isPast, compareDesc, compareAsc } from 'date-fns'
 import { useAuth } from '@/lib/AuthContext'
+import { useProfile } from '@/lib/ProfileContext'
+import { getValidImageUrl } from '@/lib/imageUtils'
 import AdUnit from '@/components/ads/AdUnit'
 import { AD_SLOTS } from '@/lib/adsense'
 import { useRouter } from 'next/navigation'
@@ -36,6 +38,7 @@ export default function EventsListing() {
   // shows a placeholder until then so a signed-in visitor never sees the
   // logged-out form flash past.
   const { user, loading: authResolving, signIn, signInWithGoogle } = useAuth()
+  const { profile } = useProfile()
   const router = useRouter()
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -248,11 +251,26 @@ export default function EventsListing() {
                     </div>
                   ) : (
                     <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-[20px] shadow-[0_8px_30px_rgb(0,0,0,0.06)] p-6 text-center flex flex-col items-center justify-center min-h-[280px]">
-                      <div className="w-14 h-14 bg-blue-50 dark:bg-blue-500/10 rounded-full flex items-center justify-center mb-3 mx-auto">
-                        <span className="text-xl font-bold text-blue-600 dark:text-blue-400">
-                          {user.displayName?.charAt(0)?.toUpperCase() || user.email?.charAt(0)?.toUpperCase() || 'U'}
-                        </span>
-                      </div>
+                      {/* Same photo the profile page shows. Falls back to the
+                          initial while the profile loads, or if none is set. */}
+                      {profile?.profilePhoto ? (
+                        <div className="w-14 h-14 rounded-full overflow-hidden mb-3 mx-auto">
+                          <Image
+                            src={getValidImageUrl(profile.profilePhoto)}
+                            alt=""
+                            width={56}
+                            height={56}
+                            className="object-cover w-full h-full rounded-full"
+                            unoptimized
+                          />
+                        </div>
+                      ) : (
+                        <div className="w-14 h-14 bg-blue-50 dark:bg-blue-500/10 rounded-full flex items-center justify-center mb-3 mx-auto">
+                          <span className="text-xl font-bold text-blue-600 dark:text-blue-400">
+                            {profile?.fullName?.charAt(0)?.toUpperCase() || user.displayName?.charAt(0)?.toUpperCase() || user.email?.charAt(0)?.toUpperCase() || 'U'}
+                          </span>
+                        </div>
+                      )}
                       <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">Welcome back!</h3>
                       <p className="text-[13px] text-gray-500 dark:text-gray-400 mb-5 truncate max-w-full px-2">You are logged in as {user.email}</p>
                       <Link

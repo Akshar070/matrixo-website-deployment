@@ -214,7 +214,7 @@ export default function EmployeeConsole({ getIdToken }: { getIdToken: GetIdToken
               aria-pressed={filter === f}
               className={`rounded-full px-3 py-1.5 text-xs font-medium border transition-colors ${
                 filter === f
-                  ? 'bg-blue-600 text-white border-blue-600'
+                  ? 'border-blue-600 cta-glass'
                   : 'bg-white/60 dark:bg-white/5 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-white/10 hover:bg-white dark:hover:bg-white/10'
               }`}
             >

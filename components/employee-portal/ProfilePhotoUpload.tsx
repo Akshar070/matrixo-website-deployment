@@ -500,7 +500,7 @@ export default function ProfilePhotoUpload({
                     className={`
                       w-full flex items-center justify-center gap-2.5 py-3 px-4 rounded-xl font-medium text-sm transition-all duration-200
                       ${selectedFile && !uploading
-                        ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white hover:from-blue-400 hover:to-purple-500 shadow-lg shadow-blue-500/25'
+                        ? 'to-purple-600 hover:to-purple-500 cta-glass'
                         : darkMode
                           ? 'bg-white/5 text-neutral-500 cursor-not-allowed'
                           : 'bg-black/5 text-gray-400 cursor-not-allowed'}

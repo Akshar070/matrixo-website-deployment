@@ -565,7 +565,7 @@ export default function WrangleXEventDetail({ event }: { event: any }) {
                     onClick={() => handleDotClick(i)}
                     className={`transition-all duration-300 rounded-full ${
                       i === currentIndex
-                        ? 'w-8 h-3 bg-gradient-to-r from-purple-500 to-blue-500'
+                        ? 'w-8 h-3 from-purple-500 cta-glass'
                         : 'w-3 h-3 bg-gray-300 dark:bg-white/20 hover:bg-gray-400 dark:hover:bg-white/40'
                     }`}
                     aria-label={`Go to event ${i + 1}`}

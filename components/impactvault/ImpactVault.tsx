@@ -123,7 +123,7 @@ export default function ImpactVault() {
                     onClick={() => setTimeRange(range)}
                     className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
                       timeRange === range
-                        ? 'bg-gradient-to-r from-green-500 to-emerald-500 text-white'
+                        ? 'from-green-500 to-emerald-500 cta-glass'
                         : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
                     }`}
                   >

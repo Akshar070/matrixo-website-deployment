@@ -195,7 +195,7 @@ export default function PlayCred() {
               onClick={() => setFilter(category)}
               className={`px-6 py-2 rounded-full font-medium transition-all ${
                 filter === category
-                  ? 'bg-gradient-to-r from-yellow-500 to-orange-500 text-white shadow-lg'
+                  ? 'from-yellow-500 to-orange-500 cta-glass'
                   : 'bg-white/50 dark:bg-white/[0.03] backdrop-blur-md text-gray-700 dark:text-gray-300 hover:shadow-md'
               }`}
             >

@@ -306,12 +306,12 @@ function DefaultEventDetail({ event }: { event: any }) {
                     }}
                     className={`px-8 py-4 ${
                       isTEDxEvent
-                        ? "bg-red-600 hover:bg-red-700 shadow-red-600/50"
-                        : "bg-gradient-to-r from-neon-blue via-neon-purple to-neon-pink"
+                        ? "bg-red-600 hover:bg-red-700 shadow-red-600/50 text-white shadow-xl hover:shadow-2xl hover:scale-105"
+                        : "cta-glass"
                     }
-                             text-white text-lg font-bold rounded-3xl shadow-xl
-                             hover:shadow-2xl hover:scale-105 hover:-translate-y-1
-                             active:scale-95 transition-all duration-300 transform
+                             text-lg font-bold rounded-3xl
+                             hover:-translate-y-1
+                             active:scale-95 transition-transform duration-300 transform
                              flex items-center gap-3 group`}
                   >
                     <span>🎟️ Register Now</span>
@@ -893,7 +893,7 @@ function DefaultEventDetail({ event }: { event: any }) {
                               ? "bg-gray-400 dark:bg-gray-600 text-gray-700 dark:text-gray-400 cursor-not-allowed opacity-60"
                               : isTEDxEvent
                                 ? "bg-red-600 hover:bg-red-700 text-white shadow-lg shadow-red-600/30 hover:shadow-red-600/50 hover:shadow-2xl hover:scale-105 hover:-translate-y-1 active:scale-95 animate-pulse-slow"
-                                : "bg-gradient-to-r from-neon-blue via-neon-purple to-neon-pink text-white shadow-lg hover:shadow-2xl hover:scale-105 hover:-translate-y-1 active:scale-95 animate-pulse-slow"
+                                : "hover:-translate-y-1 active:scale-95 cta-glass"
                           }`}
                         >
                           <span className="flex items-center justify-center gap-2">

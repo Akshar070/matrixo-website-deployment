@@ -223,7 +223,9 @@ export default function TeamContent() {
                         href={member.linkedin}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="w-10 h-10 glass-chip flex items-center justify-center hover:bg-gradient-to-br hover:to-purple-600 cta-glass"
+                        className="w-10 h-10 glass-chip flex items-center justify-center 
+                                 hover:bg-gradient-to-br hover:from-blue-500 hover:to-purple-600 hover:text-white 
+                                 transition-all duration-300"
                       >
                         <FaLinkedin size={20} />
                       </a>
@@ -237,7 +239,9 @@ export default function TeamContent() {
                           e.stopPropagation();
                           window.location.href = `mailto:${member.email}`;
                         }}
-                        className="w-10 h-10 glass-chip flex items-center justify-center hover:bg-gradient-to-br hover:to-purple-600 cta-glass"
+                        className="w-10 h-10 glass-chip flex items-center justify-center 
+                                 hover:bg-gradient-to-br hover:from-blue-500 hover:to-purple-600 hover:text-white 
+                                 transition-all duration-300"
                       >
                         <FaEnvelope size={20} />
                       </a>

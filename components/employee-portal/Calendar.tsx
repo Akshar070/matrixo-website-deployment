@@ -720,7 +720,7 @@ export function Calendar() {
                                 setEditingHoliday(panelDisplayDay.holiday!)
                                 setShowAddHoliday(true)
                               }}
-                              className="p-2 text-blue-400 hover:bg-blue-500/20 rounded-lg cta-glass"
+                              className="p-2 text-blue-400 hover:bg-blue-500/20 rounded-lg transition-colors"
                               title="Edit holiday"
                             >
                               <FaEdit />
@@ -789,7 +789,7 @@ export function Calendar() {
                                       setEditingEvent(event)
                                       setShowAddEvent(true)
                                     }}
-                                    className="p-2 text-blue-400 hover:bg-blue-500/20 rounded-lg cta-glass"
+                                    className="p-2 text-blue-400 hover:bg-blue-500/20 rounded-lg transition-colors"
                                     title="Edit event"
                                   >
                                     <FaEdit />

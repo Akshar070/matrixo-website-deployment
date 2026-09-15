@@ -419,7 +419,7 @@ export default function ProfilePage() {
                         </div>
                       </div>
                       <button onClick={handleSaveUsername} disabled={savingUsername || usernameStatus !== 'available'}
-                        className="p-1.5 rounded-lg bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 disabled:opacity-50 cta-glass">
+                        className="p-1.5 rounded-lg bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 transition-colors disabled:opacity-50">
                         {savingUsername ? <FaSpinner className="animate-spin text-xs" /> : <FaCheck className="text-xs" />}
                       </button>
                       <button onClick={() => { setEditingUsername(false); setNewUsername(profile?.username || '') }}

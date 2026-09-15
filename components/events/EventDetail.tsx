@@ -220,7 +220,7 @@ function DefaultEventDetail({ event }: { event: any }) {
             {event.featured && (
               <div className="flex flex-wrap items-center gap-3 mb-4">
                 {event.status === "sold-out" && (
-                  <span className="inline-block bg-gradient-to-r from-red-600 via-orange-500 to-yellow-500 text-white px-6 py-3 rounded-full text-sm font-bold animate-celebrate animate-shine shadow-lg shadow-red-600/50">
+                  <span className="relative inline-block bg-gradient-to-r from-red-600 via-orange-500 to-yellow-500 text-white px-6 py-3 rounded-full text-sm font-bold animate-celebrate animate-shine shadow-lg shadow-red-600/50">
                     🎉 SOLD OUT - ALL {event.totalCapacity} TICKETS CLAIMED! 🎊
                   </span>
                 )}
@@ -799,7 +799,9 @@ function DefaultEventDetail({ event }: { event: any }) {
                   {/* Sold Out Notice */}
                   {event.status === "sold-out" && (
                     <div className="bg-gradient-to-br from-red-50 via-orange-50 to-yellow-50 dark:from-red-900/30 dark:via-orange-900/30 dark:to-yellow-900/30 border-2 border-red-500 rounded-xl p-6 text-center relative overflow-hidden">
-                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shine"></div>
+                      {/* The sweep gradient now lives in `.animate-shine::after`; keeping
+                          one here too would leave a static white band down the middle. */}
+                      <div className="absolute inset-0 animate-shine"></div>
                       <div className="text-5xl mb-3 animate-celebrate">🎉</div>
                       <h3 className="text-3xl font-bold bg-gradient-to-r from-red-600 via-orange-500 to-yellow-500 bg-clip-text text-transparent mb-3">
                         SOLD OUT!

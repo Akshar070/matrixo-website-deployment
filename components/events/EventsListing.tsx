@@ -10,6 +10,8 @@ import HeadingHighlight from '@/components/HeadingHighlight'
 import { useEventVisibility } from '@/lib/eventVisibility'
 import { format, isFuture, isPast, compareDesc, compareAsc } from 'date-fns'
 import { useAuth } from '@/lib/AuthContext'
+import AdUnit from '@/components/ads/AdUnit'
+import { AD_SLOTS } from '@/lib/adsense'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { firebaseReady } from '@/lib/firebaseConfig'
@@ -377,9 +379,18 @@ export default function EventsListing() {
                 return (
                   <motion.div
                     key={event.id}
-                    initial={{ opacity: 0, y: 30 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.05, duration: 0.4 }}
+                    initial={{ opacity: 0, y: 16 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: '-60px' }}
+                    transition={{
+                      // Cap the stagger: with `index * 0.05` uncapped, the 30th
+                      // card waited 1.5s and the grid trickled in. Capping at 7
+                      // keeps the cascade visible but never longer than ~350ms,
+                      // including when a filter change re-runs it.
+                      delay: Math.min(index, 7) * 0.05,
+                      duration: 0.45,
+                      ease: [0.22, 1, 0.36, 1],
+                    }}
                   >
                     <Link 
                       href={eventLink}
@@ -501,6 +512,13 @@ export default function EventsListing() {
               })}
             </div>
           )}
+
+          {/* Renders nothing until NEXT_PUBLIC_ADSENSE_SLOT_EVENTS_FOOTER is set. */}
+          <AdUnit
+            slot={AD_SLOTS.eventsFooter}
+            className="mt-10 sm:mt-14"
+            minHeight={280}
+          />
         </div>
       </section>
     </div>

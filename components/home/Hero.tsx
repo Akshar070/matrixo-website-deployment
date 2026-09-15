@@ -28,31 +28,20 @@ export default function Hero() {
 
       {/* Content */}
       <div className="relative z-10 container-custom px-4 sm:px-6 py-20 sm:py-24 md:py-32 text-center">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.1, ease: 'easeOut' }}
-        >
+        {/* CSS-driven entrance (see .hero-* in globals.css). These used to be
+            framer-motion, which shipped opacity:0 in the SSR HTML and held the
+            hero invisible until hydration — the LCP render delay. */}
+        <div className="hero-rise">
           {/* Badge */}
-          <motion.div
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="inline-block mb-6 px-6 py-2 glass-chip"
-          >
+          <div className="inline-block mb-6 px-6 py-2 glass-chip hero-pop hero-d1">
             <span className="text-slate-700 dark:text-gray-300 font-medium text-sm md:text-base">
               AI-Powered Career Growth Platform 🧬
             </span>
-          </motion.div>
+          </div>
           <br />
 
           {/* Logo */}
-          <motion.div
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-            className="relative inline-block mb-6"
-          >
+          <div className="relative inline-block mb-6 hero-pop hero-d2">
             {/* This is the LCP element. Explicit dimensions let the browser
                 reserve the box before the bytes land (no layout shift), and
                 fetchPriority pulls it ahead of the deferred third-party scripts
@@ -75,48 +64,28 @@ export default function Hero() {
               decoding="async"
               className="h-14 md:h-32 lg:h-20 w-auto mx-auto transform hidden dark:block"
             />
-          </motion.div>
+          </div>
 
           {/* Headline — an <h1>, not a <p>: the page had no h1 at all and jumped
               straight to <h2>, which fails both the SEO and heading-order audits.
               Classes are unchanged, so this renders exactly as before. */}
-          <motion.h1
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            className="text-xl md:text-3xl lg:text-4xl font-light text-slate-700 dark:text-gray-300 mb-4 max-w-4xl mx-auto"
-          >
+          <h1 className="text-xl md:text-3xl lg:text-4xl font-light text-slate-700 dark:text-gray-300 mb-4 max-w-4xl mx-auto hero-fade hero-d3">
             <HeadingHighlight text="Where AI Meets Your Career Journey" />
-          </motion.h1>
+          </h1>
 
           {/* Bold tagline */}
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.5 }}
-            className="text-2xl md:text-3xl font-display font-bold text-slate-800 dark:text-white mb-12"
-          >
+          <p className="text-2xl md:text-3xl font-display font-bold text-slate-800 dark:text-white mb-12 hero-fade hero-d4">
             <HeadingHighlight text="Map Your Skills. Grow Smarter. Prove Your Worth." />
-          </motion.p>
+          </p>
 
           {/* Description */}
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.6 }}
-            className="text-lg md:text-xl text-slate-600 dark:text-gray-400 mb-12 max-w-3xl mx-auto"
-          >
+          <p className="text-lg md:text-xl text-slate-600 dark:text-gray-400 mb-12 max-w-3xl mx-auto hero-fade hero-d5">
             AI-driven skill analysis, personalized learning paths, blockchain-verified credentials,
             and AI-matched mentorship — everything you need to become industry-ready, in one platform.
-          </motion.p>
+          </p>
 
           {/* CTA Buttons */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.75 }}
-            className="flex flex-col sm:flex-row gap-6 justify-center items-center"
-          >
+          <div className="flex flex-col sm:flex-row gap-6 justify-center items-center hero-rise hero-d6">
             <Link href="/events">
               <motion.button
                 onMouseEnter={handleCtaMouseEnter}
@@ -154,8 +123,8 @@ export default function Hero() {
                 <span>For Colleges</span>
               </motion.button>
             </Link>
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
 
         {/* Scroll Indicator */}
         <motion.div

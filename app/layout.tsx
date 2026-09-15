@@ -3,6 +3,7 @@ import '@fontsource/inter/index.css'
 import '@fontsource/space-grotesk/index.css'
 import type { Metadata } from 'next'
 import RootChrome from '@/components/RootChrome'
+import NavigationProgress from '@/components/NavigationProgress'
 import { AuthProvider } from '@/lib/AuthContext'
 import { ProfileProvider } from '@/lib/ProfileContext'
 import { Toaster } from 'sonner'
@@ -137,6 +138,10 @@ export default async function RootLayout({
             gtag('config', 'G-KFF7KV3Z11');
           `}
         </Script>
+
+        {/* Non-blanking route-loading indicator. Replaces the old full-screen
+            app/loading.tsx, which blanked the viewport between every page. */}
+        <NavigationProgress />
 
         <AuthProvider>
           <ProfileProvider>

@@ -187,13 +187,9 @@ export default function Navbar() {
 
               {/* BETA Badge */}
               {isBeta && (
-                <motion.span
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  className="px-2 py-0.5 text-xs font-bold bg-slate-900 text-white dark:bg-white dark:text-slate-900 rounded-full"
-                >
+                <span className="px-2 py-0.5 text-xs font-bold bg-slate-900 text-white dark:bg-white dark:text-slate-900 rounded-full nav-pop">
                   BETA
-                </motion.span>
+                </span>
               )}
             </button>
 
@@ -208,36 +204,20 @@ export default function Navbar() {
                   ? pathname === '/'
                   : pathname === link.href || pathname.startsWith(link.href + '/')
                 return (
-                  <motion.div
-                    key={link.name}
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{
-                      delay: index * 0.05,
-                      duration: 0.3,
-                      ease: [0.4, 0, 0.2, 1]
-                    }}
-                  >
+                  <div key={link.name} className={`nav-drop nav-i${index}`}>
                     <Link
                       href={link.href}
                       className={`nav-link ${isActive ? 'nav-link-active' : ''}`}
                     >
                       {link.name}
                     </Link>
-                  </motion.div>
+                  </div>
                 )
               })}
 
               {/* Menu ☰ dropdown */}
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{
-                  delay: mainNavLinks.length * 0.05,
-                  duration: 0.3,
-                  ease: [0.4, 0, 0.2, 1]
-                }}
-                className="relative flex-shrink-0"
+              <div
+                className={`relative flex-shrink-0 nav-drop nav-i${mainNavLinks.length}`}
                 ref={menuDropdownRef}
               >
                 <button
@@ -294,7 +274,7 @@ export default function Navbar() {
                     </motion.div>
                   )}
                 </AnimatePresence>
-              </motion.div>
+              </div>
             </div>
           </div>
 
@@ -391,12 +371,7 @@ export default function Navbar() {
                 </AnimatePresence>
               </div>
             ) : (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.2, duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
-                className="flex-shrink-0"
-              >
+              <div className="flex-shrink-0 nav-pop nav-i4">
                 <Link
                   href="/auth"
                   onClick={handleLoginClick}
@@ -406,7 +381,7 @@ export default function Navbar() {
                   <FaUser className="text-sm" />
                   Login
                 </Link>
-              </motion.div>
+              </div>
             )}
 
             <Link href="/contact" className={talkWithUsClassName}>

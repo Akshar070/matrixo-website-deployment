@@ -1629,3 +1629,127 @@ body.printing-profile {
 body.printing-profile .min-h-screen {
   background: #ffffff !important;
 }
+
+/* ── Above-the-fold entrance animations ──────────────────────────────────────
+   These mirror the framer-motion enter transitions the hero used to run, but
+   in pure CSS. The difference matters: framer-motion's `initial` ships
+   `style="opacity:0"` in the server HTML, so the hero stayed invisible until
+   React hydrated and the JS ran - which is exactly the multi-second "element
+   render delay" Lighthouse reported against LCP. A CSS animation starts as
+   soon as the stylesheet is parsed, so the content paints on the first frame
+   instead of waiting on the JS bundle.
+
+   The timeline is also compressed (0 -> 0.30s rather than 0.1 -> 0.75s) so the
+   LCP element resolves early while keeping the staggered feel. */
+@layer utilities {
+    @keyframes heroRise {
+        from {
+            opacity: 0;
+            transform: translate3d(0, 16px, 0);
+        }
+        to {
+            opacity: 1;
+            transform: translate3d(0, 0, 0);
+        }
+    }
+
+    @keyframes heroPop {
+        from {
+            opacity: 0;
+            transform: scale(0.94);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    @keyframes heroFade {
+        from { opacity: 0; }
+        to   { opacity: 1; }
+    }
+
+    .hero-rise,
+    .hero-pop,
+    .hero-fade {
+        animation-duration: 0.5s;
+        animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+        animation-fill-mode: both;
+    }
+
+    .hero-rise { animation-name: heroRise; }
+    .hero-pop  { animation-name: heroPop; }
+    .hero-fade { animation-name: heroFade; }
+
+    .hero-d1 { animation-delay: 0.05s; }
+    .hero-d2 { animation-delay: 0.10s; }
+    .hero-d3 { animation-delay: 0.15s; }
+    .hero-d4 { animation-delay: 0.20s; }
+    .hero-d5 { animation-delay: 0.25s; }
+    .hero-d6 { animation-delay: 0.30s; }
+
+    /* Never hold content invisible for someone who asked for less motion. */
+    @media (prefers-reduced-motion: reduce) {
+        .hero-rise,
+        .hero-pop,
+        .hero-fade {
+            animation: none;
+            opacity: 1;
+            transform: none;
+        }
+    }
+}
+
+/* ── Navbar entrance ─────────────────────────────────────────────────────────
+   Same reasoning as the hero: these were framer-motion, so the whole navbar
+   shipped as `opacity:0` and only appeared once the JS bundle had hydrated.
+   The nav sits above the fold on every route, so that delay was charged to
+   first paint site-wide. */
+@layer utilities {
+    @keyframes navDrop {
+        from {
+            opacity: 0;
+            transform: translate3d(0, -10px, 0);
+        }
+        to {
+            opacity: 1;
+            transform: translate3d(0, 0, 0);
+        }
+    }
+
+    @keyframes navPop {
+        from {
+            opacity: 0;
+            transform: scale(0.95);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    .nav-drop,
+    .nav-pop {
+        animation-duration: 0.3s;
+        animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+        animation-fill-mode: both;
+    }
+
+    .nav-drop { animation-name: navDrop; }
+    .nav-pop  { animation-name: navPop; }
+
+    .nav-i0 { animation-delay: 0s; }
+    .nav-i1 { animation-delay: 0.05s; }
+    .nav-i2 { animation-delay: 0.10s; }
+    .nav-i3 { animation-delay: 0.15s; }
+    .nav-i4 { animation-delay: 0.20s; }
+
+    @media (prefers-reduced-motion: reduce) {
+        .nav-drop,
+        .nav-pop {
+            animation: none;
+            opacity: 1;
+            transform: none;
+        }
+    }
+}

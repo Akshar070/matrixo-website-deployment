@@ -317,18 +317,16 @@ export default function Navbar() {
                 onMouseEnter={() => setShowUserDropdown(true)}
                 onMouseLeave={() => setShowUserDropdown(false)}
               >
-                <motion.button
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.3 }}
-                  className="inline-flex items-center gap-x-2 px-2.5 h-9 glass-card-thin text-gray-700 dark:text-gray-300 
+                {/* A Link, not a button: clicking the name goes straight to the
+                    profile from any page. The dropdown still opens on hover of
+                    the wrapper, so both behaviours coexist. */}
+                <Link
+                  href="/profile"
+                  className="inline-flex items-center gap-x-2 px-2.5 h-9 glass-card-thin text-gray-700 dark:text-gray-300
                            rounded-full font-semibold text-sm min-w-0 max-w-[170px] whitespace-nowrap hover:scale-[1.02] transition-all duration-300"
                 >
-                  {/* Name only — the avatar and Profile link live on the events
-                      page login card, so the pill doesn't repeat them here.
-                      Mobile keeps its own avatar, which is its route to /profile. */}
                   <span className="max-w-[110px] truncate">{firstName}</span>
-                </motion.button>
+                </Link>
 
                 <AnimatePresence>
                   {showUserDropdown && (

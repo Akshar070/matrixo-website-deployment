@@ -386,8 +386,8 @@ function TopNavbar({
                   onClick={() => setActiveTab(item.id)}
                   className={`
                     relative flex items-center gap-1.5 px-3 py-2 rounded-[14px] transition-all duration-150 font-medium text-xs whitespace-nowrap
-                    ${activeTab === item.id 
-                      ? 'bg-[#0F2B5B] text-white dark:bg-[#1E3A8A] dark:text-[#F8FAFC]' 
+                    ${activeTab === item.id
+                      ? 'cta-glass'
                       : 'text-[#475569] hover:text-[#0F172A] hover:bg-[#EEF3F8] dark:text-[#94A3B8] dark:hover:text-[#F8FAFC] dark:hover:bg-[#152542]'
                     }
                   `}

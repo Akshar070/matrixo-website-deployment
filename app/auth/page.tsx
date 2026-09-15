@@ -288,7 +288,7 @@ export default function AuthPage() {
                   </div>
                   <div className="space-y-3">
                     <Link href="/">
-                      <button className="auth-btn-primary w-full py-3 px-5 rounded-xl font-bold text-lg transition-all transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2 group">
+                      <button className="cta-glass w-full py-3 px-5 rounded-xl font-bold text-lg transform active:scale-[0.98] flex items-center justify-center gap-2 group">
                         <span>Go to Home</span>
                         <FaArrowRight className="group-hover:translate-x-1 transition-transform" />
                       </button>
@@ -343,7 +343,7 @@ export default function AuthPage() {
                         setShowVerification(false)
                         setIsLogin(true)
                       }}
-                      className="auth-btn-primary w-full py-3 px-5 rounded-xl font-bold text-lg transition-all transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2 group"
+                      className="cta-glass w-full py-3 px-5 rounded-xl font-bold text-lg transform active:scale-[0.98] flex items-center justify-center gap-2 group"
                     >
                       <span>Go to Sign In</span>
                       <FaArrowRight className="group-hover:translate-x-1 transition-transform" />
@@ -353,21 +353,27 @@ export default function AuthPage() {
               ) : (
                 <>
 
-                  {/* Tab Switcher */}
-                  <div className="auth-tab-container flex gap-2 mb-6 p-1 rounded-xl">
-                    <button
-                      onClick={() => setIsLogin(true)}
-                      className={`flex-1 py-2.5 px-5 rounded-lg font-medium transition-all ${isLogin ? 'auth-tab-active' : 'auth-tab-inactive'}`}
-                    >
-                      Sign In
-                    </button>
-                    <button
-                      onClick={() => setIsLogin(false)}
-                      className={`flex-1 py-2.5 px-5 rounded-lg font-medium transition-all ${!isLogin ? 'auth-tab-active' : 'auth-tab-inactive'}`}
-                    >
-                      Sign Up
-                    </button>
-                  </div>
+                  {/* Tab Switcher — hidden when arriving via "Register now"
+                      (?mode=register). Sign-in already lives on the events page
+                      card that link comes from, so offering it again here is
+                      just noise. The navbar's Login button opens /auth with no
+                      mode, where both tabs still show. */}
+                  {mode !== 'register' && (
+                    <div className="auth-tab-container flex gap-2 mb-6 p-1 rounded-xl">
+                      <button
+                        onClick={() => setIsLogin(true)}
+                        className={`flex-1 py-2.5 px-5 rounded-lg font-medium transition-all ${isLogin ? 'cta-glass' : 'auth-tab-inactive'}`}
+                      >
+                        Sign In
+                      </button>
+                      <button
+                        onClick={() => setIsLogin(false)}
+                        className={`flex-1 py-2.5 px-5 rounded-lg font-medium transition-all ${!isLogin ? 'cta-glass' : 'auth-tab-inactive'}`}
+                      >
+                        Sign Up
+                      </button>
+                    </div>
+                  )}
 
                   {/* OAuth Buttons */}
                   <div className="space-y-2.5 mb-6">
@@ -471,10 +477,13 @@ export default function AuthPage() {
                     <button
                       type="submit"
                       disabled={loading}
-                      className="auth-btn-primary w-full py-3 px-5 rounded-xl font-bold text-lg transition-all transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 group"
+                      className="cta-glass w-full py-3 px-5 rounded-xl font-bold text-lg transform active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 group"
                     >
                       {loading ? (
-                        <div className="w-6 h-6 border-3 border-white/30 border-t-white rounded-full animate-spin" />
+                        /* Dark-on-light: the button is a pale glass pill now,
+                           so a white spinner would be invisible. It's disabled
+                           while loading, so the hover (white text) never applies. */
+                        <div className="w-6 h-6 border-[3px] border-gray-400/30 border-t-gray-700 rounded-full animate-spin" />
                       ) : (
                         <>
                           <span>{isLogin ? 'Sign In' : 'Create Account'}</span>

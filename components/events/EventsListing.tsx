@@ -222,7 +222,7 @@ export default function EventsListing() {
                         <button
                           type="submit"
                           disabled={authLoading}
-                          className="w-full py-2.5 mt-1 rounded-xl bg-[#2563EB] font-medium text-[14px] disabled:opacity-70 cta-glass"
+                          className="w-full py-2.5 mt-1 rounded-xl font-medium text-[14px] disabled:opacity-70 cta-glass"
                         >
                           {authLoading ? 'Logging in...' : 'Login'}
                         </button>

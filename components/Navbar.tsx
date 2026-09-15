@@ -324,18 +324,10 @@ export default function Navbar() {
                   className="inline-flex items-center gap-x-2 px-2.5 h-9 glass-card-thin text-gray-700 dark:text-gray-300 
                            rounded-full font-semibold text-sm min-w-0 max-w-[170px] whitespace-nowrap hover:scale-[1.02] transition-all duration-300"
                 >
-                  <div className="relative group hover:bg-white/[0.04] rounded-xl transition-all cursor-pointer flex items-center">
-                  {profile?.profilePhoto ? (
-                    <div className="w-6 h-6 rounded-lg overflow-hidden shadow-sm">
-                      <Image src={getValidImageUrl(profile.profilePhoto)} alt="" width={24} height={24} className="object-cover w-full h-full rounded-lg" unoptimized />
-                    </div>
-                  ) : (
-                    <div className="w-6 h-6 rounded-lg bg-gray-200 dark:bg-gray-700 flex items-center justify-center flex-shrink-0">
-                      <span className="text-xs font-bold text-gray-600 dark:text-gray-300">{profile?.fullName?.charAt(0)?.toUpperCase() || 'U'}</span>
-                    </div>
-                  )}
-                  </div>
-                  <span className="hidden sm:inline max-w-[110px] truncate">{firstName}</span>
+                  {/* Name only — the avatar and Profile link live on the events
+                      page login card, so the pill doesn't repeat them here.
+                      Mobile keeps its own avatar, which is its route to /profile. */}
+                  <span className="max-w-[110px] truncate">{firstName}</span>
                 </motion.button>
 
                 <AnimatePresence>
@@ -355,13 +347,6 @@ export default function Navbar() {
                       </div>
 
                       <div className="space-y-1.5">
-                        <Link
-                          href="/profile"
-                          className="flex items-center gap-2 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-white/10 text-gray-700 dark:text-white transition"
-                        >
-                          <FaUser className="text-sm" />
-                          <span>Profile</span>
-                        </Link>
                         {isEmployee && (
                           <a
                             href={EMPLOYEE_PORTAL_URL}

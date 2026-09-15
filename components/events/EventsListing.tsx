@@ -160,109 +160,108 @@ export default function EventsListing() {
                   a signed-in visitor never sees the logged-out form flash past. */}
               <div className="relative">
                 <div className={authResolving ? 'invisible' : undefined} aria-hidden={authResolving || undefined}>
-              {!user ? (
-                <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-[20px] shadow-[0_8px_30px_rgb(0,0,0,0.06)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] p-6">
-                  <div className="mb-5">
-                    <h2 className="text-[20px] font-bold text-gray-900 dark:text-white">Student Login</h2>
-                  </div>
-                  
-                  <form onSubmit={handleLogin} className="space-y-3.5">
-                    <div className="relative">
-                      <FaUser className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-[13px]" />
-                      <input
-                        type="email"
-                        placeholder="Email or College ID"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-[13px]"
-                        required
-                      />
-                    </div>
-                    <div className="relative">
-                      <FaLock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-[13px]" />
-                      <input
-                        type={showPassword ? 'text' : 'password'}
-                        placeholder="Password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        className="w-full pl-9 pr-9 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-[13px]"
-                        required
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        aria-label={showPassword ? 'Hide password' : 'Show password'}
-                        aria-pressed={showPassword}
-                        title={showPassword ? 'Hide password' : 'Show password'}
-                        className="absolute right-1.5 top-1/2 -translate-y-1/2 flex items-center justify-center w-7 h-7 rounded-md text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-                      >
-                        {showPassword ? <FaEyeSlash size={14} aria-hidden="true" /> : <FaEye size={14} aria-hidden="true" />}
-                      </button>
-                    </div>
+                  {!user ? (
+                    <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-[20px] shadow-[0_8px_30px_rgb(0,0,0,0.06)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] p-6">
+                      <div className="mb-5">
+                        <h2 className="text-[20px] font-bold text-gray-900 dark:text-white">Student Login</h2>
+                      </div>
 
-                    <div className="flex items-center justify-between text-[12px] pt-1">
-                      <label className="flex items-center gap-1.5 cursor-pointer text-gray-700 dark:text-gray-300 font-medium">
-                        <input
-                          type="checkbox"
-                          checked={rememberMe}
-                          onChange={(e) => setRememberMe(e.target.checked)}
-                          className="rounded border-gray-300 text-blue-600 focus:ring-blue-500 w-3.5 h-3.5"
-                        />
-                        <span>Remember me</span>
-                      </label>
-                      <Link href="/forgot-password" className="text-blue-600 dark:text-blue-400 font-medium hover:underline">
-                        Forgot password?
+                      <form onSubmit={handleLogin} className="space-y-3.5">
+                        <div className="relative">
+                          <FaUser className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-[13px]" />
+                          <input
+                            type="email"
+                            placeholder="Email or College ID"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-[13px]"
+                            required
+                          />
+                        </div>
+                        <div className="relative">
+                          <FaLock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-[13px]" />
+                          <input
+                            type={showPassword ? 'text' : 'password'}
+                            placeholder="Password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            className="w-full pl-9 pr-9 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-[13px]"
+                            required
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            aria-label={showPassword ? 'Hide password' : 'Show password'}
+                            aria-pressed={showPassword}
+                            title={showPassword ? 'Hide password' : 'Show password'}
+                            className="absolute right-1.5 top-1/2 -translate-y-1/2 flex items-center justify-center w-7 h-7 rounded-md text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                          >
+                            {showPassword ? <FaEyeSlash size={14} aria-hidden="true" /> : <FaEye size={14} aria-hidden="true" />}
+                          </button>
+                        </div>
+
+                        <div className="flex items-center justify-between text-[12px] pt-1">
+                          <label className="flex items-center gap-1.5 cursor-pointer text-gray-700 dark:text-gray-300 font-medium">
+                            <input
+                              type="checkbox"
+                              checked={rememberMe}
+                              onChange={(e) => setRememberMe(e.target.checked)}
+                              className="rounded border-gray-300 text-blue-600 focus:ring-blue-500 w-3.5 h-3.5"
+                            />
+                            <span>Remember me</span>
+                          </label>
+                          <Link href="/forgot-password" className="text-blue-600 dark:text-blue-400 font-medium hover:underline">
+                            Forgot password?
+                          </Link>
+                        </div>
+
+                        <button
+                          type="submit"
+                          disabled={authLoading}
+                          className="w-full py-2.5 mt-1 rounded-xl bg-[#2563EB] hover:bg-blue-700 text-white font-medium transition-colors text-[14px] disabled:opacity-70 shadow-sm shadow-blue-500/30"
+                        >
+                          {authLoading ? 'Logging in...' : 'Login'}
+                        </button>
+                      </form>
+
+                      <div className="flex items-center gap-3 my-4">
+                        <div className="h-px bg-gray-100 dark:bg-gray-700 flex-1" />
+                        <span className="text-[11px] text-gray-400 font-medium lowercase">or</span>
+                        <div className="h-px bg-gray-100 dark:bg-gray-700 flex-1" />
+                      </div>
+                      <button
+                        onClick={handleGoogleSignIn}
+                        disabled={authLoading}
+                        className="w-full flex items-center justify-center gap-2 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 font-medium transition-colors text-[13px] disabled:opacity-70 shadow-[0_1px_2px_rgba(0,0,0,0.03)]"
+                      >
+                        <FaGoogle className="text-[14px]" />
+                        Sign in with Google
+                      </button>
+
+                      <div className="mt-5 text-center text-[12px] text-gray-600 dark:text-gray-400">
+                        New here?{' '}
+                        <Link href="/auth?mode=register" className="text-blue-600 dark:text-blue-400 font-semibold hover:underline">
+                          Register now
+                        </Link>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-[20px] shadow-[0_8px_30px_rgb(0,0,0,0.06)] p-6 text-center flex flex-col items-center justify-center min-h-[280px]">
+                      <div className="w-14 h-14 bg-blue-50 dark:bg-blue-500/10 rounded-full flex items-center justify-center mb-3 mx-auto">
+                        <span className="text-xl font-bold text-blue-600 dark:text-blue-400">
+                          {user.displayName?.charAt(0)?.toUpperCase() || user.email?.charAt(0)?.toUpperCase() || 'U'}
+                        </span>
+                      </div>
+                      <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">Welcome back!</h3>
+                      <p className="text-[13px] text-gray-500 dark:text-gray-400 mb-5 truncate max-w-full px-2">You are logged in as {user.email}</p>
+                      <Link
+                        href="/profile"
+                        className="px-6 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-medium transition-colors text-[13px]"
+                      >
+                        Go to Profile
                       </Link>
                     </div>
-
-                    <button
-                      type="submit"
-                      disabled={authLoading}
-                      className="w-full py-2.5 mt-1 rounded-xl bg-[#2563EB] hover:bg-blue-700 text-white font-medium transition-colors text-[14px] disabled:opacity-70 shadow-sm shadow-blue-500/30"
-                    >
-                      {authLoading ? 'Logging in...' : 'Login'}
-                    </button>
-                  </form>
-
-                  <div className="flex items-center gap-3 my-4">
-                    <div className="h-px bg-gray-100 dark:bg-gray-700 flex-1" />
-                    <span className="text-[11px] text-gray-400 font-medium lowercase">or</span>
-                    <div className="h-px bg-gray-100 dark:bg-gray-700 flex-1" />
-                  </div>
-
-                  <button
-                    onClick={handleGoogleSignIn}
-                    disabled={authLoading}
-                    className="w-full flex items-center justify-center gap-2 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 font-medium transition-colors text-[13px] disabled:opacity-70 shadow-[0_1px_2px_rgba(0,0,0,0.03)]"
-                  >
-                    <FaGoogle className="text-[14px]" />
-                    Sign in with Google
-                  </button>
-
-                  <div className="mt-5 text-center text-[12px] text-gray-600 dark:text-gray-400">
-                    New here?{' '}
-                    <Link href="/auth?mode=register" className="text-blue-600 dark:text-blue-400 font-semibold hover:underline">
-                      Register now
-                    </Link>
-                  </div>
-                </div>
-              ) : (
-                <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-[20px] shadow-[0_8px_30px_rgb(0,0,0,0.06)] p-6 text-center flex flex-col items-center justify-center min-h-[280px]">
-                  <div className="w-14 h-14 bg-blue-50 dark:bg-blue-500/10 rounded-full flex items-center justify-center mb-3 mx-auto">
-                    <span className="text-xl font-bold text-blue-600 dark:text-blue-400">
-                      {user.displayName?.charAt(0)?.toUpperCase() || user.email?.charAt(0)?.toUpperCase() || 'U'}
-                    </span>
-                  </div>
-                  <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">Welcome back!</h3>
-                  <p className="text-[13px] text-gray-500 dark:text-gray-400 mb-5 truncate max-w-full px-2">You are logged in as {user.email}</p>
-                  <Link
-                    href="/profile"
-                    className="px-6 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-medium transition-colors text-[13px]"
-                  >
-                    Go to Profile
-                  </Link>
-                </div>
-              )}
+                  )}
                 </div>
                 {authResolving && (
                   <div

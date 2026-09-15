@@ -383,12 +383,12 @@ export default function EventRegistrationForm({
         <div className="sticky top-0 z-10 bg-gradient-to-r from-blue-500 to-purple-600 text-white p-6">
           <button
             onClick={() => requestClose(false)}
-            className="absolute top-4 right-4 text-white hover:text-gray-200 transition-colors"
+            className="absolute top-4 right-4 text-gray-900 dark:text-white hover:text-gray-200 transition-colors"
           >
             <FaTimes className="text-2xl" />
           </button>
           <h2 className="text-2xl font-bold mb-2">{event.title}</h2>
-          <p className="text-white/90">Complete your registration</p>
+          <p className="text-gray-900/90 dark:text-white/90">Complete your registration</p>
         </div>
 
         {/* Form */}

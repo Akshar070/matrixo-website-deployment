@@ -368,7 +368,7 @@ export default function DevAgentsRegistrationForm({
                 )}
               </div>
               <span
-                className={`text-[10px] font-medium transition-colors duration-300 ${i <= currentIdx ? "text-white/70" : "text-white/30"
+                className={`text-[10px] font-medium transition-colors duration-300 ${i <= currentIdx ? "text-gray-900/70 dark:text-white/70" : "text-gray-900/30 dark:text-white/30"
                   }`}
               >
                 {s.label}
@@ -446,10 +446,10 @@ export default function DevAgentsRegistrationForm({
               <FaCheckCircle className="text-green-400 text-4xl" />
             </motion.div>
             <div>
-              <h3 className="text-2xl font-bold text-white mb-2">
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
                 Registration Received!
               </h3>
-              <p className="text-white/50 text-sm leading-relaxed">
+              <p className="text-gray-900/50 dark:text-white/50 text-sm leading-relaxed">
                 We&apos;ve received your registration and payment screenshot.
                 We&apos;ll review it and send a QR approval email to{" "}
                 <span className="text-blue-400 font-medium">
@@ -459,18 +459,18 @@ export default function DevAgentsRegistrationForm({
               </p>
             </div>
             <div
-              className="p-3 rounded-xl text-xs text-white/40"
+              className="p-3 rounded-xl text-xs text-gray-900/40 dark:text-white/40"
               style={{
                 background: "rgba(255,255,255,0.04)",
                 border: "1px solid rgba(255,255,255,0.08)",
               }}
             >
               Payment ref:{" "}
-              <span className="text-white/60 font-mono">{paymentRef}</span>
+              <span className="text-gray-900/60 dark:text-white/60 font-mono">{paymentRef}</span>
             </div>
             <button
               onClick={requestClose}
-              className="w-full py-3 rounded-xl font-bold text-white text-sm transition-all hover:scale-[1.02]"
+              className="w-full py-3 rounded-xl font-bold text-gray-900 dark:text-white text-sm transition-all hover:scale-[1.02]"
               style={{
                 background: "linear-gradient(135deg,#2563eb,#7c3aed,#ec4899)",
               }}
@@ -518,17 +518,17 @@ export default function DevAgentsRegistrationForm({
             {/* Header */}
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-lg font-bold text-white">
+                <h3 className="text-lg font-bold text-gray-900 dark:text-white">
                   Complete Payment
                 </h3>
-                <p className="text-xs text-white/40">
+                <p className="text-xs text-gray-900/40 dark:text-white/40">
                   Step 2 of 3 — Pay ₹{BREAKDOWN.total} securely
                 </p>
               </div>
               <button
                 onClick={requestClose}
                 disabled={isSubmitting}
-                className="w-8 h-8 rounded-full flex items-center justify-center text-white/40 hover:text-white transition-colors"
+                className="w-8 h-8 rounded-full flex items-center justify-center text-gray-900/40 dark:text-white/40 hover:text-gray-900 dark:hover:text-white transition-colors"
                 style={{ background: "rgba(255,255,255,0.06)" }}
               >
                 <FaTimes className="text-xs" />
@@ -573,15 +573,15 @@ export default function DevAgentsRegistrationForm({
                 border: "1px solid rgba(255,255,255,0.08)",
               }}
             >
-              <div className="flex justify-between text-sm text-white/60">
+              <div className="flex justify-between text-sm text-gray-900/60 dark:text-white/60">
                 <span>Workshop pass</span>
                 <span>₹{BREAKDOWN.basePrice}</span>
               </div>
-              <div className="flex justify-between text-sm text-white/60">
+              <div className="flex justify-between text-sm text-gray-900/60 dark:text-white/60">
                 <span>Platform fee</span>
                 <span>₹{BREAKDOWN.platformFee}</span>
               </div>
-              <div className="flex justify-between pt-2 border-t border-white/10 text-base font-bold text-white">
+              <div className="flex justify-between pt-2 border-t border-gray-200 dark:border-white/10 text-base font-bold text-gray-900 dark:text-white">
                 <span>Total payable</span>
                 <span>₹{BREAKDOWN.total}</span>
               </div>
@@ -591,7 +591,7 @@ export default function DevAgentsRegistrationForm({
             <button
               onClick={handlePayAndSubmit}
               disabled={isSubmitting || isProcessing}
-              className="w-full py-4 rounded-2xl font-bold text-white text-base transition-all active:scale-[0.98] flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full py-4 rounded-2xl font-bold text-gray-900 dark:text-white text-base transition-all active:scale-[0.98] flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
               style={{
                 background: "linear-gradient(135deg,#2563eb,#7c3aed)",
                 boxShadow:
@@ -610,26 +610,26 @@ export default function DevAgentsRegistrationForm({
               )}
             </button>
 
-            <p className="text-[11px] text-white/30 text-center">
+            <p className="text-[11px] text-gray-900/30 dark:text-white/30 text-center">
               UPI, cards, net banking &amp; wallets — powered by Razorpay
             </p>
 
             <button
               onClick={() => !isSubmitting && setStep("form")}
               disabled={isSubmitting}
-              className="w-full text-center text-xs text-white/30 hover:text-white/60 transition-colors"
+              className="w-full text-center text-xs text-gray-900/30 dark:text-white/30 hover:text-gray-900/60 dark:hover:text-white/60 transition-colors"
             >
               ← Back to form
             </button>
 
             {/* Trust footer */}
             <div className="flex items-center justify-center gap-3 pt-1 pb-1">
-              <div className="flex items-center gap-1.5 text-[10px] text-white/25">
+              <div className="flex items-center gap-1.5 text-[10px] text-gray-900/25 dark:text-white/25">
                 <FaLock className="text-[8px]" />
                 <span>Secure payment</span>
               </div>
-              <span className="text-white/10">·</span>
-              <span className="text-[10px] text-white/25">1,000+ registrations</span>
+              <span className="text-gray-900/10 dark:text-white/10">·</span>
+              <span className="text-[10px] text-gray-900/25 dark:text-white/25">1,000+ registrations</span>
             </div>
           </div>
         </motion.div>
@@ -667,16 +667,16 @@ export default function DevAgentsRegistrationForm({
           {/* Header */}
           <div className="flex items-center justify-between mb-5">
             <div>
-              <h3 className="text-xl font-bold text-white">
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white">
                 Register for DevAgentic 1.0
               </h3>
-              <p className="text-xs text-white/40 mt-0.5">
+              <p className="text-xs text-gray-900/40 dark:text-white/40 mt-0.5">
                 Step 1 of 3 — Fill in your details
               </p>
             </div>
             <button
               onClick={requestClose}
-              className="w-8 h-8 rounded-full flex items-center justify-center text-white/40 hover:text-white transition-colors"
+              className="w-8 h-8 rounded-full flex items-center justify-center text-gray-900/40 dark:text-white/40 hover:text-gray-900 dark:hover:text-white transition-colors"
               style={{ background: "rgba(255,255,255,0.06)" }}
             >
               <FaTimes className="text-xs" />
@@ -804,7 +804,7 @@ export default function DevAgentsRegistrationForm({
               <div>
                 <label className={labelClass}>
                   GitHub Profile{" "}
-                  <span className="text-white/30">(optional)</span>
+                  <span className="text-gray-900/30 dark:text-white/30">(optional)</span>
                 </label>
                 <input
                   name="github"
@@ -818,7 +818,7 @@ export default function DevAgentsRegistrationForm({
               <div>
                 <label className={labelClass}>
                   LinkedIn Profile{" "}
-                  <span className="text-white/30">(optional)</span>
+                  <span className="text-gray-900/30 dark:text-white/30">(optional)</span>
                 </label>
                 <input
                   name="linkedIn"
@@ -856,7 +856,7 @@ export default function DevAgentsRegistrationForm({
             <div>
               <label className={labelClass}>
                 Why do you want to attend?{" "}
-                <span className="text-white/30">(optional)</span>
+                <span className="text-gray-900/30 dark:text-white/30">(optional)</span>
               </label>
               <textarea
                 name="whyAttend"
@@ -879,9 +879,9 @@ export default function DevAgentsRegistrationForm({
                   name="agreeTerms"
                   checked={formData.agreeTerms}
                   onChange={handleChange}
-                  className="mt-1 w-4 h-4 rounded border-white/20 accent-blue-500 cursor-pointer"
+                  className="mt-1 w-4 h-4 rounded border-gray-300 dark:border-white/20 accent-blue-500 cursor-pointer"
                 />
-                <span className="text-xs text-white/50 group-hover:text-white/70 transition-colors leading-relaxed">
+                <span className="text-xs text-gray-900/50 dark:text-white/50 group-hover:text-gray-900/70 dark:group-hover:text-white/70 transition-colors leading-relaxed">
                   I agree to the{" "}
                   <a
                     href="/terms"
@@ -907,7 +907,7 @@ export default function DevAgentsRegistrationForm({
             {/* Submit */}
             <button
               type="submit"
-              className="w-full py-4 rounded-xl font-bold text-white text-sm transition-all hover:scale-[1.02] active:scale-[0.98] mt-2"
+              className="w-full py-4 rounded-xl font-bold text-gray-900 dark:text-white text-sm transition-all hover:scale-[1.02] active:scale-[0.98] mt-2"
               style={{
                 background: "linear-gradient(135deg,#2563eb,#7c3aed,#ec4899)",
                 boxShadow: "0 0 24px rgba(124,58,237,0.35)",
@@ -918,8 +918,8 @@ export default function DevAgentsRegistrationForm({
 
             <div className="flex items-center justify-center gap-2 pb-2">
               <span className="inline-block w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
-              <p className="text-xs text-white/30">
-                <span className="text-white/50 font-semibold">₹{BREAKDOWN.total}</span> · Limited to 120 seats · Instant confirmation
+              <p className="text-xs text-gray-900/30 dark:text-white/30">
+                <span className="text-gray-900/50 dark:text-white/50 font-semibold">₹{BREAKDOWN.total}</span> · Limited to 120 seats · Instant confirmation
               </p>
             </div>
           </form>

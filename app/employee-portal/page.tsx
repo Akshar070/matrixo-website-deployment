@@ -41,7 +41,7 @@ import { EmployeeAuthProvider, useEmployeeAuth, isAdminOrSubAdmin } from '@/lib/
 import ProfilePhotoUpload from '@/components/employee-portal/ProfilePhotoUpload'
 import { registerServiceWorker, subscribeToPush } from '@/lib/serviceWorkerRegistration'
 import { createGlobalNotification } from '@/lib/notificationUtils'
-import { PortalThemeContext, usePortalTheme } from '@/lib/portalThemeContext'
+import { PortalThemeContext, usePortalTheme, resolvePortalTheme } from '@/lib/portalThemeContext'
 import { db } from '@/lib/firebaseConfig'
 import { collection, doc, setDoc, getDocs, query, where, Timestamp, deleteDoc, updateDoc, onSnapshot } from 'firebase/firestore'
 import { toast, Toaster } from 'sonner'
@@ -1194,14 +1194,8 @@ function Dashboard() {
   const [activeTab, setActiveTab] = useState('attendance')
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null)
   const [showOnlyMyTasks, setShowOnlyMyTasks] = useState(false)
-  const [darkMode, setDarkMode] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('ep-theme')
-      if (saved) return saved === 'dark'
-      return window.matchMedia('(max-width: 768px)').matches ? false : true
-    }
-    return true
-  })
+  // Same resolution the loading screen uses, so the two never disagree.
+  const [darkMode, setDarkMode] = useState(resolvePortalTheme)
   const isAdmin = isAdminOrSubAdmin(employee?.role)
 
   const toggleTheme = () => {
@@ -1531,12 +1525,32 @@ function Dashboard() {
 function EmployeePortalContent() {
   const { user, loading } = useEmployeeAuth()
 
+  // This screen renders before PortalThemeContext.Provider exists, so it reads
+  // the stored preference directly. Without this it always painted dark, which
+  // is what made a light-mode refresh flash a black page.
+  const [isDark, setIsDark] = useState(true)
+  useEffect(() => {
+    setIsDark(resolvePortalTheme())
+  }, [])
+
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: 'radial-gradient(ellipse at 20% 50%, rgba(124,58,237,0.2) 0%, transparent 60%), #06060a' }}>
-        <div className="text-center p-10 rounded-3xl" style={{ background: 'rgba(255,255,255,0.05)', backdropFilter: 'blur(40px)', border: '1px solid rgba(255,255,255,0.1)' }}>
+      <div
+        className={`min-h-screen flex items-center justify-center transition-colors duration-200 ${
+          isDark ? 'bg-[#07111F]' : 'bg-[#F5F7FB]'
+        }`}
+      >
+        <div
+          className={`text-center p-10 rounded-3xl backdrop-blur-2xl border ${
+            isDark
+              ? 'bg-white/[0.05] border-white/10'
+              : 'bg-white/70 border-[rgba(15,23,42,0.08)]'
+          }`}
+        >
           <XOLoader size={20} />
-          <p className="text-neutral-400">Loading...</p>
+          <p className={`mt-3 text-sm ${isDark ? 'text-neutral-400' : 'text-[#64748B]'}`}>
+            Loading...
+          </p>
         </div>
       </div>
     )

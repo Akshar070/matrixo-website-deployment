@@ -222,17 +222,17 @@ export default function WrangleXEventDetail({ event }: { event: any }) {
 
               {/* Event Meta */}
               <div className="flex flex-wrap justify-center lg:justify-start gap-3 mb-8">
-                <div className="flex items-center gap-2 bg-white/5 backdrop-blur-sm border border-white/10 rounded-full px-4 py-2">
+                <div className="flex items-center gap-2 bg-white/5 backdrop-blur-sm border border-gray-200 dark:border-white/10 rounded-full px-4 py-2">
                   <FaCalendar className="text-purple-400" />
-                  <span className="text-white text-sm">{format(new Date(event.date), 'MMM dd')} – {format(new Date(event.endDate), 'MMM dd, yyyy')}</span>
+                  <span className="text-gray-900 dark:text-white text-sm">{format(new Date(event.date), 'MMM dd')} – {format(new Date(event.endDate), 'MMM dd, yyyy')}</span>
                 </div>
-                <div className="flex items-center gap-2 bg-white/5 backdrop-blur-sm border border-white/10 rounded-full px-4 py-2">
+                <div className="flex items-center gap-2 bg-white/5 backdrop-blur-sm border border-gray-200 dark:border-white/10 rounded-full px-4 py-2">
                   <FaMapMarkerAlt className="text-purple-400" />
-                  <span className="text-white text-sm">{event.location}</span>
+                  <span className="text-gray-900 dark:text-white text-sm">{event.location}</span>
                 </div>
-                <div className="flex items-center gap-2 bg-white/5 backdrop-blur-sm border border-white/10 rounded-full px-4 py-2">
+                <div className="flex items-center gap-2 bg-white/5 backdrop-blur-sm border border-gray-200 dark:border-white/10 rounded-full px-4 py-2">
                   <FaClock className="text-purple-400" />
-                  <span className="text-white text-sm">3 Events</span>
+                  <span className="text-gray-900 dark:text-white text-sm">3 Events</span>
                 </div>
               </div>
 
@@ -290,7 +290,7 @@ export default function WrangleXEventDetail({ event }: { event: any }) {
             <h2 className="text-3xl md:text-4xl font-bold mb-6 bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
               About WRANGLEX
             </h2>
-            <p className="text-lg text-gray-300 leading-relaxed whitespace-pre-line">
+            <p className="text-lg text-gray-600 dark:text-gray-300 leading-relaxed whitespace-pre-line">
               {event.description}
             </p>
           </motion.div>
@@ -311,7 +311,7 @@ export default function WrangleXEventDetail({ event }: { event: any }) {
             <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
               Events Under WRANGLEX
             </h2>
-            <p className="text-gray-400 text-lg">Choose your event and register</p>
+            <p className="text-gray-500 dark:text-gray-400 text-lg">Choose your event and register</p>
           </motion.div>
 
           <div className="space-y-12">
@@ -335,7 +335,7 @@ export default function WrangleXEventDetail({ event }: { event: any }) {
                       className="object-cover"
                     />
                     {/* Category badge */}
-                    <div className="absolute top-4 left-4 bg-black/70 backdrop-blur-sm text-white px-3 py-1 rounded-full text-xs font-semibold">
+                    <div className="absolute top-4 left-4 bg-black/70 backdrop-blur-sm text-gray-900 dark:text-white px-3 py-1 rounded-full text-xs font-semibold">
                       {subEvent.category.toUpperCase()}
                     </div>
                   </div>
@@ -349,13 +349,13 @@ export default function WrangleXEventDetail({ event }: { event: any }) {
                       <p className="text-purple-400/80 text-base mb-4">{subEvent.tagline}</p>
 
                       {/* Date */}
-                      <div className="flex items-center gap-2 text-gray-400 text-sm mb-4">
+                      <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400 text-sm mb-4">
                         <FaCalendar className="text-purple-400" />
                         <span>{format(new Date(subEvent.date), 'MMMM dd, yyyy • hh:mm a')}</span>
                       </div>
 
                       {/* Description */}
-                      <p className="text-gray-300 text-sm leading-relaxed whitespace-pre-line mb-6 line-clamp-6">
+                      <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed whitespace-pre-line mb-6 line-clamp-6">
                         {subEvent.description}
                       </p>
 
@@ -363,8 +363,8 @@ export default function WrangleXEventDetail({ event }: { event: any }) {
                       <div className="flex flex-wrap gap-3 mb-6">
                         {subEvent.tickets.map((ticket: any, i: number) => (
                           <div key={i} className="bg-white/[0.05] border border-white/[0.08] rounded-xl px-4 py-2">
-                            <span className="text-gray-400 text-xs block">{ticket.name}</span>
-                            <span className="text-white font-bold text-lg">₹{ticket.price}</span>
+                            <span className="text-gray-500 dark:text-gray-400 text-xs block">{ticket.name}</span>
+                            <span className="text-gray-900 dark:text-white font-bold text-lg">₹{ticket.price}</span>
                           </div>
                         ))}
                       </div>
@@ -413,7 +413,7 @@ export default function WrangleXEventDetail({ event }: { event: any }) {
                     className="flex items-start gap-3 bg-white/[0.03] border border-white/[0.06] rounded-xl p-4"
                   >
                     <span className="text-purple-400 mt-0.5">✓</span>
-                    <span className="text-gray-300">{highlight}</span>
+                    <span className="text-gray-600 dark:text-gray-300">{highlight}</span>
                   </motion.div>
                 ))}
               </div>
@@ -433,12 +433,12 @@ export default function WrangleXEventDetail({ event }: { event: any }) {
               viewport={{ once: true }}
               className="flex-1 bg-white/[0.03] border border-white/[0.08] rounded-2xl p-6"
             >
-              <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
                 <FaMapMarkerAlt className="text-purple-400" />
                 Venue
               </h3>
-              <p className="text-gray-300 font-semibold mb-1">{event.venue}</p>
-              <p className="text-gray-400">{event.location}</p>
+              <p className="text-gray-600 dark:text-gray-300 font-semibold mb-1">{event.venue}</p>
+              <p className="text-gray-500 dark:text-gray-400">{event.location}</p>
             </motion.div>
 
             {/* Organizer */}
@@ -449,8 +449,8 @@ export default function WrangleXEventDetail({ event }: { event: any }) {
               transition={{ delay: 0.1 }}
               className="flex-1 bg-white/[0.03] border border-white/[0.08] rounded-2xl p-6"
             >
-              <h3 className="text-xl font-bold text-white mb-4">Organized By</h3>
-              <p className="text-gray-300">{event.organizer}</p>
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Organized By</h3>
+              <p className="text-gray-600 dark:text-gray-300">{event.organizer}</p>
             </motion.div>
           </div>
 
@@ -460,7 +460,7 @@ export default function WrangleXEventDetail({ event }: { event: any }) {
             {event.tags.map((tag: string) => (
               <span
                 key={tag}
-                className="px-3 py-1 bg-white/[0.05] text-gray-400 text-xs rounded-full border border-white/[0.06]"
+                className="px-3 py-1 bg-white/[0.05] text-gray-500 dark:text-gray-400 text-xs rounded-full border border-white/[0.06]"
               >
                 {tag}
               </span>

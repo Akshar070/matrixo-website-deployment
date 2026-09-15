@@ -327,21 +327,20 @@ export default function VibeCodeRegistrationForm({ event, ticket, onClose }: Vib
         animate={{ scale: isOpen ? 1 : 0.95, opacity: isOpen ? 1 : 0 }}
         transition={{ duration: 0.22, ease: 'easeOut' }}
         onClick={(e) => e.stopPropagation()}
-        className="relative w-full max-w-[700px] max-h-[90vh] overflow-y-auto bg-gradient-to-b from-[#0a1525] to-[#0d1830]
-                   border border-cyan-500/30 rounded-3xl shadow-2xl shadow-cyan-500/20"
+        className="relative w-full max-w-[700px] max-h-[90vh] overflow-y-auto bg-gradient-to-b from-gray-50 dark:from-[#0a1525] to-gray-50 dark:to-[#0d1830] border border-cyan-500/30 rounded-3xl shadow-2xl shadow-cyan-500/20"
       >
         {/* Close Button */}
         <button
           onClick={requestClose}
-          className="absolute top-6 right-6 p-2 text-gray-400 hover:text-white hover:bg-white/10 rounded-full transition-all z-10"
+          className="absolute top-6 right-6 p-2 text-gray-500 dark:text-gray-400 hover:text-white hover:bg-white/10 rounded-full transition-all z-10"
         >
           <FaTimes size={20} />
         </button>
 
         {/* Header */}
         <div className="bg-gradient-to-r from-cyan-500/20 to-blue-500/20 border-b border-cyan-500/30 p-8">
-          <h2 className="text-3xl font-bold text-white mb-2">Register for {event.title}</h2>
-          <p className="text-gray-300">Fill in your details to secure your spot • ₹{breakdown.total}</p>
+          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Register for {event.title}</h2>
+          <p className="text-gray-600 dark:text-gray-300">Fill in your details to secure your spot • ₹{breakdown.total}</p>
         </div>
 
         {/* Check if user is logged in */}
@@ -349,8 +348,8 @@ export default function VibeCodeRegistrationForm({ event, ticket, onClose }: Vib
           <div className="p-8 text-center">
             <div className="bg-red-500/10 border border-red-500/30 rounded-2xl p-8">
               <FaTimes className="mx-auto text-red-400 text-5xl mb-4" />
-              <h3 className="text-2xl font-bold text-white mb-2">Login Required</h3>
-              <p className="text-gray-300 mb-6">
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Login Required</h3>
+              <p className="text-gray-600 dark:text-gray-300 mb-6">
                 You must be logged in to register for this event.
               </p>
               <button
@@ -368,8 +367,8 @@ export default function VibeCodeRegistrationForm({ event, ticket, onClose }: Vib
           <div className="p-8 text-center">
             <div className="bg-green-500/10 border border-green-500/30 rounded-2xl p-8">
               <FaCheckCircle className="mx-auto text-green-400 text-5xl mb-4" />
-              <h3 className="text-2xl font-bold text-white mb-2">Already Registered!</h3>
-              <p className="text-gray-300 mb-4">
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Already Registered!</h3>
+              <p className="text-gray-600 dark:text-gray-300 mb-4">
                 You have already registered for {event.title}.
               </p>
               <p className="text-cyan-300 text-sm mb-6">
@@ -388,7 +387,7 @@ export default function VibeCodeRegistrationForm({ event, ticket, onClose }: Vib
           <div className="space-y-6">
             {/* Full Name */}
             <div>
-              <label className="flex items-center gap-2 text-white font-medium mb-2">
+              <label className="flex items-center gap-2 text-gray-900 dark:text-white font-medium mb-2">
                 <FaUser className="text-cyan-400" />
                 Full Name <span className="text-red-400">*</span>
               </label>
@@ -398,15 +397,14 @@ export default function VibeCodeRegistrationForm({ event, ticket, onClose }: Vib
                 value={formData.name}
                 onChange={handleChange}
                 placeholder="Enter your full name"
-                className="w-full px-4 py-3 bg-white/5 border border-cyan-500/30 rounded-xl text-white 
-                         placeholder:text-gray-500 focus:outline-none focus:border-cyan-400 transition-all"
+                className="w-full px-4 py-3 bg-white/5 border border-cyan-500/30 rounded-xl text-gray-900 dark:text-white placeholder:text-gray-500 focus:outline-none focus:border-cyan-400 transition-all"
                 disabled={isSubmitting}
               />
             </div>
 
             {/* Roll Number */}
             <div>
-              <label className="flex items-center gap-2 text-white font-medium mb-2">
+              <label className="flex items-center gap-2 text-gray-900 dark:text-white font-medium mb-2">
                 <FaIdCard className="text-cyan-400" />
                 Roll Number (Full Series) <span className="text-red-400">*</span>
               </label>
@@ -416,35 +414,33 @@ export default function VibeCodeRegistrationForm({ event, ticket, onClose }: Vib
                 value={formData.rollNumber}
                 onChange={handleChange}
                 placeholder="e.g., 22BD1A0501"
-                className="w-full px-4 py-3 bg-white/5 border border-cyan-500/30 rounded-xl text-white 
-                         placeholder:text-gray-500 focus:outline-none focus:border-cyan-400 transition-all"
+                className="w-full px-4 py-3 bg-white/5 border border-cyan-500/30 rounded-xl text-gray-900 dark:text-white placeholder:text-gray-500 focus:outline-none focus:border-cyan-400 transition-all"
                 disabled={isSubmitting}
               />
             </div>
 
             {/* Email */}
             <div>
-              <label className="flex items-center gap-2 text-white font-medium mb-2">
+              <label className="flex items-center gap-2 text-gray-900 dark:text-white font-medium mb-2">
                 <FaEnvelope className="text-cyan-400" />
                 Email Address <span className="text-red-400">*</span>
-                <span className="text-xs text-gray-400">(from your account)</span>
+                <span className="text-xs text-gray-500 dark:text-gray-400">(from your account)</span>
               </label>
               <input
                 type="email"
                 name="email"
                 value={formData.email}
                 placeholder="your.email@example.com"
-                className="w-full px-4 py-3 bg-white/5 border border-cyan-500/30 rounded-xl text-white 
-                         placeholder:text-gray-500 opacity-70 cursor-not-allowed"
+                className="w-full px-4 py-3 bg-white/5 border border-cyan-500/30 rounded-xl text-gray-900 dark:text-white placeholder:text-gray-500 opacity-70 cursor-not-allowed"
                 disabled={true}
                 readOnly
               />
-              <p className="text-xs text-gray-400 mt-1">Using email from your logged-in account</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Using email from your logged-in account</p>
             </div>
 
             {/* Phone */}
             <div>
-              <label className="flex items-center gap-2 text-white font-medium mb-2">
+              <label className="flex items-center gap-2 text-gray-900 dark:text-white font-medium mb-2">
                 <FaPhone className="text-cyan-400" />
                 Phone Number (Preferably WhatsApp) <span className="text-red-400">*</span>
               </label>
@@ -454,27 +450,26 @@ export default function VibeCodeRegistrationForm({ event, ticket, onClose }: Vib
                 value={formData.phone}
                 onChange={handleChange}
                 placeholder="10-digit mobile number"
-                className="w-full px-4 py-3 bg-white/5 border border-cyan-500/30 rounded-xl text-white 
-                         placeholder:text-gray-500 focus:outline-none focus:border-cyan-400 transition-all"
+                className="w-full px-4 py-3 bg-white/5 border border-cyan-500/30 rounded-xl text-gray-900 dark:text-white placeholder:text-gray-500 focus:outline-none focus:border-cyan-400 transition-all"
                 disabled={isSubmitting}
               />
             </div>
 
             {/* Year of Study - Fixed to 2nd Year */}
             <div>
-              <label className="flex items-center gap-2 text-white font-medium mb-2">
+              <label className="flex items-center gap-2 text-gray-900 dark:text-white font-medium mb-2">
                 <FaGraduationCap className="text-cyan-400" />
                 Year of Study
               </label>
               <div className="w-full px-4 py-3 bg-cyan-500/20 border border-cyan-500/50 rounded-xl text-cyan-400 font-medium">
                 2nd Year Only
               </div>
-              <p className="text-xs text-gray-400 mt-1">This workshop is exclusively for 2nd year students</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">This workshop is exclusively for 2nd year students</p>
             </div>
 
             {/* Branch of Study */}
             <div>
-              <label className="flex items-center gap-2 text-white font-medium mb-3">
+              <label className="flex items-center gap-2 text-gray-900 dark:text-white font-medium mb-3">
                 <FaCodeBranch className="text-cyan-400" />
                 Branch of Study <span className="text-red-400">*</span>
               </label>
@@ -488,7 +483,7 @@ export default function VibeCodeRegistrationForm({ event, ticket, onClose }: Vib
                     className={`px-4 py-3 rounded-xl text-sm font-medium transition-all ${
                       formData.branch === branch
                         ? 'bg-cyan-500 text-white border-2 border-cyan-400 shadow-lg shadow-cyan-500/30'
-                        : 'bg-white/5 text-gray-300 border border-cyan-500/30 hover:bg-white/10'
+                        : 'bg-white/5 text-gray-600 dark:text-gray-300 border border-cyan-500/30 hover:bg-white/10'
                     }`}
                   >
                     {branch}
@@ -499,7 +494,7 @@ export default function VibeCodeRegistrationForm({ event, ticket, onClose }: Vib
 
             {/* College */}
             <div>
-              <label className="flex items-center gap-2 text-white font-medium mb-2">
+              <label className="flex items-center gap-2 text-gray-900 dark:text-white font-medium mb-2">
                 <FaUniversity className="text-cyan-400" />
                 Name of College <span className="text-red-400">*</span>
               </label>
@@ -509,15 +504,14 @@ export default function VibeCodeRegistrationForm({ event, ticket, onClose }: Vib
                 value={formData.college}
                 onChange={handleChange}
                 placeholder="Your college name"
-                className="w-full px-4 py-3 bg-white/5 border border-cyan-500/30 rounded-xl text-white 
-                         placeholder:text-gray-500 focus:outline-none focus:border-cyan-400 transition-all"
+                className="w-full px-4 py-3 bg-white/5 border border-cyan-500/30 rounded-xl text-gray-900 dark:text-white placeholder:text-gray-500 focus:outline-none focus:border-cyan-400 transition-all"
                 disabled={isSubmitting}
               />
             </div>
 
             {/* Do you have a laptop? */}
             <div>
-              <label className="flex items-center gap-2 text-white font-medium mb-3">
+              <label className="flex items-center gap-2 text-gray-900 dark:text-white font-medium mb-3">
                 <FaLaptop className="text-cyan-400" />
                 Do You Have Laptop? <span className="text-red-400">*</span>
               </label>
@@ -529,7 +523,7 @@ export default function VibeCodeRegistrationForm({ event, ticket, onClose }: Vib
                   className={`px-6 py-4 rounded-xl font-semibold transition-all ${
                     formData.hasLaptop === 'Yes'
                       ? 'bg-cyan-500 text-white border-2 border-cyan-400 shadow-lg shadow-cyan-500/30'
-                      : 'bg-white/5 text-gray-300 border border-cyan-500/30 hover:bg-white/10'
+                      : 'bg-white/5 text-gray-600 dark:text-gray-300 border border-cyan-500/30 hover:bg-white/10'
                   }`}
                 >
                   Yes
@@ -541,7 +535,7 @@ export default function VibeCodeRegistrationForm({ event, ticket, onClose }: Vib
                   className={`px-6 py-4 rounded-xl font-semibold transition-all ${
                     formData.hasLaptop === 'No'
                       ? 'bg-cyan-500 text-white border-2 border-cyan-400 shadow-lg shadow-cyan-500/30'
-                      : 'bg-white/5 text-gray-300 border border-cyan-500/30 hover:bg-white/10'
+                      : 'bg-white/5 text-gray-600 dark:text-gray-300 border border-cyan-500/30 hover:bg-white/10'
                   }`}
                 >
                   No
@@ -558,19 +552,19 @@ export default function VibeCodeRegistrationForm({ event, ticket, onClose }: Vib
 
           {/* Payment Summary */}
           <div className="mt-8 p-5 bg-white/5 border border-cyan-500/30 rounded-2xl space-y-2">
-            <div className="flex justify-between text-sm text-gray-300">
+            <div className="flex justify-between text-sm text-gray-600 dark:text-gray-300">
               <span>{ticket.name}</span>
               <span>₹{breakdown.basePrice}</span>
             </div>
-            <div className="flex justify-between text-sm text-gray-300">
+            <div className="flex justify-between text-sm text-gray-600 dark:text-gray-300">
               <span>Platform fee</span>
               <span>₹{breakdown.platformFee}</span>
             </div>
-            <div className="flex justify-between pt-2 border-t border-cyan-500/20 text-lg font-bold text-white">
+            <div className="flex justify-between pt-2 border-t border-cyan-500/20 text-lg font-bold text-gray-900 dark:text-white">
               <span>Total payable</span>
               <span>₹{breakdown.total}</span>
             </div>
-            <p className="flex items-center justify-center gap-2 pt-1 text-xs text-gray-400">
+            <p className="flex items-center justify-center gap-2 pt-1 text-xs text-gray-500 dark:text-gray-400">
               <FaLock className="text-green-400" />
               Secure payment via Razorpay — UPI, cards, net banking &amp; wallets
             </p>
@@ -582,8 +576,7 @@ export default function VibeCodeRegistrationForm({ event, ticket, onClose }: Vib
               type="button"
               onClick={requestClose}
               disabled={isSubmitting}
-              className="flex-1 px-6 py-4 bg-white/5 border border-cyan-500/30 rounded-xl text-white
-                       font-semibold hover:bg-white/10 transition-all disabled:opacity-50"
+              className="flex-1 px-6 py-4 bg-white/5 border border-cyan-500/30 rounded-xl text-gray-900 dark:text-white font-semibold hover:bg-white/10 transition-all disabled:opacity-50"
             >
               Cancel
             </button>

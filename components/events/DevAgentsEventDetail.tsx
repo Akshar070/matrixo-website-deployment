@@ -319,7 +319,7 @@ function PartnerLogo({ name, src }: { name: string; src: string }) {
   if (failed || !src) {
     return (
       <div
-        className="w-6 h-6 rounded-md flex items-center justify-center text-[10px] font-bold text-white flex-shrink-0"
+        className="w-6 h-6 rounded-md flex items-center justify-center text-[10px] font-bold text-gray-900 dark:text-white flex-shrink-0"
         style={{
           background: "linear-gradient(135deg,#3b82f6,#8b5cf6)",
         }}
@@ -649,7 +649,7 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
             animate="visible"
             className="flex items-center justify-center gap-2 mb-10"
           >
-            <p className="text-sm font-medium text-slate-400">Join <strong className="text-white">100+ developers</strong> from top tech companies & universities.</p>
+            <p className="text-sm font-medium text-slate-400">Join <strong className="text-gray-900 dark:text-white">100+ developers</strong> from top tech companies & universities.</p>
           </motion.div>
 
           {/* CTA row */}
@@ -783,7 +783,7 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: 8 }}
                             transition={{ duration: 0.2 }}
-                            className="text-xl md:text-2xl font-bold font-display text-white tabular-nums"
+                            className="text-xl md:text-2xl font-bold font-display text-gray-900 dark:text-white tabular-nums"
                           >
                             {String(v).padStart(2, "0")}
                           </motion.span>
@@ -1058,7 +1058,7 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
               viewport={{ once: true }}
               className="text-center mb-12"
             >
-              <h2 className="text-3xl md:text-4xl font-bold font-display text-white mb-4">
+              <h2 className="text-3xl md:text-4xl font-bold font-display text-gray-900 dark:text-white mb-4">
                 Workshop Agenda
               </h2>
               <p className="text-slate-400">
@@ -1111,7 +1111,7 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
                       }}
                     >
                       <div className="flex flex-wrap items-start justify-between gap-2">
-                        <h3 className="font-bold text-white text-sm">
+                        <h3 className="font-bold text-gray-900 dark:text-white text-sm">
                           {item.title}
                         </h3>
                         {item.badge && (
@@ -1152,7 +1152,7 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
               viewport={{ once: true }}
               className="text-center mb-12"
             >
-              <h2 className="text-3xl md:text-4xl font-bold font-display text-white mb-4">
+              <h2 className="text-3xl md:text-4xl font-bold font-display text-gray-900 dark:text-white mb-4">
                 Event Highlights
               </h2>
               <p className="text-slate-400">
@@ -1185,7 +1185,7 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
                   >
                     {item.icon}
                   </div>
-                  <h3 className="font-bold text-white text-sm mb-1">
+                  <h3 className="font-bold text-gray-900 dark:text-white text-sm mb-1">
                     {item.title}
                   </h3>
                   <p className="text-xs text-slate-500">{item.desc}</p>
@@ -1203,7 +1203,7 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
               viewport={{ once: true }}
               className="text-center mb-10"
             >
-              <h2 className="text-3xl md:text-4xl font-bold font-display text-white mb-4">
+              <h2 className="text-3xl md:text-4xl font-bold font-display text-gray-900 dark:text-white mb-4">
                 What&apos;s Included
               </h2>
               <p className="text-slate-400">
@@ -1526,7 +1526,7 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
             viewport={{ once: true }}
             className="text-center mb-10"
           >
-            <h2 className="text-3xl md:text-4xl font-bold font-display text-white mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold font-display text-gray-900 dark:text-white mb-4">
               Get Your Pass
             </h2>
             <p className="text-slate-400">Secure your spot at DevAgentic 1.0</p>
@@ -1599,7 +1599,7 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
               {/* CTA */}
               <button
                 onClick={() => setShowRegistration(true)}
-                className="w-full py-4 rounded-xl font-bold text-white text-lg transition-all duration-200 hover:scale-[1.02] active:scale-[.98]"
+                className="w-full py-4 rounded-xl font-bold text-gray-900 dark:text-white text-lg transition-all duration-200 hover:scale-[1.02] active:scale-[.98]"
                 style={{
                   background:
                     "linear-gradient(135deg, #2563EB, #8B5CF6, #EC4899)",
@@ -1641,7 +1641,7 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
             viewport={{ once: true }}
             className="text-center mb-12"
           >
-            <h2 className="text-3xl md:text-4xl font-bold font-display text-white mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold font-display text-gray-900 dark:text-white mb-4">
               Speakers
             </h2>
           </motion.div>
@@ -1661,7 +1661,7 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
               }}
             >
               {/* Gradient avatar */}
-              <div className="w-24 h-24 rounded-full mx-auto mb-5 overflow-hidden flex items-center justify-center border border-white/10 bg-white/5">
+              <div className="w-24 h-24 rounded-full mx-auto mb-5 overflow-hidden flex items-center justify-center border border-gray-200 dark:border-white/10 bg-white/5">
                 {DEVAGENTS_SPEAKER_IMAGE_URL ? (
                   <Image
                     src={DEVAGENTS_SPEAKER_IMAGE_URL}
@@ -1673,7 +1673,7 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
                   />
                 ) : (
                   <div
-                    className="w-full h-full flex items-center justify-center text-3xl font-bold text-white font-display"
+                    className="w-full h-full flex items-center justify-center text-3xl font-bold text-gray-900 dark:text-white font-display"
                     style={{
                       background: "linear-gradient(135deg, #3b82f6, #8b5cf6)",
                     }}
@@ -1682,7 +1682,7 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
                   </div>
                 )}
               </div>
-              <h3 className="text-xl font-bold text-white mb-1">
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-1">
                 Shiva Ganesh Talikota
               </h3>
               <p className="text-sm text-blue-400 font-medium mb-1">
@@ -1718,9 +1718,9 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
                 border: "1px solid rgba(124,58,237,.25)",
               }}
             >
-              <div className="w-24 h-24 rounded-full mx-auto mb-5 overflow-hidden flex items-center justify-center border border-white/10 bg-white/5">
+              <div className="w-24 h-24 rounded-full mx-auto mb-5 overflow-hidden flex items-center justify-center border border-gray-200 dark:border-white/10 bg-white/5">
                 <div
-                  className="w-full h-full flex items-center justify-center text-3xl font-bold text-white font-display"
+                  className="w-full h-full flex items-center justify-center text-3xl font-bold text-gray-900 dark:text-white font-display"
                   style={{
                     background: "linear-gradient(135deg, #f59e0b, #ef4444)",
                   }}
@@ -1728,7 +1728,7 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
                   SR
                 </div>
               </div>
-              <h3 className="text-xl font-bold text-white mb-1">
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-1">
                 Saideep Reddy
               </h3>
               <p className="text-sm text-blue-400 font-medium mb-1">
@@ -1764,9 +1764,9 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
                 border: "1px solid rgba(124,58,237,.25)",
               }}
             >
-              <div className="w-24 h-24 rounded-full mx-auto mb-5 overflow-hidden flex items-center justify-center border border-white/10 bg-white/5">
+              <div className="w-24 h-24 rounded-full mx-auto mb-5 overflow-hidden flex items-center justify-center border border-gray-200 dark:border-white/10 bg-white/5">
                 <div
-                  className="w-full h-full flex items-center justify-center text-3xl font-bold text-white font-display"
+                  className="w-full h-full flex items-center justify-center text-3xl font-bold text-gray-900 dark:text-white font-display"
                   style={{
                     background: "linear-gradient(135deg, #10b981, #3b82f6)",
                   }}
@@ -1774,7 +1774,7 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
                   BP
                 </div>
               </div>
-              <h3 className="text-xl font-bold text-white mb-1">
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-1">
                 Bhargavi Papolu
               </h3>
               <p className="text-sm text-blue-400 font-medium mb-1">
@@ -1812,7 +1812,7 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
             viewport={{ once: true }}
             className="text-center mb-12"
           >
-            <h2 className="text-3xl md:text-4xl font-bold font-display text-white mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold font-display text-gray-900 dark:text-white mb-4">
               Who Should Attend
             </h2>
             <p className="text-slate-400">
@@ -1855,7 +1855,7 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
             viewport={{ once: true }}
             className="text-center mb-12"
           >
-            <h2 className="text-3xl md:text-4xl font-bold font-display text-white mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold font-display text-gray-900 dark:text-white mb-4">
               Frequently Asked Questions
             </h2>
           </motion.div>
@@ -1881,7 +1881,7 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
                   }
                   className="w-full flex items-center justify-between p-5 text-left gap-4"
                 >
-                  <span className="text-white font-medium text-sm">
+                  <span className="text-gray-900 dark:text-white font-medium text-sm">
                     {faq.q}
                   </span>
                   <FaChevronDown
@@ -1932,7 +1932,7 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
             viewport={{ once: true }}
             className="text-center mb-10"
           >
-            <h2 className="text-3xl md:text-4xl font-bold font-display text-white mb-3">
+            <h2 className="text-3xl md:text-4xl font-bold font-display text-gray-900 dark:text-white mb-3">
               Event Gallery
             </h2>
             <p className="text-slate-500 text-sm">
@@ -1992,7 +1992,7 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
             viewport={{ once: true }}
             className="text-center mb-12"
           >
-            <h2 className="text-3xl md:text-4xl font-bold font-display text-white mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold font-display text-gray-900 dark:text-white mb-4">
               Sponsors &amp; Partners
             </h2>
           </motion.div>
@@ -2030,7 +2030,7 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
                     unoptimized
                   />
                 </div>
-                <span className="text-white font-semibold">matriXO</span>
+                <span className="text-gray-900 dark:text-white font-semibold">matriXO</span>
                 <span className="text-xs text-slate-500">— Main Organizer</span>
               </div>
             </motion.div>
@@ -2079,7 +2079,7 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
             viewport={{ once: true }}
             className="text-center mb-12"
           >
-            <h2 className="text-3xl md:text-4xl font-bold font-display text-white mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold font-display text-gray-900 dark:text-white mb-4">
               Get in Touch
             </h2>
             <p className="text-slate-400">
@@ -2146,7 +2146,7 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
                   <p className="text-xs text-slate-500 uppercase tracking-wider">
                     {item.label}
                   </p>
-                  <p className="text-white text-sm font-medium truncate">
+                  <p className="text-gray-900 dark:text-white text-sm font-medium truncate">
                     {item.value}
                   </p>
                 </div>
@@ -2178,8 +2178,8 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
             <span className="text-red-400 text-2xl mt-0.5">⚠️</span>
             <div className="flex-1">
               <span className="text-red-400 font-bold text-base block mb-1 tracking-wide">URGENT: EVENT POSTPONED</span>
-              <span className="text-white/90 text-sm leading-relaxed">
-                Due to extremely high demand, the event has been rescheduled to <strong className="text-white">Saturday, 11th July 2026 (3:00 PM - 6:00 PM)</strong>.
+              <span className="text-gray-900/90 dark:text-white/90 text-sm leading-relaxed">
+                Due to extremely high demand, the event has been rescheduled to <strong className="text-gray-900 dark:text-white">Saturday, 11th July 2026 (3:00 PM - 6:00 PM)</strong>.
                 All existing registrations remain completely valid.
               </span>
             </div>
@@ -2267,7 +2267,7 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={label}
-                className="w-9 h-9 rounded-full flex items-center justify-center text-slate-500 hover:text-white transition-all duration-200 hover:scale-110 hover:border-[#7C3AED]"
+                className="w-9 h-9 rounded-full flex items-center justify-center text-slate-500 hover:text-gray-900 dark:hover:text-white transition-all duration-200 hover:scale-110 hover:border-[#7C3AED]"
                 style={{
                   background: "rgba(255,255,255,.05)",
                   border: "1px solid rgba(255,255,255,.12)",
@@ -2309,7 +2309,7 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
               }}
             >
               <div>
-                <p className="text-white font-bold text-sm">
+                <p className="text-gray-900 dark:text-white font-bold text-sm">
                   DevAgentic 1.0
                 </p>
                 <div className="flex items-center gap-2 mt-0.5">
@@ -2323,7 +2323,7 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
               </div>
               <button
                 onClick={() => setShowRegistration(true)}
-                className="flex-shrink-0 px-6 py-3 rounded-xl font-extrabold text-white text-sm transition-all duration-200 hover:scale-[1.03] active:scale-[.97] relative overflow-hidden group"
+                className="flex-shrink-0 px-6 py-3 rounded-xl font-extrabold text-gray-900 dark:text-white text-sm transition-all duration-200 hover:scale-[1.03] active:scale-[.97] relative overflow-hidden group"
                 style={{
                   background:
                     "linear-gradient(135deg, #2563EB, #8B5CF6, #EC4899)",

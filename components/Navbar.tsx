@@ -158,6 +158,11 @@ export default function Navbar() {
   // Either way, navigating to /auth should leave no menu open behind it.
   const handleLoginClick = () => closeMobileMenu()
 
+  // Both "/" and "/events" render EventsListing, which already shows a full
+  // Student Login card. A Login button in the nav there just duplicates it,
+  // so it's hidden on those two routes only.
+  const hasInlineLoginCard = pathname === '/' || pathname === '/events'
+
   return (
     <nav
       className="fixed top-0 left-0 w-full z-[1000] transition-all duration-300 ease-in-out"
@@ -368,7 +373,7 @@ export default function Navbar() {
                   )}
                 </AnimatePresence>
               </div>
-            ) : (
+            ) : hasInlineLoginCard ? null : (
               <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -378,7 +383,7 @@ export default function Navbar() {
                 <Link
                   href="/auth"
                   onClick={handleLoginClick}
-                  className="inline-flex items-center gap-x-2 px-3 h-9 glass-card-thin text-gray-700 dark:text-gray-300 
+                  className="inline-flex items-center gap-x-2 px-3 h-9 glass-card-thin text-gray-700 dark:text-gray-300
                            rounded-full font-semibold text-sm whitespace-nowrap hover:scale-[1.02] transition-all duration-300 flex-shrink-0"
                 >
                   <FaUser className="text-sm" />
@@ -429,7 +434,7 @@ export default function Navbar() {
                 )}
                 </div>
               </Link>
-            ) : (
+            ) : hasInlineLoginCard ? null : (
               <Link
                 href="/auth"
                 onClick={handleLoginClick}

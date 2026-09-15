@@ -231,7 +231,7 @@ function DefaultEventDetail({ event }: { event: any }) {
                   </span>
                 )}
                 <span
-                  className={`inline-block ${isTEDxEvent ? "bg-gray-800 border-2 border-red-600" : "bg-neon-pink"} text-white px-4 py-2 rounded-full text-sm font-bold`}
+                  className={`inline-block ${isTEDxEvent ? "bg-gray-50 dark:bg-gray-800 border-2 border-red-600" : "bg-neon-pink"} text-white px-4 py-2 rounded-full text-sm font-bold`}
                 >
                   ⭐ FEATURED EVENT
                 </span>
@@ -430,7 +430,7 @@ function DefaultEventDetail({ event }: { event: any }) {
                             sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
                           />
                           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-3">
-                            <span className="text-white text-sm font-medium">
+                            <span className="text-gray-900 dark:text-white text-sm font-medium">
                               Click to expand
                             </span>
                           </div>
@@ -852,7 +852,7 @@ function DefaultEventDetail({ event }: { event: any }) {
                               ₹{ticket.price}
                             </div>
                             {ticket.originalPrice && (
-                              <div className="text-sm text-gray-400 line-through">
+                              <div className="text-sm text-gray-500 dark:text-gray-400 line-through">
                                 ₹{ticket.originalPrice}
                               </div>
                             )}
@@ -909,7 +909,7 @@ function DefaultEventDetail({ event }: { event: any }) {
                   {/* Tags */}
                   <div className="pt-6 border-t border-gray-200/30 dark:border-white/[0.06]">
                     <div className="flex items-center flex-wrap gap-2">
-                      <FaTag className="text-gray-400" />
+                      <FaTag className="text-gray-500 dark:text-gray-400" />
                       {event.tags.map((tag: string) => (
                         <span
                           key={tag}
@@ -949,7 +949,7 @@ function DefaultEventDetail({ event }: { event: any }) {
               {/* Close Button */}
               <button
                 onClick={closeImageModal}
-                className="absolute -top-12 right-0 text-white hover:text-red-500 transition-colors z-10"
+                className="absolute -top-12 right-0 text-gray-900 dark:text-white hover:text-red-500 transition-colors z-10"
               >
                 <svg
                   className="w-10 h-10"
@@ -973,7 +973,7 @@ function DefaultEventDetail({ event }: { event: any }) {
                     e.stopPropagation();
                     navigateImage("prev");
                   }}
-                  className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white p-3 rounded-full transition-all z-10"
+                  className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 backdrop-blur-sm text-gray-900 dark:text-white p-3 rounded-full transition-all z-10"
                 >
                   <svg
                     className="w-6 h-6"
@@ -1010,7 +1010,7 @@ function DefaultEventDetail({ event }: { event: any }) {
                     e.stopPropagation();
                     navigateImage("next");
                   }}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white p-3 rounded-full transition-all z-10"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 backdrop-blur-sm text-gray-900 dark:text-white p-3 rounded-full transition-all z-10"
                 >
                   <svg
                     className="w-6 h-6"
@@ -1029,7 +1029,7 @@ function DefaultEventDetail({ event }: { event: any }) {
               )}
 
               {/* Image Counter */}
-              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/50 backdrop-blur-sm text-white px-4 py-2 rounded-full text-sm">
+              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/50 backdrop-blur-sm text-gray-900 dark:text-white px-4 py-2 rounded-full text-sm">
                 {selectedImageIndex + 1} / {event.images?.gallery?.length || 0}
               </div>
             </motion.div>

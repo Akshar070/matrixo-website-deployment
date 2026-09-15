@@ -154,6 +154,10 @@ export default function Navbar() {
     setShowMobileMenuDropdown(false)
   }
 
+  // The Login link appears in both the desktop bar and the mobile header.
+  // Either way, navigating to /auth should leave no menu open behind it.
+  const handleLoginClick = () => closeMobileMenu()
+
   return (
     <nav
       className="fixed top-0 left-0 w-full z-[1000] transition-all duration-300 ease-in-out"

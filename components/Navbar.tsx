@@ -37,7 +37,7 @@ const menuDropdownLinks = [
 ]
 
 const talkWithUsClassName =
-  'inline-flex items-center justify-center px-4 py-1.5 rounded-full font-medium whitespace-nowrap bg-black text-white hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-200 transition-all duration-300 hover:scale-105 flex-shrink-0'
+  'inline-flex items-center justify-center px-4 h-9 rounded-full font-medium whitespace-nowrap bg-black text-white hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-200 transition-all duration-300 hover:scale-105 flex-shrink-0 text-sm'
 
 // Employee Portal URL - external domain
 const EMPLOYEE_PORTAL_URL = 'https://team-auth.matrixo.in/employee-portal'
@@ -288,20 +288,20 @@ export default function Navbar() {
           </div>
 
           {/* ─── Desktop / Tablet Actions ─── */}
-          <div className="hidden md:flex items-center gap-4 whitespace-nowrap flex-shrink-0">
+          <div className="hidden md:flex items-center gap-3 whitespace-nowrap flex-shrink-0">
             {mounted && (
               <button
                 onClick={() => setDarkMode(!darkMode)}
-                className="flex h-11 w-11 items-center justify-center rounded-full border border-gray-300 bg-white shadow-sm text-gray-800 transition-all duration-300 hover:scale-105 hover:shadow-md dark:border-white/10 dark:bg-white/5 dark:text-yellow-400 dark:hover:bg-white/10"
+                className="flex h-9 w-9 items-center justify-center rounded-full border border-gray-300 bg-white shadow-sm text-gray-800 transition-all duration-300 hover:scale-105 hover:shadow-md dark:border-white/10 dark:bg-white/5 dark:text-yellow-400 dark:hover:bg-white/10"
                 aria-label="Toggle dark mode"
               >
                 {darkMode ? (
                   <FaSun
-                    size={18}
+                    size={16}
                     className="text-yellow-400"
                   />
                 ) : (
-                  <FaMoon size={18} className="text-gray-800" />
+                  <FaMoon size={16} className="text-gray-800" />
                 )}
               </button>
             )}
@@ -317,16 +317,16 @@ export default function Navbar() {
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.3 }}
-                  className="inline-flex items-center gap-x-2 px-2.5 py-1 glass-card-thin text-gray-700 dark:text-gray-300 
+                  className="inline-flex items-center gap-x-2 px-2.5 h-9 glass-card-thin text-gray-700 dark:text-gray-300 
                            rounded-full font-semibold text-sm min-w-0 max-w-[170px] whitespace-nowrap hover:scale-[1.02] transition-all duration-300"
                 >
-                  <div className="relative group p-1.5 hover:bg-white/[0.04] rounded-2xl transition-all cursor-pointer">
+                  <div className="relative group hover:bg-white/[0.04] rounded-xl transition-all cursor-pointer flex items-center">
                   {profile?.profilePhoto ? (
-                    <div className="w-8 h-8 rounded-xl overflow-hidden shadow-sm">
-                      <Image src={getValidImageUrl(profile.profilePhoto)} alt="" width={28} height={28} className="object-cover w-full h-full rounded-xl" unoptimized />
+                    <div className="w-6 h-6 rounded-lg overflow-hidden shadow-sm">
+                      <Image src={getValidImageUrl(profile.profilePhoto)} alt="" width={24} height={24} className="object-cover w-full h-full rounded-lg" unoptimized />
                     </div>
                   ) : (
-                    <div className="w-7 h-7 rounded-xl bg-gray-200 dark:bg-gray-700 flex items-center justify-center flex-shrink-0">
+                    <div className="w-6 h-6 rounded-lg bg-gray-200 dark:bg-gray-700 flex items-center justify-center flex-shrink-0">
                       <span className="text-xs font-bold text-gray-600 dark:text-gray-300">{profile?.fullName?.charAt(0)?.toUpperCase() || 'U'}</span>
                     </div>
                   )}
@@ -391,7 +391,7 @@ export default function Navbar() {
                 <Link
                   href="/auth"
                   onClick={handleLoginClick}
-                  className="inline-flex items-center gap-x-2 px-3 py-1.5 glass-card-thin text-gray-700 dark:text-gray-300 
+                  className="inline-flex items-center gap-x-2 px-3 h-9 glass-card-thin text-gray-700 dark:text-gray-300 
                            rounded-full font-semibold text-sm whitespace-nowrap hover:scale-[1.02] transition-all duration-300 flex-shrink-0"
                 >
                   <FaUser className="text-sm" />

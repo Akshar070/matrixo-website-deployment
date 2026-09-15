@@ -19,6 +19,7 @@ import Link from 'next/link'
 import { getCollegeName } from '@/lib/colleges'
 import StudentVaultDashboardCard from '@/components/studentvault/DashboardCard'
 import { LocationSelection, LocationSelectionState } from '@/components/location/LocationSelection'
+import XOLoader from '@/components/XOLoader'
 
 const YEAR_OPTIONS = ['1st Year', '2nd Year', '3rd Year', '4th Year', 'Graduate']
 const BRANCH_OPTIONS = [
@@ -155,7 +156,7 @@ export default function ProfilePage() {
   if (profileLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-950 to-black flex items-center justify-center">
-        <FaSpinner className="animate-spin text-4xl text-blue-400" />
+        <XOLoader size={20} />
       </div>
     )
   }

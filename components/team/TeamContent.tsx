@@ -6,6 +6,7 @@ import { FaLinkedin, FaEnvelope } from 'react-icons/fa'
 import { collection, getDocs, query, orderBy } from 'firebase/firestore'
 import { db } from '@/lib/firebaseConfig'
 import Link from 'next/link'
+import XOLoader from '@/components/XOLoader'
 
 interface TeamMember {
   employeeId: string
@@ -162,7 +163,7 @@ export default function TeamContent() {
         <div className="container-custom px-6">
           {loading ? (
             <div className="flex justify-center items-center py-20">
-              <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
+              <XOLoader size={16} />
             </div>
           ) : (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10 max-w-6xl mx-auto">

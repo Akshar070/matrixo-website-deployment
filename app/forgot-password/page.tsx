@@ -7,6 +7,7 @@ import Link from 'next/link'
 import { sendPasswordResetEmail } from 'firebase/auth'
 import { auth, firebaseReady } from '@/lib/firebaseConfig'
 import { toast } from 'sonner'
+import XOLoader from '@/components/XOLoader'
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('')
@@ -171,7 +172,7 @@ export default function ForgotPasswordPage() {
                     >
                       {loading ? (
                         <>
-                          <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                          <XOLoader size={16} />
                           <span>Sending...</span>
                         </>
                       ) : (

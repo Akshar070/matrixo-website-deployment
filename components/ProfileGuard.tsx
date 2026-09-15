@@ -5,6 +5,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/AuthContext'
 import { useProfile } from '@/lib/ProfileContext'
 import { FaSpinner } from 'react-icons/fa'
+import XOLoader from '@/components/XOLoader'
 
 // Routes that don't require profile setup
 const PUBLIC_ROUTES = [
@@ -61,7 +62,7 @@ export default function ProfileGuard({ children }: { children: React.ReactNode }
       return (
         <div className="min-h-screen flex items-center justify-center bg-white dark:bg-gray-950">
           <div className="flex flex-col items-center gap-3">
-            <FaSpinner className="animate-spin text-3xl text-purple-500" />
+            <XOLoader size={20} />
             <p className="text-gray-500 dark:text-gray-400 text-sm">Loading...</p>
           </div>
         </div>
@@ -74,7 +75,7 @@ export default function ProfileGuard({ children }: { children: React.ReactNode }
     return (
       <div className="min-h-screen flex items-center justify-center bg-white dark:bg-gray-950">
         <div className="flex flex-col items-center gap-3">
-          <FaSpinner className="animate-spin text-3xl text-purple-500" />
+          <XOLoader size={20} />
           <p className="text-gray-600 dark:text-gray-300 text-sm">Redirecting to profile setup...</p>
         </div>
       </div>

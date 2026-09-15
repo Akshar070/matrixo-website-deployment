@@ -22,6 +22,7 @@ import { Card, Button, Input, Textarea, Select, Modal, Badge, Alert } from './ui
 import { toast } from 'sonner'
 import type { FormQuestion } from '@/components/careers/ApplicationForm'
 import { normalizeQuestions } from '@/components/careers/ApplicationForm'
+import XOLoader from '@/components/XOLoader'
 
 // ============================================
 // TYPES
@@ -1061,7 +1062,7 @@ export default function JobPostings() {
       </div>
 
       {loading ? (
-        <Card padding="lg"><div className="flex items-center justify-center py-12"><FaSpinner className="animate-spin text-2xl text-[#2563EB] dark:text-primary-500" /></div></Card>
+        <Card padding="lg"><div className="flex items-center justify-center py-12"><XOLoader size={16} /></div></Card>
       ) : roles.length === 0 ? (
         <Card padding="lg">
           <div className="text-center py-12">

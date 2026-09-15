@@ -16,6 +16,7 @@ import {
   compressImage, 
   blobToFile 
 } from '@/lib/imageUtils';
+import XOLoader from '@/components/XOLoader';
 
 interface ImageUploaderProps {
   onUpload: (file: File) => Promise<string>; // Returns image URL
@@ -211,7 +212,7 @@ export default function ImageUploader({
           >
             {isUploading ? (
               <>
-                <FaSpinner className="text-3xl text-blue-500 animate-spin" />
+                <XOLoader size={16} />
                 <span className="text-sm text-gray-600 dark:text-gray-400">
                   Uploading... {uploadProgress}%
                 </span>

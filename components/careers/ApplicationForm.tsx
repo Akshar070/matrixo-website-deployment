@@ -16,6 +16,7 @@ import { toast } from 'sonner'
 import Link from 'next/link'
 import { useRouter, usePathname } from 'next/navigation'
 import PositionClosed from './PositionClosed'
+import XOLoader from '@/components/XOLoader'
 
 // ============================================
 // TYPES
@@ -657,7 +658,7 @@ export default function ApplicationForm({ roleId }: ApplicationFormProps) {
   if (loading) {
     return (
       <div className="min-h-screen pt-20 flex items-center justify-center bg-gray-50 dark:bg-gray-950">
-        <div className="w-12 h-12 border-4 border-cyan-500 border-t-transparent rounded-full animate-spin" />
+        <XOLoader size={20} />
       </div>
     )
   }
@@ -933,7 +934,7 @@ export default function ApplicationForm({ roleId }: ApplicationFormProps) {
                         </span>
                       ) : isUploading ? (
                         <span className="flex items-center justify-center gap-3">
-                          <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                          <XOLoader size={16} />
                           Waiting for upload...
                         </span>
                       ) : 'Submit Application'}

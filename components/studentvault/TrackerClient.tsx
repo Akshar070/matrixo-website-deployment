@@ -9,6 +9,7 @@ import { db } from '@/lib/firebaseConfig'
 import { useAuth } from '@/lib/AuthContext'
 import type { ClaimStatus, Offer } from '@/lib/studentvault/types'
 import { CLAIM_STATUSES, daysUntil } from '@/lib/studentvault/types'
+import XOLoader from '@/components/XOLoader'
 
 interface TrackedItem {
   offerSlug: string
@@ -128,7 +129,7 @@ export default function TrackerClient({ offers }: { offers: Offer[] }) {
   if (loading || busy) {
     return (
       <div className="flex justify-center py-20" aria-live="polite">
-        <FaSpinner className="animate-spin text-3xl text-blue-600 dark:text-blue-400" />
+        <XOLoader size={16} />
         <span className="sr-only">Loading your tracker…</span>
       </div>
     )

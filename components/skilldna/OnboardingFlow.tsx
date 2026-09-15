@@ -21,6 +21,7 @@ import {
   PersonalityAnswers,
   SkillLevel,
 } from '@/lib/skilldna/types';
+import XOLoader from '@/components/XOLoader';
 
 interface OnboardingFlowProps {
   onComplete: (data: OnboardingData) => Promise<void>;
@@ -803,7 +804,7 @@ export default function OnboardingFlow({ onComplete, userName }: OnboardingFlowP
               >
                 {isSubmitting ? (
                   <>
-                    <FaSpinner className="animate-spin" />
+                    <XOLoader size={16} />
                     AI is analyzing your SkillDNA...
                   </>
                 ) : (

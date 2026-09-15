@@ -12,6 +12,7 @@ import { useAuth } from '@/lib/AuthContext'
 
 import type { JobStatus } from '@/lib/careers/types'
 import { STATUS_LABELS, STATUS_COLORS, ALL_STATUSES } from '@/lib/careers/types'
+import XOLoader from '@/components/XOLoader'
 
 interface Role {
   id: string
@@ -205,7 +206,7 @@ export default function RoleManagement() {
   if (!isEmployee) {
     return (
       <div className="min-h-screen pt-20 flex items-center justify-center">
-        <div className="w-12 h-12 border-4 border-cyan-500 border-t-transparent rounded-full animate-spin" />
+        <XOLoader size={20} />
       </div>
     )
   }
@@ -406,7 +407,7 @@ export default function RoleManagement() {
           {/* Roles List */}
           {loading ? (
             <div className="flex justify-center py-20">
-              <div className="w-12 h-12 border-4 border-cyan-500 border-t-transparent rounded-full animate-spin" />
+              <XOLoader size={16} />
             </div>
           ) : (
             <div className="space-y-4">

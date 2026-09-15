@@ -12,6 +12,7 @@ import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
 import { compressImage } from '@/lib/imageUtils'
 import { storage } from '@/lib/firebaseConfig'
 import Image from 'next/image'
+import XOLoader from '@/components/XOLoader'
 
 const YEAR_OPTIONS = ['1st Year', '2nd Year', '3rd Year', '4th Year', 'Graduate']
 const BRANCH_OPTIONS = [
@@ -82,7 +83,7 @@ export default function ProfileSetupPage() {
   if (authLoading || (user && profileLoading)) {
     return (
       <div className="min-h-screen bg-gray-100 dark:bg-gradient-to-br dark:from-gray-900 dark:via-gray-950 dark:to-black flex items-center justify-center">
-        <FaSpinner className="animate-spin text-blue-500 text-3xl" />
+        <XOLoader size={20} />
       </div>
     )
   }

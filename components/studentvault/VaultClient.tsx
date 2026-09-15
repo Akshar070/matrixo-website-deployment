@@ -7,6 +7,7 @@ import { useAuth } from '@/lib/AuthContext'
 import type { ClaimItem, Offer } from '@/lib/studentvault/types'
 import { daysUntil } from '@/lib/studentvault/types'
 import type { PlaybookSection, SprintStep } from '@/lib/studentvault/playbook'
+import XOLoader from '@/components/XOLoader'
 
 interface VaultData {
   playbook: PlaybookSection[]
@@ -72,7 +73,7 @@ export default function VaultClient({ offers }: { offers: Offer[] }) {
   if (loading || busy) {
     return (
       <div className="flex justify-center py-20" aria-live="polite">
-        <FaSpinner className="animate-spin text-3xl text-blue-600 dark:text-blue-400" />
+        <XOLoader size={16} />
         <span className="sr-only">Loading your vault…</span>
       </div>
     )

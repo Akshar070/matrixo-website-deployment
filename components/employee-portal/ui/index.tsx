@@ -845,7 +845,7 @@ export const Spinner = ({ size = 'md', className = '' }: SpinnerProps) => {
   
   return (
     <div className={`flex items-center justify-center ${className}`}>
-      <FaSpinner className={`animate-spin text-primary-500 ${sizes[size]}`} />
+      <XOLoader size={16} />
     </div>
   )
 }
@@ -855,6 +855,7 @@ export const Spinner = ({ size = 'md', className = '' }: SpinnerProps) => {
 // ============================================
 
 import { FaEnvelope, FaCalendarAlt as FaCalendar2, FaChartLine, FaCircle, FaIdCard, FaBriefcase, FaEye, FaEdit, FaClock } from 'react-icons/fa'
+import XOLoader from '@/components/XOLoader'
 
 // Profile Data Contract
 export interface ProfileInfoData {

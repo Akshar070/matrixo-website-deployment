@@ -1544,3 +1544,108 @@ body.printing-profile {
 body.printing-profile .min-h-screen {
     background: #ffffff !important;
 }
+/* ── matriXO loader ──────────────────────────────────────────────────────────
+   The X holds the centre while the O orbits it, tucks in beside it to spell
+   "XO", holds that beat, then swings back out and repeats. Eight dots trace
+   the orbit path and light up in sequence, so it still reads as a conventional
+   spinner at a glance.
+
+   Everything animates transform/opacity only, so the whole thing runs on the
+   compositor and costs the main thread nothing even while a route is loading. */
+@layer utilities {
+    .xo-loader {
+        position: relative;
+        display: grid;
+        place-items: center;
+        width: 4.5em;
+        height: 4.5em;
+        font-size: 1rem;
+        line-height: 1;
+    }
+
+    .xo-glyph {
+        font-weight: 700;
+        font-size: 1.5em;
+        letter-spacing: -0.02em;
+        color: #1e3a8a;
+    }
+
+    .dark .xo-glyph {
+        color: #60a5fa;
+    }
+
+    /* The X never moves — it's the anchor the O orbits. */
+    .xo-x {
+        position: relative;
+        z-index: 2;
+    }
+
+    .xo-o {
+        position: absolute;
+        z-index: 2;
+        /* rotate -> push out -> counter-rotate keeps the O upright while it
+           travels around the circle. */
+        animation: xoOrbit 2.2s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+    }
+
+    @keyframes xoOrbit {
+        /* Sweep a full lap. */
+        0% {
+            transform: rotate(0deg) translateX(1.45em) rotate(0deg);
+        }
+        55% {
+            transform: rotate(360deg) translateX(1.45em) rotate(-360deg);
+        }
+        /* Tuck in beside the X: now it reads "XO". */
+        70%,
+        88% {
+            transform: rotate(360deg) translateX(0.62em) rotate(-360deg);
+        }
+        /* Swing back out, ready to lap again. */
+        100% {
+            transform: rotate(360deg) translateX(1.45em) rotate(-360deg);
+        }
+    }
+
+    /* Eight dots marking the orbit, pulsing in sequence behind the O. */
+    .xo-dot {
+        position: absolute;
+        width: 0.28em;
+        height: 0.28em;
+        border-radius: 9999px;
+        background: currentColor;
+        color: #1e3a8a;
+        opacity: 0.18;
+        transform: rotate(calc(var(--i) * 45deg)) translateX(1.9em);
+        animation: xoDot 2.2s linear infinite;
+        animation-delay: calc(var(--i) * 0.0687s);
+    }
+
+    .dark .xo-dot {
+        color: #60a5fa;
+    }
+
+    @keyframes xoDot {
+        0%,
+        55%,
+        100% {
+            opacity: 0.5;
+        }
+        20%,
+        75% {
+            opacity: 0.12;
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .xo-o {
+            animation: none;
+            transform: translateX(0.62em);
+        }
+
+        .xo-dot {
+            animation: none;
+            opacity: 0.2;
+        }
+    }
+}

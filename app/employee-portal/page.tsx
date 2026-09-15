@@ -58,6 +58,7 @@ import NotificationBell from '@/components/employee-portal/NotificationBell'
 import EventQRScanner from '@/components/employee-portal/EventQRScanner'
 import JobPostings from '@/components/employee-portal/JobPostings'
 import { ProfileInfo, employeeToProfileData, getLocalProfileImage } from '@/components/employee-portal/ui'
+import XOLoader from '@/components/XOLoader'
 
 // ============================================
 // THEME CONTEXT
@@ -207,7 +208,7 @@ function LoginForm() {
             >
               {loading ? (
                 <>
-                  <FaSpinner className="animate-spin" />
+                  <XOLoader size={16} />
                   Signing In...
                 </>
               ) : (
@@ -727,7 +728,7 @@ function DashboardOverview({ onTaskClick, onShowMyTasks }: { onTaskClick?: (task
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <FaSpinner className="animate-spin text-4xl text-primary-500" />
+        <XOLoader size={16} />
       </div>
     )
   }
@@ -972,7 +973,7 @@ function HistoryTab() {
 
         {loading ? (
           <div className="flex justify-center py-8">
-            <FaSpinner className="animate-spin text-3xl text-[#2563EB]" />
+            <XOLoader size={16} />
           </div>
         ) : records.length === 0 ? (
           <p className="text-center py-8 text-[#64748B] dark:text-[#94A3B8]">No attendance records for this month</p>
@@ -1534,7 +1535,7 @@ function EmployeePortalContent() {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ background: 'radial-gradient(ellipse at 20% 50%, rgba(124,58,237,0.2) 0%, transparent 60%), #06060a' }}>
         <div className="text-center p-10 rounded-3xl" style={{ background: 'rgba(255,255,255,0.05)', backdropFilter: 'blur(40px)', border: '1px solid rgba(255,255,255,0.1)' }}>
-          <FaSpinner className="animate-spin text-5xl text-primary-500 mx-auto mb-4" />
+          <XOLoader size={20} />
           <p className="text-neutral-400">Loading...</p>
         </div>
       </div>

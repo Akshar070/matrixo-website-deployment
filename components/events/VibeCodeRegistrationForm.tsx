@@ -22,6 +22,7 @@ import { toast } from 'sonner'
 import { useAuth } from '@/lib/AuthContext'
 import { useRazorpayCheckout } from '@/hooks/useRazorpayCheckout'
 import { getPaymentBreakdown } from '@/lib/payments'
+import XOLoader from '@/components/XOLoader'
 
 interface VibeCodeRegistrationFormProps {
   event: any
@@ -595,7 +596,7 @@ export default function VibeCodeRegistrationForm({ event, ticket, onClose }: Vib
             >
               {isSubmitting || isProcessing ? (
                 <>
-                  <FaSpinner className="animate-spin" />
+                  <XOLoader size={16} />
                   Processing...
                 </>
               ) : (

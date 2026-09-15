@@ -7,6 +7,7 @@ import { toast } from 'sonner'
 import { FaSpinner } from 'react-icons/fa'
 import { useAuth } from '@/lib/AuthContext'
 import { useRazorpayCheckout } from '@/hooks/useRazorpayCheckout'
+import XOLoader from '@/components/XOLoader'
 
 export default function UnlockPanel({ total }: { total: number }) {
   const { user, loading } = useAuth()
@@ -73,7 +74,7 @@ export default function UnlockPanel({ total }: { total: number }) {
   if (loading || checking) {
     return (
       <div className="flex items-center justify-center py-3" aria-live="polite">
-        <FaSpinner className="animate-spin text-blue-600 dark:text-blue-400" />
+        <XOLoader size={16} />
         <span className="sr-only">Checking your access…</span>
       </div>
     )
@@ -96,7 +97,7 @@ export default function UnlockPanel({ total }: { total: number }) {
     >
       {isProcessing ? (
         <>
-          <FaSpinner className="animate-spin" aria-hidden="true" />
+          <XOLoader size={16} />
           Processing…
         </>
       ) : user ? (

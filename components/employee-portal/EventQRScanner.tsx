@@ -21,6 +21,7 @@ import { toast } from 'sonner'
 import { db } from '@/lib/firebaseConfig'
 import { collection, getDocs, addDoc, Timestamp, query, orderBy } from 'firebase/firestore'
 import { useEmployeeAuth } from '@/lib/employeePortalContext'
+import XOLoader from '@/components/XOLoader'
 
 interface EventOption {
   id: string
@@ -438,7 +439,7 @@ export default function EventQRScanner() {
           {/* LOADING State */}
           {mode === 'loading' && (
             <div className="text-center py-12">
-              <FaSpinner className="animate-spin text-5xl text-[#2563EB] dark:text-cyan-400 mx-auto mb-4" />
+              <XOLoader size={16} />
               <p className="text-[#64748B] dark:text-gray-400">Processing...</p>
             </div>
           )}

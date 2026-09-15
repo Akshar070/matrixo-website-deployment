@@ -19,6 +19,7 @@ import VibeCodeEventDetail from "./VibeCodeEventDetail";
 import WrangleXEventDetail from "./WrangleXEventDetail";
 import DevAgentsEventDetail from "./DevAgentsEventDetail";
 import { useEventVisibility } from "@/lib/eventVisibility";
+import XOLoader from '@/components/XOLoader';
 
 export default function EventDetail({ event }: { event: any }) {
   const { visibilityMap, loading } = useEventVisibility();
@@ -28,7 +29,7 @@ export default function EventDetail({ event }: { event: any }) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-950 dark:via-gray-900 dark:to-black px-4">
         <div className="text-center space-y-3">
-          <div className="mx-auto h-12 w-12 rounded-full border-4 border-blue-500 border-t-transparent animate-spin" />
+          <XOLoader size={20} />
           <p className="text-gray-700 dark:text-gray-300 font-medium">
             Checking event visibility…
           </p>

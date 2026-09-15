@@ -12,6 +12,7 @@ import { FaCamera, FaSpinner, FaUser } from 'react-icons/fa';
 import Image from 'next/image';
 import ImageCropper from './ImageCropper';
 import { validateImageFile, fileToDataURL, compressImage, blobToFile } from '@/lib/imageUtils';
+import XOLoader from '@/components/XOLoader';
 
 interface ProfileImageProps {
   profileImageUrl?: string;
@@ -163,7 +164,7 @@ export default function ProfileImage({
               onClick={handleEditClick}
             >
               {isUploading ? (
-                <FaSpinner className="text-white text-2xl animate-spin" />
+                <XOLoader size={16} />
               ) : (
                 <FaCamera className={`text-white ${iconSizes[size]}`} />
               )}
@@ -174,7 +175,7 @@ export default function ProfileImage({
           {isUploading && (
             <div className="absolute inset-0 bg-black/70 flex items-center justify-center">
               <div className="flex flex-col items-center gap-2">
-                <FaSpinner className="text-white text-xl animate-spin" />
+                <XOLoader size={16} />
                 <span className="text-white text-xs font-medium">Uploading...</span>
               </div>
             </div>

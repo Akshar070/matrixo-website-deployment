@@ -4,6 +4,7 @@ import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { FaSpinner } from 'react-icons/fa'
 import { useAuth } from '@/lib/AuthContext'
+import XOLoader from '@/components/XOLoader'
 
 export default function DashboardPage() {
   const router = useRouter()
@@ -23,7 +24,7 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-50 dark:from-gray-950 dark:via-gray-900 dark:to-black flex items-center justify-center">
-      <FaSpinner className="animate-spin text-4xl text-blue-500" />
+      <XOLoader size={20} />
     </div>
   )
 }

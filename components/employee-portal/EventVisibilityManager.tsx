@@ -8,6 +8,7 @@ import { useEmployeeAuth, isAdminOrSubAdmin } from '@/lib/employeePortalContext'
 import { useEventVisibility, updateEventVisibility } from '@/lib/eventVisibility'
 import { format } from 'date-fns'
 import { toast } from 'sonner'
+import XOLoader from '@/components/XOLoader'
 
 export default function EventVisibilityManager() {
   const { employee, user } = useEmployeeAuth()
@@ -112,7 +113,7 @@ export default function EventVisibilityManager() {
 
       {loading ? (
         <div className="flex items-center justify-center py-12 text-[#64748B] dark:text-neutral-400">
-          <FaSyncAlt className="mr-2 animate-spin" />
+          <XOLoader size={16} />
           Loading visibility settings…
         </div>
       ) : filteredEvents.length === 0 ? (

@@ -8,6 +8,7 @@ import { db } from '@/lib/firebaseConfig'
 import { notifyAdminsOfNewApplication } from '@/lib/notificationUtils'
 import { toast } from 'sonner'
 import Link from 'next/link'
+import XOLoader from '@/components/XOLoader'
 
 interface Role {
   id: string
@@ -220,7 +221,7 @@ export default function CareersContent() {
 
           {loading ? (
             <div className="flex justify-center items-center py-20">
-              <div className="w-12 h-12 border-4 border-cyan-500 border-t-transparent rounded-full animate-spin" />
+              <XOLoader size={16} />
             </div>
           ) : roles.length === 0 ? (
             <div className="max-w-4xl mx-auto">

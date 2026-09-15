@@ -15,6 +15,7 @@ import { AD_SLOTS } from '@/lib/adsense'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { firebaseReady } from '@/lib/firebaseConfig'
+import XOLoader from '@/components/XOLoader'
 
 type SortOption = 'upcoming' | 'latest' | 'all'
 
@@ -269,7 +270,7 @@ export default function EventsListing() {
                     role="status"
                     aria-label="Checking your session"
                   >
-                    <FaSpinner className="animate-spin text-gray-300 dark:text-gray-600 text-2xl" aria-hidden="true" />
+                    <XOLoader size={16} />
                   </div>
                 )}
               </div>

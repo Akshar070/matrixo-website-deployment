@@ -12,6 +12,7 @@ import { UserProfile, PrivacySettings, DEFAULT_PRIVACY } from '@/lib/ProfileCont
 import Link from 'next/link'
 import Image from 'next/image'
 import { getValidImageUrl } from '@/lib/imageUtils'
+import XOLoader from '@/components/XOLoader'
 
 export default function PublicProfile({ username }: { username: string }) {
   const [profile, setProfile] = useState<UserProfile | null>(null)
@@ -66,7 +67,7 @@ export default function PublicProfile({ username }: { username: string }) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
-          <div className="w-10 h-10 border-2 border-gray-300 dark:border-gray-700 border-t-gray-900 dark:border-t-white rounded-full animate-spin" />
+          <XOLoader size={20} />
           <p className="text-gray-500 text-sm">Loading profile...</p>
         </div>
       </div>

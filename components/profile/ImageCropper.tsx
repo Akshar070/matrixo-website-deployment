@@ -10,6 +10,7 @@ import { useState, useCallback, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaTimes, FaCheck, FaSearchPlus, FaSearchMinus } from 'react-icons/fa';
 import { createCroppedImage } from '@/lib/imageUtils';
+import XOLoader from '@/components/XOLoader';
 
 interface ImageCropperProps {
   imageSrc: string;
@@ -229,7 +230,7 @@ export default function ImageCropper({
             >
               {isProcessing ? (
                 <>
-                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  <XOLoader size={16} />
                   <span className="hidden sm:inline">Processing...</span>
                 </>
               ) : (

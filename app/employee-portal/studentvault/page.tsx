@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { FaLock, FaSpinner } from 'react-icons/fa'
 import { EmployeeAuthProvider, useEmployeeAuth } from '@/lib/employeePortalContext'
 import EmployeeConsole from '@/components/studentvault/EmployeeConsole'
+import XOLoader from '@/components/XOLoader'
 
 function ConsoleGate() {
   const { user, employee, loading } = useEmployeeAuth()
@@ -11,7 +12,7 @@ function ConsoleGate() {
   if (loading) {
     return (
       <div className="flex justify-center py-20" aria-live="polite">
-        <FaSpinner className="animate-spin text-3xl text-blue-500" />
+        <XOLoader size={16} />
         <span className="sr-only">Checking your access…</span>
       </div>
     )

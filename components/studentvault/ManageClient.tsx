@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { FaSpinner, FaLock } from 'react-icons/fa'
 import { useAuth } from '@/lib/AuthContext'
 import EmployeeConsole from './EmployeeConsole'
+import XOLoader from '@/components/XOLoader'
 
 export default function ManageClient() {
   const { user, loading } = useAuth()
@@ -41,7 +42,7 @@ export default function ManageClient() {
   if (loading || isEmployee === null) {
     return (
       <div className="flex justify-center py-20" aria-live="polite">
-        <FaSpinner className="animate-spin text-3xl text-blue-500" />
+        <XOLoader size={16} />
         <span className="sr-only">Checking your access…</span>
       </div>
     )

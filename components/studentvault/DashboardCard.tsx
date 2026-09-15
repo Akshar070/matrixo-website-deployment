@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { FaSpinner, FaVault } from 'react-icons/fa6'
 import { useAuth } from '@/lib/AuthContext'
+import XOLoader from '@/components/XOLoader'
 
 interface Summary {
   active: boolean
@@ -49,7 +50,7 @@ export default function StudentVaultDashboardCard() {
   if (loading || busy) {
     return (
       <div className="p-5 rounded-2xl bg-white/5 dark:bg-white/[0.06] border border-white/[0.08] flex justify-center">
-        <FaSpinner className="animate-spin text-blue-500" aria-hidden="true" />
+        <XOLoader size={16} />
         <span className="sr-only">Loading StudentVault summary…</span>
       </div>
     )

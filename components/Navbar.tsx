@@ -147,7 +147,7 @@ export default function Navbar() {
     }
   }
 
-  const handleLoginClick = () => setIsOpen(false)
+
 
   const closeMobileMenu = () => {
     setIsOpen(false)
@@ -306,7 +306,7 @@ export default function Navbar() {
               </button>
             )}
 
-            {/* User Profile or Login Button */}
+            {/* User Profile */}
             {user ? (
               <div
                 className="relative"

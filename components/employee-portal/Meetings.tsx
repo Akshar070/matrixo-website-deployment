@@ -510,7 +510,7 @@ function MeetingCard({
                 href={meeting.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-1.5 rounded-lg text-neutral-500 hover:bg-blue-500/10 hover:text-blue-400 transition-all text-xs"
+                className="p-1.5 rounded-lg text-neutral-500 hover:bg-blue-500/10 hover:text-blue-400 text-xs cta-glass"
                 title="Open in Fathom"
               >
                 <FaExternalLinkAlt />
@@ -548,7 +548,7 @@ function MeetingCard({
             </div>
             <button
               onClick={() => onViewDetails(meeting)}
-              className="text-xs text-blue-400 hover:text-blue-300 transition-colors flex items-center gap-1 px-2 py-1 rounded hover:bg-blue-500/10"
+              className="text-xs text-blue-400 hover:text-blue-300 flex items-center gap-1 px-2 py-1 rounded hover:bg-blue-500/10 cta-glass"
             >
               View MoM
               <FaChevronRight className="text-[9px]" />
@@ -653,7 +653,7 @@ function MeetingDetailModal({
             href={meeting.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="px-3 py-1.5 rounded-lg bg-[#2563EB]/10 dark:bg-blue-500/15 text-[#2563EB] dark:text-blue-400 hover:bg-[#2563EB]/20 dark:hover:bg-blue-500/25 transition-all text-xs flex items-center gap-1.5 flex-shrink-0 font-medium"
+            className="px-3 py-1.5 rounded-lg bg-[#2563EB]/10 dark:bg-blue-500/15 text-[#2563EB] dark:text-blue-400 hover:bg-[#2563EB]/20 dark:hover:bg-blue-500/25 text-xs flex items-center gap-1.5 flex-shrink-0 font-medium cta-glass"
           >
             <FaPlay className="text-[10px]" />
             Watch
@@ -744,7 +744,7 @@ function MeetingDetailModal({
                           setNewTaskAssignee('')
                           setShowAddTask(false)
                         }}
-                        className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-sm rounded-lg transition-colors"
+                        className="px-4 py-2 text-sm rounded-lg cta-glass"
                       >
                         Add
                       </button>
@@ -759,7 +759,7 @@ function MeetingDetailModal({
                 ) : (
                   <button
                     onClick={() => setShowAddTask(true)}
-                    className="flex items-center gap-2 text-xs text-[#2563EB] dark:text-blue-400 hover:text-[#1D4ED8] dark:hover:text-blue-300 px-3 py-2 rounded-lg bg-[#2563EB]/5 dark:bg-blue-500/10 hover:bg-[#2563EB]/10 dark:hover:bg-blue-500/15 border border-[#2563EB]/20 dark:border-blue-500/20 transition-all w-full justify-center"
+                    className="flex items-center gap-2 text-xs text-[#2563EB] dark:text-blue-400 hover:text-[#1D4ED8] dark:hover:text-blue-300 px-3 py-2 rounded-lg bg-[#2563EB]/5 dark:bg-blue-500/10 hover:bg-[#2563EB]/10 dark:hover:bg-blue-500/15 border border-[#2563EB]/20 dark:border-blue-500/20 w-full justify-center cta-glass"
                   >
                     <FaPlus className="text-[9px]" />
                     Add New Task
@@ -881,7 +881,7 @@ function MeetingDetailModal({
                                   setEditTaskDesc(item?.description || '')
                                   setEditTaskAssignee(item?.assignee?.name || '')
                                 }}
-                                className="p-1.5 rounded-lg text-neutral-500 hover:bg-blue-500/10 hover:text-blue-400 transition-all"
+                                className="p-1.5 rounded-lg text-neutral-500 hover:bg-blue-500/10 hover:text-blue-400 cta-glass"
                                 title="Edit task"
                               >
                                 <FaEdit className="text-[10px]" />
@@ -899,7 +899,7 @@ function MeetingDetailModal({
                           {matchedEmployee && employeeData && (
                             <button
                               onClick={() => onSendMentionNotification(meeting, item)}
-                              className="p-1.5 rounded-lg bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 transition-all flex-shrink-0"
+                              className="p-1.5 rounded-lg bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 flex-shrink-0 cta-glass"
                               title={`Notify ${assignee?.name || 'assignee'}`}
                             >
                               <FaBell className="text-[10px]" />

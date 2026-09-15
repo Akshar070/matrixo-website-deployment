@@ -163,7 +163,7 @@ export function CollegeNotFoundForm({
                   </button>
                   <button
                     type="submit"
-                    className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50"
+                    className="flex-1 px-4 py-2 rounded-lg font-medium disabled:opacity-50 cta-glass"
                     disabled={loading}
                   >
                     {loading ? 'Submitting...' : 'Submit Request'}

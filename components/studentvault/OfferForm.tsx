@@ -343,7 +343,7 @@ export default function OfferForm({ offer, authedFetch, onDone, onCancel }: Prop
 
       <div className="flex flex-wrap gap-3">
         <button type="submit"
-          className="rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700">
+          className="rounded-xl px-4 py-2 text-sm font-semibold cta-glass">
           Continue to review
         </button>
         <button type="button" onClick={onCancel}

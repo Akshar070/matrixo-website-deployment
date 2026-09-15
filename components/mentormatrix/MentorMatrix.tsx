@@ -360,7 +360,7 @@ export default function MentorMatrix() {
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="bg-gradient-to-r from-blue-500 to-indigo-500 text-white px-4 py-2 rounded-lg font-semibold text-sm hover:shadow-lg"
+                  className="to-indigo-500 px-4 py-2 rounded-lg font-semibold text-sm cta-glass"
                 >
                   Book Now
                 </motion.button>
@@ -499,7 +499,7 @@ export default function MentorMatrix() {
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    className="flex-1 bg-gradient-to-r from-blue-500 to-indigo-500 text-white px-6 py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-2 hover:shadow-xl"
+                    className="flex-1 to-indigo-500 px-6 py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-2 cta-glass"
                   >
                     <FaCalendar /> Book Session - ₹{selectedMentor.price}
                   </motion.button>

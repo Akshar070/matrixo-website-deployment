@@ -688,7 +688,7 @@ export function AttendanceMarker({ onAttendanceMarked }: { onAttendanceMarked?: 
                       }
                     }, 300)
                   }}
-                  className="flex-1 px-4 py-3 bg-blue-500 hover:bg-blue-400 text-white font-medium rounded-xl transition-all flex items-center justify-center gap-2"
+                  className="flex-1 px-4 py-3 font-medium rounded-xl flex items-center justify-center gap-2 cta-glass"
                 >
                   <FaLocationArrow />
                   Try Again

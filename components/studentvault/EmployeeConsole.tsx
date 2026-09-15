@@ -225,7 +225,7 @@ export default function EmployeeConsole({ getIdToken }: { getIdToken: GetIdToken
         <button
           type="button"
           onClick={() => setCreating(true)}
-          className="inline-flex items-center gap-2 rounded-xl bg-blue-600 hover:bg-blue-700 px-4 py-2 text-sm font-semibold text-white transition-colors"
+          className="inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold cta-glass"
         >
           <FaPlus className="text-xs" aria-hidden="true" /> Add New Offer
         </button>

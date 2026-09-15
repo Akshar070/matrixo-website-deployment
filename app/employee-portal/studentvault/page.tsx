@@ -30,7 +30,7 @@ function ConsoleGate() {
         </p>
         <Link
           href="/employee-portal"
-          className="inline-flex rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"
+          className="inline-flex rounded-xl px-4 py-2 text-sm font-semibold cta-glass"
         >
           Go to employee portal
         </Link>

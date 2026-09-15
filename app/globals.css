@@ -1649,3 +1649,91 @@ body.printing-profile .min-h-screen {
         }
     }
 }
+
+/* ── Glass CTA ───────────────────────────────────────────────────────────────
+   The home-page hero button, generalised. `.hero-cta` bakes in its own large
+   padding and text size; this deliberately sets neither, so a button keeps
+   whatever sizing classes it already had and only its colour and hover change.
+
+   Pair with <CtaDirection /> (mounted once in the root layout) to get the
+   gradient sweeping in from whichever side the cursor entered. Without it the
+   sweep still works, just always from the left. */
+@layer components {
+    .cta-glass {
+        --cta-translate-x: -100%;
+        position: relative;
+        overflow: hidden;
+        isolation: isolate;
+        background: var(--glass-bg);
+        backdrop-filter: var(--glass-blur);
+        -webkit-backdrop-filter: var(--glass-blur);
+        border: 1px solid var(--glass-border);
+        box-shadow: var(--glass-shadow);
+        @apply text-gray-800 dark:text-gray-200;
+        transition:
+            transform 0.6s ease,
+            box-shadow 0.6s ease,
+            color 0.45s ease,
+            border-color 0.6s ease;
+    }
+
+    .cta-glass::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+            270deg,
+            #194569,
+            #5f84a2,
+            #91aec4,
+            #5f84a2,
+            #194569
+        );
+        background-size: 300% 300%;
+        animation: gradientFlow 12s ease infinite;
+        opacity: 0;
+        transform: translate3d(var(--cta-translate-x), 0, 0);
+        transition:
+            opacity 0.4s ease,
+            transform 0.6s ease;
+        /* Behind the label but above the button's own background. Unlike a
+           z-index of 0, this also works when the label is a bare text node
+           rather than a wrapped <span>. */
+        z-index: -1;
+    }
+
+    .cta-glass[data-direction="right"] {
+        --cta-translate-x: 100%;
+    }
+
+    .cta-glass:hover::before,
+    .cta-glass:focus-visible::before {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+    }
+
+    .cta-glass:hover,
+    .cta-glass:focus-visible {
+        transform: scale(1.03);
+        box-shadow: var(--glass-shadow-elevated);
+        color: #f8fafc;
+    }
+
+    /* A disabled button shouldn't invite a click. */
+    .cta-glass:disabled,
+    .cta-glass[aria-disabled="true"] {
+        opacity: 0.55;
+        pointer-events: none;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .cta-glass,
+        .cta-glass::before {
+            transition: opacity 0.2s ease;
+        }
+        .cta-glass:hover,
+        .cta-glass:focus-visible {
+            transform: none;
+        }
+    }
+}

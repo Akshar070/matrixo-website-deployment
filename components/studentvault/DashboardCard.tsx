@@ -115,7 +115,7 @@ export default function StudentVaultDashboardCard() {
 
           <Link
             href="/studentvault/vault"
-            className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-blue-600 to-blue-500 text-white text-sm font-semibold hover:from-blue-500 hover:to-blue-400 transition-all flex items-center justify-center"
+            className="w-full py-2.5 px-4 rounded-xl text-sm font-semibold flex items-center justify-center cta-glass"
           >
             Open StudentVault
           </Link>
@@ -136,7 +136,7 @@ export default function StudentVaultDashboardCard() {
             </Link>
             <Link
               href="/studentvault/unlock"
-              className="flex-1 py-2.5 px-4 rounded-xl bg-gradient-to-r from-blue-600 to-blue-500 text-white text-sm font-semibold hover:from-blue-500 hover:to-blue-400 transition-all text-center"
+              className="flex-1 py-2.5 px-4 rounded-xl text-sm font-semibold text-center cta-glass"
             >
               Unlock
             </Link>

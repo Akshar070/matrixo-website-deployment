@@ -187,7 +187,7 @@ export default function ImageUploader({
                           transition-opacity rounded-xl flex items-center justify-center gap-3">
               <button
                 onClick={() => fileInputRef.current?.click()}
-                className="p-3 bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors"
+                className="p-3 rounded-lg cta-glass"
                 disabled={isUploading}
               >
                 <FaImage className="text-white" />

@@ -7,6 +7,7 @@ import { AuthProvider } from '@/lib/AuthContext'
 import { ProfileProvider } from '@/lib/ProfileContext'
 import ProfileGuard from '@/components/ProfileGuard'
 import ThemeProvider from '@/components/ThemeProvider'
+import CtaDirection from '@/components/CtaDirection'
 import { Toaster } from 'sonner'
 import Script from 'next/script'
 import { headers } from 'next/headers'
@@ -157,6 +158,9 @@ export default async function RootLayout({
           `}
         </Script>
 
+
+        {/* Gives every .cta-glass button the home-page directional hover sweep. */}
+        <CtaDirection />
 
         <ThemeProvider defaultTheme="light" enableSystem={false}>
           <AuthProvider>

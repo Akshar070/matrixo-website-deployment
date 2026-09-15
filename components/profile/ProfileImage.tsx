@@ -186,8 +186,7 @@ export default function ProfileImage({
         {isEditable && !isUploading && (
           <motion.button
             onClick={handleEditClick}
-            className="absolute bottom-0 right-0 p-2 bg-blue-600 hover:bg-blue-700 rounded-full 
-                     border-2 border-white dark:border-gray-900 shadow-lg transition-colors"
+            className="absolute bottom-0 right-0 p-2 rounded-full border-2 border-white dark:border-gray-900 cta-glass"
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
             aria-label="Edit profile picture"

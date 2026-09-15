@@ -171,10 +171,7 @@ export default function TestPage() {
         <button
           onClick={runAllTests}
           disabled={testing}
-          className="w-full px-6 py-4 bg-gradient-to-r from-blue-500 to-purple-600 
-                   text-white rounded-lg font-semibold text-lg shadow-lg
-                   hover:shadow-xl transform hover:scale-105 transition-all
-                   disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+          className="w-full px-6 py-4 to-purple-600 rounded-lg font-semibold text-lg transform disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none cta-glass"
         >
           {testing ? '🧪 Running Tests...' : '🚀 Run All Tests'}
         </button>

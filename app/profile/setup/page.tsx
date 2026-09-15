@@ -353,7 +353,7 @@ export default function ProfileSetupPage() {
               <button
                 type="button"
                 onClick={handleNext}
-                className="w-full py-3 px-5 bg-gradient-to-r from-blue-600 to-blue-500 text-white rounded-xl font-semibold hover:from-blue-500 hover:to-blue-400 transition-all shadow-lg shadow-blue-500/20 flex items-center justify-center gap-2 mt-2"
+                className="w-full py-3 px-5 rounded-xl font-semibold flex items-center justify-center gap-2 mt-2 cta-glass"
               >
                 <span>Continue</span>
                 <FaArrowRight className="text-sm" />
@@ -460,7 +460,7 @@ export default function ProfileSetupPage() {
                 </button>
                 <button
                   type="submit" disabled={loading}
-                  className="flex-1 py-3 px-5 bg-gradient-to-r from-blue-600 to-blue-500 text-white rounded-xl font-semibold hover:from-blue-500 hover:to-blue-400 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-blue-500/20 flex items-center justify-center gap-2"
+                  className="flex-1 py-3 px-5 rounded-xl font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 cta-glass"
                 >
                   {loading ? (
                     <FaSpinner className="animate-spin text-xl" />

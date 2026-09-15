@@ -419,7 +419,7 @@ export default function ProfilePage() {
                         </div>
                       </div>
                       <button onClick={handleSaveUsername} disabled={savingUsername || usernameStatus !== 'available'}
-                        className="p-1.5 rounded-lg bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 transition-colors disabled:opacity-50">
+                        className="p-1.5 rounded-lg bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 disabled:opacity-50 cta-glass">
                         {savingUsername ? <FaSpinner className="animate-spin text-xs" /> : <FaCheck className="text-xs" />}
                       </button>
                       <button onClick={() => { setEditingUsername(false); setNewUsername(profile?.username || '') }}
@@ -547,7 +547,7 @@ export default function ProfilePage() {
                     </div>
                     <div className="flex gap-3 pt-2">
                       <button onClick={handleCancel} className="flex-1 py-3 px-4 border border-white/10 dark:border-white/[0.1] text-gray-700 dark:text-gray-300 rounded-xl font-semibold hover:bg-white/5 transition-all flex items-center justify-center gap-2"><FaTimes /> Cancel</button>
-                      <button onClick={handleSave} disabled={saving} className="flex-1 py-3 px-4 bg-gradient-to-r from-blue-600 to-blue-500 text-white rounded-xl font-semibold hover:from-blue-500 hover:to-blue-400 transition-all disabled:opacity-50 shadow-lg shadow-blue-500/20 flex items-center justify-center gap-2">
+                      <button onClick={handleSave} disabled={saving} className="flex-1 py-3 px-4 rounded-xl font-semibold disabled:opacity-50 flex items-center justify-center gap-2 cta-glass">
                         {saving ? <><FaSpinner className="animate-spin" /> Saving...</> : <><FaSave /> Save</>}
                       </button>
                     </div>
@@ -561,7 +561,7 @@ export default function ProfilePage() {
                     <InfoRow icon={FaUniversity} label="College" value={profile?.collegeId ? getCollegeName(profile.collegeId) : (profile?.college || '')} />
                     <InfoRow icon={FaGraduationCap} label="Year" value={profile?.year || ''} />
                     <InfoRow icon={FaCodeBranch} label="Branch" value={profile?.branch || ''} />
-                    <button onClick={() => setIsEditing(true)} className="w-full mt-6 py-3 px-4 bg-gradient-to-r from-blue-600 to-blue-500 text-white rounded-xl font-semibold hover:from-blue-500 hover:to-blue-400 transition-all shadow-lg shadow-blue-500/20 flex items-center justify-center gap-2"><FaEdit /> Edit Profile</button>
+                    <button onClick={() => setIsEditing(true)} className="w-full mt-6 py-3 px-4 rounded-xl font-semibold flex items-center justify-center gap-2 cta-glass"><FaEdit /> Edit Profile</button>
                   </div>
                 )}
               </div>
@@ -598,7 +598,7 @@ export default function ProfilePage() {
 
                 </div>
                 <button onClick={handleSavePrivacy} disabled={saving}
-                  className="w-full mt-6 py-3 px-4 bg-gradient-to-r from-blue-600 to-blue-500 text-white rounded-xl font-semibold hover:from-blue-500 hover:to-blue-400 transition-all disabled:opacity-50 shadow-lg shadow-blue-500/20 flex items-center justify-center gap-2">
+                  className="w-full mt-6 py-3 px-4 rounded-xl font-semibold disabled:opacity-50 flex items-center justify-center gap-2 cta-glass">
                   {saving ? <><FaSpinner className="animate-spin" /> Saving...</> : <><FaSave /> Save Privacy Settings</>}
                 </button>
               </div>
@@ -624,7 +624,7 @@ export default function ProfilePage() {
                       {profileUrl || 'Set a username to get your link'}
                     </div>
                     <button onClick={handleCopyLink} disabled={!profile?.username}
-                      className="p-2.5 bg-gradient-to-r from-blue-600 to-blue-500 text-white rounded-lg hover:from-blue-500 hover:to-blue-400 transition-all flex-shrink-0 disabled:opacity-50 shadow-lg shadow-blue-500/20">
+                      className="p-2.5 rounded-lg flex-shrink-0 disabled:opacity-50 cta-glass">
                       {copied ? <FaCheck /> : <FaCopy />}
                     </button>
                   </div>

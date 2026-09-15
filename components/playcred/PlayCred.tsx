@@ -353,7 +353,7 @@ export default function PlayCred() {
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    className="flex-1 bg-blue-500 text-white px-6 py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:shadow-lg"
+                    className="flex-1 px-6 py-3 rounded-xl font-bold flex items-center justify-center gap-2 cta-glass"
                   >
                     <FaShareAlt /> Share
                   </motion.button>

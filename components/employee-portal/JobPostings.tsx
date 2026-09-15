@@ -799,7 +799,7 @@ function ApplicationsModal({
                   href={selectedApp.resumeURL}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2 px-4 py-2 bg-[#2563EB]/10 dark:bg-blue-500/10 text-[#2563EB] dark:text-blue-400 hover:bg-[#2563EB]/20 dark:hover:bg-blue-500/20 rounded-xl text-sm transition-all"
+                  className="flex items-center gap-2 px-4 py-2 bg-[#2563EB]/10 dark:bg-blue-500/10 text-[#2563EB] dark:text-blue-400 hover:bg-[#2563EB]/20 dark:hover:bg-blue-500/20 rounded-xl text-sm cta-glass"
                 >
                   <FaExternalLinkAlt className="text-xs" /> View Resume
                 </a>
@@ -1102,11 +1102,11 @@ export default function JobPostings() {
                           <p className="text-xs text-[#94A3B8] dark:text-neutral-500 mt-2 line-clamp-2">{role.description}</p>
                         </div>
                         <div className="flex items-center gap-1 flex-shrink-0">
-                          <button onClick={() => setViewingApps(role)} className="relative p-2 text-[#64748B] dark:text-neutral-400 hover:bg-[#2563EB]/10 dark:hover:bg-blue-500/10 hover:text-[#2563EB] dark:hover:text-blue-400 rounded-lg transition-all" title={`View ${appCount} applications`}>
+                          <button onClick={() => setViewingApps(role)} className="relative p-2 text-[#64748B] dark:text-neutral-400 hover:bg-[#2563EB]/10 dark:hover:bg-blue-500/10 hover:text-[#2563EB] dark:hover:text-blue-400 rounded-lg cta-glass" title={`View ${appCount} applications`}>
                             <FaEye className="text-xs" />
                             {pendingCount > 0 && <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-red-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center">{pendingCount}</span>}
                           </button>
-                          <button onClick={() => { setEditingRole(role); setShowForm(true) }} className="p-2 text-[#64748B] dark:text-neutral-400 hover:bg-[#2563EB]/10 dark:hover:bg-blue-500/10 hover:text-[#2563EB] dark:hover:text-blue-400 rounded-lg transition-all" title="Edit"><FaEdit className="text-xs" /></button>
+                          <button onClick={() => { setEditingRole(role); setShowForm(true) }} className="p-2 text-[#64748B] dark:text-neutral-400 hover:bg-[#2563EB]/10 dark:hover:bg-blue-500/10 hover:text-[#2563EB] dark:hover:text-blue-400 rounded-lg cta-glass" title="Edit"><FaEdit className="text-xs" /></button>
                           <button onClick={() => handleToggleStatus(role)} className={`p-2 rounded-lg transition-all ${role.status === 'open' ? 'text-[#64748B] dark:text-neutral-400 hover:bg-amber-500/10 hover:text-amber-500 dark:hover:text-amber-400' : 'text-emerald-500 dark:text-emerald-400 hover:bg-emerald-500/10'}`} title={role.status === 'open' ? 'Close posting' : 'Reopen posting'}>
                             {role.status === 'open' ? <FaLock className="text-xs" /> : <FaUnlock className="text-xs" />}
                           </button>

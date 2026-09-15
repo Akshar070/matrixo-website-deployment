@@ -760,10 +760,7 @@ export default function EventRegistrationForm({
             <button
               type="submit"
               disabled={isSubmitting || isProcessing}
-              className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600
-                       text-white rounded-lg font-semibold shadow-lg
-                       hover:shadow-xl transform hover:scale-105 transition-all
-                       disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+              className="flex-1 px-6 py-3 to-purple-600 rounded-lg font-semibold transform disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none cta-glass"
             >
               {isSubmitting
                 ? "Submitting..."

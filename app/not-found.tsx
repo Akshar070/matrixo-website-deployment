@@ -92,7 +92,7 @@ export default function NotFound() {
           transition={{ delay: 0.4 }}
           className="flex flex-col sm:flex-row gap-4 justify-center items-center relative z-10"
         >
-          <Link href="/" className="group px-8 py-4 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white font-bold rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 active:scale-95 flex items-center gap-3">
+          <Link href="/" className="group px-8 py-4 via-purple-600 to-pink-600 font-bold rounded-2xl active:scale-95 flex items-center gap-3 cta-glass">
             <FaHome className="text-xl group-hover:rotate-12 transition-transform" />
             <span>Back to Home</span>
           </Link>

@@ -222,7 +222,7 @@ export default function EventsListing() {
                         <button
                           type="submit"
                           disabled={authLoading}
-                          className="w-full py-2.5 mt-1 rounded-xl bg-[#2563EB] hover:bg-blue-700 text-white font-medium transition-colors text-[14px] disabled:opacity-70 shadow-sm shadow-blue-500/30"
+                          className="w-full py-2.5 mt-1 rounded-xl bg-[#2563EB] font-medium text-[14px] disabled:opacity-70 cta-glass"
                         >
                           {authLoading ? 'Logging in...' : 'Login'}
                         </button>
@@ -275,7 +275,7 @@ export default function EventsListing() {
                       <p className="text-[13px] text-gray-500 dark:text-gray-400 mb-5 truncate max-w-full px-2">You are logged in as {user.email}</p>
                       <Link
                         href="/profile"
-                        className="px-6 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-medium transition-colors text-[13px]"
+                        className="px-6 py-2 rounded-xl font-medium text-[13px] cta-glass"
                       >
                         Go to Profile
                       </Link>

@@ -224,9 +224,7 @@ export default function ImageCropper({
             <button
               onClick={handleCrop}
               disabled={isProcessing}
-              className="flex-1 py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white rounded-xl 
-                       transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed
-                       flex items-center justify-center gap-2"
+              className="flex-1 py-3 px-4 rounded-xl font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 cta-glass"
             >
               {isProcessing ? (
                 <>

@@ -24,10 +24,13 @@ module.exports = {
           800: '#075985',
           900: '#0c4a6e',
         },
+        // Kept identical to main so beta renders in the same brand colours as
+        // production. Changing these here would silently re-tint every
+        // `neon-*` gradient across the site.
         neon: {
-          blue: '#0f172a',
-          purple: '#1e3a8a',
-          pink: '#2563eb',
+          blue: '#2563eb',
+          purple: '#7c3aed',
+          pink: '#db2777',
         },
       },
       fontFamily: {

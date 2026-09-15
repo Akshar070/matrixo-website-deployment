@@ -187,12 +187,16 @@ function LoginForm() {
                   className="w-full py-3 px-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all text-white placeholder-neutral-400 pr-12"
                   style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.12)', backdropFilter: 'blur(10px)' }}
                 />
+                {/* right-2 + p-2 keeps the icon at the same optical position as
+                    right-4 did, while growing the hit area past the 24px minimum. */}
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-white transition-colors"
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  aria-pressed={showPassword}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center justify-center p-2 text-neutral-400 hover:text-white transition-colors"
                 >
-                  {showPassword ? '🙈' : '👁️'}
+                  <span aria-hidden="true">{showPassword ? '🙈' : '👁️'}</span>
                 </button>
               </div>
               <p className="text-xs text-neutral-500 mt-2 flex items-start gap-1">

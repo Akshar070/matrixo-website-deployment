@@ -1,0 +1,3 @@
+# ads.txt - Authorized Digital Sellers for matrixo.in
+# Spec: https://iabtechlab.com/ads-txt/
+google.com, pub-2402360356645801, DIRECT, f08c47fec0942fa0

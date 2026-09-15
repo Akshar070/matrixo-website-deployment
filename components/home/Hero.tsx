@@ -53,27 +53,41 @@ export default function Hero() {
             transition={{ duration: 0.5, delay: 0.3 }}
             className="relative inline-block mb-6"
           >
+            {/* This is the LCP element. Explicit dimensions let the browser
+                reserve the box before the bytes land (no layout shift), and
+                fetchPriority pulls it ahead of the deferred third-party scripts
+                that were previously winning the race for bandwidth. */}
             <img
               src="/logos/logo-light.png"
               alt="matriXO"
+              width={1200}
+              height={276}
+              fetchPriority="high"
+              decoding="async"
               className="h-14 md:h-32 lg:h-20 w-auto mx-auto block dark:hidden"
             />
             <img
               src="/logos/logo-dark.png"
               alt="matriXO"
+              width={1200}
+              height={278}
+              fetchPriority="high"
+              decoding="async"
               className="h-14 md:h-32 lg:h-20 w-auto mx-auto transform hidden dark:block"
             />
           </motion.div>
 
-          {/* Headline */}
-          <motion.p
+          {/* Headline — an <h1>, not a <p>: the page had no h1 at all and jumped
+              straight to <h2>, which fails both the SEO and heading-order audits.
+              Classes are unchanged, so this renders exactly as before. */}
+          <motion.h1
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.4 }}
             className="text-xl md:text-3xl lg:text-4xl font-light text-slate-700 dark:text-gray-300 mb-4 max-w-4xl mx-auto"
           >
             <HeadingHighlight text="Where AI Meets Your Career Journey" />
-          </motion.p>
+          </motion.h1>
 
           {/* Bold tagline */}
           <motion.p

@@ -459,13 +459,8 @@ export default function ProfilePage() {
           {tabs.map(tab => (
             <button key={tab.id} onClick={() => { setActiveTab(tab.id); setIsEditing(false) }}
               className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-sm font-medium transition-all ${activeTab === tab.id
-<<<<<<< HEAD
                   ? 'cta-glass'
                   : 'text-gray-500 hover:text-gray-900 dark:hover:text-white hover:bg-white/5'
-=======
-                ? 'bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-lg shadow-blue-500/20'
-                : 'text-gray-500 hover:text-gray-900 dark:hover:text-white hover:bg-white/5'
->>>>>>> 784d3b2 (Changed the neon colors to simple colors in cover image in pfp card)
                 }`}>
               <tab.icon className="text-xs" />{tab.label}
             </button>
@@ -584,13 +579,8 @@ export default function ProfilePage() {
                     {(['public', 'private'] as const).map(opt => (
                       <button key={opt} onClick={() => setPrivacyData(p => ({ ...p, profileVisibility: opt }))}
                         className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all flex items-center justify-center gap-2 ${privacyData.profileVisibility === opt
-<<<<<<< HEAD
                             ? 'cta-glass'
                             : 'bg-white/5 dark:bg-white/[0.06] border border-white/10 dark:border-white/[0.08] text-gray-600 dark:text-gray-400'
-=======
-                          ? 'bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-lg shadow-blue-500/20'
-                          : 'bg-white/5 dark:bg-white/[0.06] border border-white/10 dark:border-white/[0.08] text-gray-600 dark:text-gray-400'
->>>>>>> 784d3b2 (Changed the neon colors to simple colors in cover image in pfp card)
                           }`}>
                         {opt === 'public' ? <FaEye className="text-xs" /> : <FaEyeSlash className="text-xs" />}
                         {opt.charAt(0).toUpperCase() + opt.slice(1)}

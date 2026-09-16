@@ -12,6 +12,7 @@ import { useProfile } from '@/lib/ProfileContext'
 import { toast } from 'sonner'
 import { getFirestore, collection, query, where, getDocs } from 'firebase/firestore'
 import { getValidImageUrl } from '@/lib/imageUtils'
+import PublicNotificationBell from './PublicNotificationBell'
 
 // Standalone nav links (no dropdown), rendered before the Menu dropdown
 const standaloneNavLinks = [
@@ -315,6 +316,8 @@ export default function Navbar() {
               </button>
             )}
 
+            <PublicNotificationBell />
+
             {/* User Profile */}
             {user ? (
               <div
@@ -416,6 +419,8 @@ export default function Navbar() {
               </button>
             )}
 
+            <PublicNotificationBell />
+
             {user ? (
               <Link
                 href="/profile"
@@ -437,7 +442,6 @@ export default function Navbar() {
             ) : hasInlineLoginCard ? null : (
               <Link
                 href="/auth"
-                onClick={handleLoginClick}
                 className="flex items-center gap-x-2 flex-shrink-0 p-2 rounded-full glass-card-thin text-gray-700 dark:text-gray-300"
                 aria-label="Login"
               >

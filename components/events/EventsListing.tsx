@@ -33,7 +33,7 @@ export default function EventsListing() {
   const [showPassword, setShowPassword] = useState(false)
   const [rememberMe, setRememberMe] = useState(false)
   const [authLoading, setAuthLoading] = useState(false)
-  
+
   // `authResolving` is true until Firebase reports the current session. The card
   // shows a placeholder until then so a signed-in visitor never sees the
   // logged-out form flash past.
@@ -89,10 +89,10 @@ export default function EventsListing() {
     const eventPrograms = eventsData.filter(event => {
       const cat = event.category?.toLowerCase() || ''
       const tags = event.tags?.map((t: string) => t.toLowerCase()) || []
-      
+
       // Allow specific examples cited by user (DevAgentic is an event despite 'workshop' category)
       if (event.id === 'devagents-1-0') return true
-      
+
       // Exclude non-event types explicitly forbidden by user
       const nonEventKeywords = ['workshop', 'hackathon', 'course', 'bootcamp', 'webinar', 'competition']
       const hasNonEventKeyword = nonEventKeywords.some(kw => cat.includes(kw) || tags.some(t => t.includes(kw)))
@@ -110,15 +110,15 @@ export default function EventsListing() {
       // Since page is Events-only, "Events" and "All Programs" chips both show all events.
       // Other chips (e.g. workshops) will return 0 results since they were stripped in step 1.
       const isEventFilter = cat === 'event' || cat === 'all'
-      const matchesCategory = isEventFilter || 
-                              (event.category?.toLowerCase().includes(cat)) || 
-                              (event.tags?.some((t: string) => t.toLowerCase().includes(cat))) || false
+      const matchesCategory = isEventFilter ||
+        (event.category?.toLowerCase().includes(cat)) ||
+        (event.tags?.some((t: string) => t.toLowerCase().includes(cat))) || false
 
       const searchLower = searchTerm.toLowerCase()
-      const matchesSearch = !searchTerm || 
-                            (event.title?.toLowerCase().includes(searchLower)) ||
-                            (event.tagline?.toLowerCase().includes(searchLower)) ||
-                            (event.location?.toLowerCase().includes(searchLower)) || false
+      const matchesSearch = !searchTerm ||
+        (event.title?.toLowerCase().includes(searchLower)) ||
+        (event.tagline?.toLowerCase().includes(searchLower)) ||
+        (event.location?.toLowerCase().includes(searchLower)) || false
       return matchesCategory && matchesSearch
     })
 
@@ -325,11 +325,10 @@ export default function EventsListing() {
                 <button
                   key={option.value}
                   onClick={() => setSortOption(option.value as SortOption)}
-                  className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200 ease-[cubic-bezier(0.25,0.1,0.25,1)] flex items-center gap-1.5 ${
-                    sortOption === option.value
+                  className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200 ease-[cubic-bezier(0.25,0.1,0.25,1)] flex items-center gap-1.5 ${sortOption === option.value
                       ? activeFilterClass
                       : 'glass-chip text-gray-700 dark:text-gray-300'
-                  }`}
+                    }`}
                 >
                   <option.icon className="text-xs" />
                   {option.label}
@@ -351,11 +350,10 @@ export default function EventsListing() {
                 <button
                   key={cat.value}
                   onClick={() => setCategoryFilter(cat.value)}
-                  className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200 ease-[cubic-bezier(0.25,0.1,0.25,1)] ${
-                    categoryFilter === cat.value
+                  className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200 ease-[cubic-bezier(0.25,0.1,0.25,1)] ${categoryFilter === cat.value
                       ? activeFilterClass
                       : 'glass-chip text-gray-700 dark:text-gray-300'
-                  }`}
+                    }`}
                 >
                   {cat.label}
                 </button>
@@ -377,16 +375,16 @@ export default function EventsListing() {
           {filteredAndSortedEvents.length === 0 ? (
             <div className="text-center py-20">
               <p className="text-xl text-gray-500">No programs found matching your criteria</p>
-                <button
-                  onClick={() => {
-                    setCategoryFilter('all')
-                    setSortOption('all')
-                    setSearchTerm('')
-                  }}
-                  className={`mt-4 px-6 py-3 rounded-full transition-all duration-200 ease-[cubic-bezier(0.25,0.1,0.25,1)] ${activeFilterClass}`}
-                >
-                  Clear All Filters
-                </button>
+              <button
+                onClick={() => {
+                  setCategoryFilter('all')
+                  setSortOption('all')
+                  setSearchTerm('')
+                }}
+                className={`mt-4 px-6 py-3 rounded-full transition-all duration-200 ease-[cubic-bezier(0.25,0.1,0.25,1)] ${activeFilterClass}`}
+              >
+                Clear All Filters
+              </button>
             </div>
           ) : (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
@@ -410,7 +408,7 @@ export default function EventsListing() {
                       ease: [0.22, 1, 0.36, 1],
                     }}
                   >
-                    <Link 
+                    <Link
                       href={eventLink}
                       target={isExternal ? "_blank" : undefined}
                       rel={isExternal ? "noopener noreferrer" : undefined}

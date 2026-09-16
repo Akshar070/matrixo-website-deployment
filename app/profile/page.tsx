@@ -224,7 +224,7 @@ export default function ProfilePage() {
               })
             }
           })
-          .catch(() => {})
+          .catch(() => { })
       }
     }
     setErrors({})
@@ -354,14 +354,14 @@ export default function ProfilePage() {
           {/* Cover Image Section */}
           <div className="relative">
             {/* Cover Image */}
-            <div className="relative w-full aspect-[3/1] bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 overflow-hidden group">
+            <div className="relative w-full aspect-[3/1] overflow-hidden group" style={{ background: 'linear-gradient(135deg, #2563EB, #FFFFFF)' }}>
               {profile?.coverPhoto ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={getValidImageUrl(profile.coverPhoto)} alt="Cover" className="object-cover w-full h-full" />
               ) : (
-                <div className="w-full h-full bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600" />
+                <div className="w-full h-full" style={{ background: 'linear-gradient(135deg, #2563EB, #FFFFFF)' }} />
               )}
-              
+
               {/* Cover Edit Button */}
               <label htmlFor="cover-change" className="absolute top-3 right-3 p-2.5 bg-black/40 hover:bg-black/60 backdrop-blur-sm rounded-xl cursor-pointer transition-all opacity-0 group-hover:opacity-100">
                 {uploadingCover ? <FaSpinner className="animate-spin text-white text-sm" /> : <FaCamera className="text-white text-sm" />}
@@ -459,8 +459,13 @@ export default function ProfilePage() {
           {tabs.map(tab => (
             <button key={tab.id} onClick={() => { setActiveTab(tab.id); setIsEditing(false) }}
               className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-sm font-medium transition-all ${activeTab === tab.id
+<<<<<<< HEAD
                   ? 'cta-glass'
                   : 'text-gray-500 hover:text-gray-900 dark:hover:text-white hover:bg-white/5'
+=======
+                ? 'bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-lg shadow-blue-500/20'
+                : 'text-gray-500 hover:text-gray-900 dark:hover:text-white hover:bg-white/5'
+>>>>>>> 784d3b2 (Changed the neon colors to simple colors in cover image in pfp card)
                 }`}>
               <tab.icon className="text-xs" />{tab.label}
             </button>
@@ -579,8 +584,13 @@ export default function ProfilePage() {
                     {(['public', 'private'] as const).map(opt => (
                       <button key={opt} onClick={() => setPrivacyData(p => ({ ...p, profileVisibility: opt }))}
                         className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all flex items-center justify-center gap-2 ${privacyData.profileVisibility === opt
+<<<<<<< HEAD
                             ? 'cta-glass'
                             : 'bg-white/5 dark:bg-white/[0.06] border border-white/10 dark:border-white/[0.08] text-gray-600 dark:text-gray-400'
+=======
+                          ? 'bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-lg shadow-blue-500/20'
+                          : 'bg-white/5 dark:bg-white/[0.06] border border-white/10 dark:border-white/[0.08] text-gray-600 dark:text-gray-400'
+>>>>>>> 784d3b2 (Changed the neon colors to simple colors in cover image in pfp card)
                           }`}>
                         {opt === 'public' ? <FaEye className="text-xs" /> : <FaEyeSlash className="text-xs" />}
                         {opt.charAt(0).toUpperCase() + opt.slice(1)}

@@ -122,7 +122,7 @@ export default function CoverImage({
             />
           ) : (
             // Default gradient background
-            <div className="w-full h-full bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600" />
+            <div className="w-full h-full" style={{ background: 'linear-gradient(135deg, #2563EB, #FFFFFF)' }} />
           )}
 
           {/* Upload overlay (visible on hover) */}

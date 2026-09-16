@@ -382,12 +382,8 @@ export default function Navbar() {
               >
                 <Link
                   href="/auth"
-<<<<<<< HEAD
                   onClick={handleLoginClick}
                   className="inline-flex items-center gap-x-2 px-3 h-9 glass-card-thin text-gray-700 dark:text-gray-300
-=======
-                  className="inline-flex items-center gap-x-2 px-3 h-9 glass-card-thin text-gray-700 dark:text-gray-300 
->>>>>>> 784d3b2 (Changed the neon colors to simple colors in cover image in pfp card)
                            rounded-full font-semibold text-sm whitespace-nowrap hover:scale-[1.02] transition-all duration-300 flex-shrink-0"
                 >
                   <FaUser className="text-sm" />

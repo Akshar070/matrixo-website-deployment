@@ -459,8 +459,8 @@ export default function ProfilePage() {
           {tabs.map(tab => (
             <button key={tab.id} onClick={() => { setActiveTab(tab.id); setIsEditing(false) }}
               className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-sm font-medium transition-all ${activeTab === tab.id
-                  ? 'cta-glass'
-                  : 'text-gray-500 hover:text-gray-900 dark:hover:text-white hover:bg-white/5'
+                ? 'cta-glass'
+                : 'text-gray-500 hover:text-gray-900 dark:hover:text-white hover:bg-white/5'
                 }`}>
               <tab.icon className="text-xs" />{tab.label}
             </button>
@@ -579,8 +579,8 @@ export default function ProfilePage() {
                     {(['public', 'private'] as const).map(opt => (
                       <button key={opt} onClick={() => setPrivacyData(p => ({ ...p, profileVisibility: opt }))}
                         className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all flex items-center justify-center gap-2 ${privacyData.profileVisibility === opt
-                            ? 'cta-glass'
-                            : 'bg-white/5 dark:bg-white/[0.06] border border-white/10 dark:border-white/[0.08] text-gray-600 dark:text-gray-400'
+                          ? 'cta-glass'
+                          : 'bg-white/5 dark:bg-white/[0.06] border border-white/10 dark:border-white/[0.08] text-gray-600 dark:text-gray-400'
                           }`}>
                         {opt === 'public' ? <FaEye className="text-xs" /> : <FaEyeSlash className="text-xs" />}
                         {opt.charAt(0).toUpperCase() + opt.slice(1)}

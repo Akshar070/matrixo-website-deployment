@@ -71,10 +71,13 @@ const offerings = [
 
 const reasons = [
   'Hands-on technical training programs',
-  'Industry-relevant curriculum',
   'Expert mentorship and guidance',
-  'Growing partner network',
   'Career-focused approach',
+  'Real-world projects and practical learning',
+  'Industry-relevant curriculum',
+  'Growing partner network',
+  'Student opportunities and events',
+  'Learning resources and career development',
 ]
 
 const values = [
@@ -340,13 +343,13 @@ export default function AboutContent() {
         </div>
       </section>
 
-      <section className="pb-16 md:pb-24">
+      <section className="pb-12 md:pb-16">
         <div className="container-custom px-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="mb-8 text-center"
+            className="mb-5 md:mb-6 text-center"
           >
             <h2 className="text-3xl font-bold md:text-4xl font-display mb-4">
               <HeadingHighlight
@@ -362,16 +365,16 @@ export default function AboutContent() {
             initial={{ opacity: 0, y: 18 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className={`${glassPanel} p-6 md:p-10`}
+            className={`${glassPanel} p-5 md:p-8`}
           >
-            <ul className="grid gap-4 md:grid-cols-2">
+            <ul className="grid gap-3 sm:gap-4 md:grid-cols-2 md:gap-x-8 md:gap-y-4">
               {reasons.map((reason) => (
                 <li
                   key={reason}
                   className="flex items-start gap-3 text-sm md:text-base text-slate-600 dark:text-slate-200/80"
                 >
-                  <span className="mt-2 h-2 w-2 rounded-full bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.35)] dark:bg-blue-400 dark:shadow-[0_0_10px_rgba(59,130,246,0.5)]" />
-                  <span>{reason}</span>
+                  <span className="mt-1.5 md:mt-2 h-2 w-2 flex-shrink-0 rounded-full bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.35)] dark:bg-blue-400 dark:shadow-[0_0_10px_rgba(59,130,246,0.5)]" />
+                  <span className="leading-snug">{reason}</span>
                 </li>
               ))}
             </ul>

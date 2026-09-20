@@ -37,10 +37,12 @@ export default function RootChrome({
   return (
     <>
       {showNavbar && <Navbar />}
-      <main className={mainClassName}>
-        {isEmployeePortal ? children : <ProfileGuard>{children}</ProfileGuard>}
-      </main>
-      {showFooter && <Footer />}
+      <div className={`${mainClassName} flex flex-col`}>
+        <main className="flex-1 flex flex-col">
+          {isEmployeePortal ? children : <ProfileGuard>{children}</ProfileGuard>}
+        </main>
+        {showFooter && <Footer />}
+      </div>
     </>
   )
 }

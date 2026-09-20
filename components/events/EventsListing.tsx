@@ -93,74 +93,81 @@ export default function EventsListing() {
       </section>
 
       {/* Filters and Search - Compact Version */}
-      <section className="bg-white/40 dark:bg-white/[0.02] backdrop-blur-md py-3 sm:py-4 border-b border-gray-200/30 dark:border-white/[0.06]">
+      <section className="bg-white/40 dark:bg-white/[0.02] backdrop-blur-md py-3 border-b border-gray-200/30 dark:border-white/[0.06]">
         <div className="container-custom px-4 sm:px-6">
-          {/* Compact Filter Row */}
-          <div className="flex flex-col lg:flex-row gap-3 items-start lg:items-center">
-            {/* Search - Compact */}
-            <div className="relative w-full lg:w-80">
-              <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm" />
-              <input
-                type="text"
-                placeholder="Search programs, topics..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-9 pr-3 py-2 rounded-full glass-input text-sm"
-              />
+          <div className="flex flex-col xl:flex-row gap-4 items-start xl:items-center justify-between">
+            {/* Controls Group */}
+            <div className="flex flex-col md:flex-row gap-3 items-start md:items-center w-full xl:w-auto">
+              {/* Search - Compact */}
+              <div className="relative w-full md:w-64 lg:w-72 flex-shrink-0">
+                <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm" />
+                <input
+                  type="text"
+                  placeholder="Search programs, topics..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full pl-9 pr-3 py-2 rounded-full glass-input text-sm"
+                />
+              </div>
+
+              {/* Filters */}
+              <div className="flex flex-wrap items-center gap-2 lg:gap-3">
+                {/* Sort Options - Compact */}
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  <FaClock className="hidden sm:block text-gray-400 text-xs mr-1" />
+                  {[
+                    { value: 'upcoming', label: 'Upcoming', icon: FaClock },
+                    { value: 'latest', label: 'Latest', icon: FaStar },
+                    { value: 'all', label: 'All', icon: FaCalendar }
+                  ].map((option) => (
+                    <button
+                      key={option.value}
+                      onClick={() => setSortOption(option.value as SortOption)}
+                      className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200 ease-[cubic-bezier(0.25,0.1,0.25,1)] flex items-center gap-1.5 ${
+                        sortOption === option.value
+                          ? activeFilterClass
+                          : 'glass-chip text-gray-700 dark:text-gray-300'
+                      }`}
+                    >
+                      <option.icon className="text-[10px] sm:text-xs" />
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
+
+                <div className="hidden md:block w-px h-5 bg-gray-300/50 dark:bg-gray-700/50 mx-1"></div>
+
+                {/* Category Filter Buttons - Compact */}
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  <FaFilter className="hidden sm:block text-gray-400 text-xs mr-1" />
+                  {[
+                    { value: 'all', label: 'All Programs' },
+                    { value: 'course', label: 'Courses' },
+                    { value: 'workshop', label: 'Workshops' },
+                    { value: 'hackathon', label: 'Hackathons' },
+                    { value: 'bootcamp', label: 'Bootcamps' },
+                    { value: 'event', label: 'Events' }
+                  ].map((cat) => (
+                    <button
+                      key={cat.value}
+                      onClick={() => setCategoryFilter(cat.value)}
+                      className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200 ease-[cubic-bezier(0.25,0.1,0.25,1)] ${
+                        categoryFilter === cat.value
+                          ? activeFilterClass
+                          : 'glass-chip text-gray-700 dark:text-gray-300'
+                      }`}
+                    >
+                      {cat.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
             </div>
 
-            {/* Sort Options - Compact */}
-            <div className="flex items-center gap-2 flex-wrap">
-              <FaClock className="text-gray-500 text-sm" />
-              {[
-                { value: 'upcoming', label: 'Upcoming', icon: FaClock },
-                { value: 'latest', label: 'Latest', icon: FaStar },
-                { value: 'all', label: 'All', icon: FaCalendar }
-              ].map((option) => (
-                <button
-                  key={option.value}
-                  onClick={() => setSortOption(option.value as SortOption)}
-                  className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200 ease-[cubic-bezier(0.25,0.1,0.25,1)] flex items-center gap-1.5 ${
-                    sortOption === option.value
-                      ? activeFilterClass
-                      : 'glass-chip text-gray-700 dark:text-gray-300'
-                  }`}
-                >
-                  <option.icon className="text-xs" />
-                  {option.label}
-                </button>
-              ))}
+            {/* Results Count */}
+            <div className="text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap pt-2 xl:pt-0 mt-1 xl:mt-0 w-full xl:w-auto border-t border-gray-200/30 dark:border-white/[0.06] xl:border-none flex items-center justify-between xl:justify-start">
+              <span>Showing <span className="font-semibold text-gray-900 dark:text-white">{filteredAndSortedEvents.length}</span> program{filteredAndSortedEvents.length !== 1 ? 's' : ''}</span>
             </div>
-
-            {/* Category Filter Buttons - Compact */}
-            <div className="flex items-center gap-2 flex-wrap">
-              <FaFilter className="text-gray-500 text-sm" />
-              {[
-                { value: 'all', label: 'All Programs' },
-                { value: 'course', label: 'Courses' },
-                { value: 'workshop', label: 'Workshops' },
-                { value: 'hackathon', label: 'Hackathons' },
-                { value: 'bootcamp', label: 'Bootcamps' },
-                { value: 'event', label: 'Events' }
-              ].map((cat) => (
-                <button
-                  key={cat.value}
-                  onClick={() => setCategoryFilter(cat.value)}
-                  className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200 ease-[cubic-bezier(0.25,0.1,0.25,1)] ${
-                    categoryFilter === cat.value
-                      ? activeFilterClass
-                      : 'glass-chip text-gray-700 dark:text-gray-300'
-                  }`}
-                >
-                  {cat.label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Results Count */}
-          <div className="mt-4 text-sm text-gray-600 dark:text-gray-400">
-            Showing <span className="font-semibold text-gray-900 dark:text-white">{filteredAndSortedEvents.length}</span> program{filteredAndSortedEvents.length !== 1 ? 's' : ''}
           </div>
         </div>
       </section>

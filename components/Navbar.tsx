@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { FaBars, FaTimes, FaChevronDown, FaUser, FaSignOutAlt, FaIdBadge } from 'react-icons/fa'
 import { FaSun, FaMoon } from 'react-icons/fa'
@@ -46,6 +46,7 @@ export default function Navbar() {
   const { user, logout } = useAuth()
   const { profile } = useProfile()
   const pathname = usePathname()
+  const router = useRouter()
 
   const displayName = (profile?.fullName || user?.displayName || user?.email?.split('@')[0] || 'User').trim()
   const firstName = displayName ? displayName.split(' ')[0] : 'User'
@@ -130,6 +131,7 @@ export default function Navbar() {
       await logout()
       toast.success('Logged out successfully')
       setShowUserDropdown(false)
+      router.replace('/auth')
     } catch (error) {
       toast.error('Failed to logout')
     }

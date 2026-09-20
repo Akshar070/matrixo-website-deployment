@@ -43,16 +43,6 @@
       ]
     },
     {
-      "collectionGroup": "userNotifications",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "relatedEntityId",
-          "order": "ASCENDING"
-        }
-      ]
-    },
-    {
       "collectionGroup": "projects",
       "queryScope": "COLLECTION",
       "fields": [

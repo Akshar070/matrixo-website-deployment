@@ -354,13 +354,22 @@ export const Select = ({
     }
   }, [isOpen])
 
-  // Close on scroll (parent containers)
+  // Close when a PARENT container scrolls (the dropdown is fixed-positioned, so
+  // it would otherwise detach from its trigger).
+  //
+  // The listener is in capture phase, which means it also sees scrolls that
+  // happen INSIDE the dropdown's own option list. Without the check below, any
+  // attempt to scroll a long list closed it immediately -- making options past
+  // the visible few unreachable.
   useEffect(() => {
-    if (isOpen) {
-      const handleScroll = () => setIsOpen(false)
-      window.addEventListener('scroll', handleScroll, true)
-      return () => window.removeEventListener('scroll', handleScroll, true)
+    if (!isOpen) return
+    const handleScroll = (event: Event) => {
+      const target = event.target as Node | null
+      if (target && dropdownRef.current?.contains(target)) return // scrolling the list itself
+      setIsOpen(false)
     }
+    window.addEventListener('scroll', handleScroll, true)
+    return () => window.removeEventListener('scroll', handleScroll, true)
   }, [isOpen])
 
   const selectedOption = options.find(opt => opt.value === value)

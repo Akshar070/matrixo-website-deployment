@@ -16,13 +16,13 @@ import { useState, useEffect, useMemo, useCallback } from 'react'
 import {
   FaPlus, FaFilter, FaSearch, FaCheck, FaTimes, FaClock, FaLock,
   FaUserPlus, FaHistory, FaExclamationTriangle, FaFolderOpen, FaArchive,
-  FaPlay, FaPaperPlane, FaUndo, FaBan,
+  FaPlay, FaPaperPlane, FaUndo, FaBan, FaTrash,
 } from 'react-icons/fa'
 import { toast } from 'sonner'
 import { useEmployeeAuth, type EmployeeProfile } from '@/lib/employeePortalContext'
 import {
   subscribeProjects, subscribeProjectTasks, subscribeTaskEvents,
-  createProject, setProjectArchived,
+  createProject, setProjectArchived, deleteProject, deleteProjectTask,
   createProjectTask, assignProjectTask, claimProjectTask,
   startProjectTask, submitProjectTask, confirmProjectTask,
   requestChangesOnTask, reopenProjectTask, setTaskBlocked, setTaskCancelled,
@@ -67,29 +67,22 @@ function isOverdue(t: ProjectTask) {
 }
 
 /**
- * Real teams, extracted from messy employee data.
+ * Every department present in the employee list, tidied for display.
  *
- * `department` is inconsistent in this database: for many employees it simply
- * repeats their `role` ("Admin", "Intern", "admin", "intern"), and casing
- * varies. AdminPanel already works around this by only showing the department
- * badge when `department !== role`; this applies the same rule, and also
- * de-duplicates case-insensitively so "Intern" and "intern" collapse into one.
+ * `department` is inconsistent in this database -- casing varies ("Intern" vs
+ * "intern") and for some employees it repeats their role. All real values are
+ * kept so nothing is hidden from the person assigning work; only exact
+ * case-duplicates are merged, preferring the properly-capitalised spelling.
  */
 function teamsFrom(employees: EmployeeProfile[]): string[] {
-  const roleWords = new Set(
-    employees.map((e) => (e.role || '').trim().toLowerCase()).filter(Boolean)
-  )
   const byKey = new Map<string, string>()
 
   for (const e of employees) {
     const dept = (e.department || '').trim()
     if (!dept) continue
     const key = dept.toLowerCase()
-    // Drop values that are really just the person's role.
-    if (key === (e.role || '').trim().toLowerCase()) continue
-    if (roleWords.has(key)) continue
-    // Keep the first spelling seen, preferring one that isn't all-lowercase.
     const existing = byKey.get(key)
+    // Prefer "Web Development" over "web development".
     if (!existing || (existing === existing.toLowerCase() && dept !== dept.toLowerCase())) {
       byKey.set(key, dept)
     }
@@ -385,7 +378,7 @@ function TaskDetailModal({
                 </Button>
               )}
               {task.status !== 'CANCELLED' ? (
-                <Button size="sm" variant="danger" icon={<FaBan />} loading={busy}
+                <Button size="sm" variant="ghost" icon={<FaBan />} loading={busy}
                   onClick={() => run(() => setTaskCancelled(task.id!, true), 'Task cancelled')}>
                   Cancel Task
                 </Button>
@@ -395,6 +388,21 @@ function TaskDetailModal({
                   Restore
                 </Button>
               )}
+
+              {/* Permanent, unlike Cancel. Confirmed because the audit history
+                  goes with it and nothing can bring either back. */}
+              <Button size="sm" variant="danger" icon={<FaTrash />} loading={busy}
+                onClick={() => {
+                  const ok = window.confirm(
+                    `Delete "${task.title}" permanently?\n\n` +
+                    'This also removes its history and cannot be undone. ' +
+                    'Use Cancel Task instead if you only want it out of the way.'
+                  )
+                  if (!ok) return
+                  run(async () => { await deleteProjectTask(task.id!); onClose() }, 'Task deleted')
+                }}>
+                Delete
+              </Button>
             </div>
           </div>
         )}
@@ -625,13 +633,36 @@ function ProjectsPanel({ projects, tasks, actor }: { projects: Project[]; tasks:
                   </div>
                 </div>
 
-                <Button size="sm" variant="ghost" icon={<FaArchive />}
-                  onClick={async () => {
-                    try { await setProjectArchived(p.id!, true); toast.success('Project archived') }
-                    catch (e: any) { toast.error(e?.message || 'Could not archive') }
-                  }}>
-                  Archive
-                </Button>
+                <div className="flex items-center gap-2">
+                  <Button size="sm" variant="ghost" icon={<FaArchive />}
+                    onClick={async () => {
+                      try { await setProjectArchived(p.id!, true); toast.success('Project archived') }
+                      catch (e: any) { toast.error(e?.message || 'Could not archive') }
+                    }}>
+                    Archive
+                  </Button>
+
+                  {/* Deleting a project takes its tasks with it, so the count is
+                      spelled out before anything is destroyed. */}
+                  <Button size="sm" variant="danger" icon={<FaTrash />}
+                    onClick={async () => {
+                      const ok = window.confirm(
+                        `Delete the project "${p.name}" permanently?\n\n` +
+                        `This also deletes its ${prog.total} task${prog.total === 1 ? '' : 's'} ` +
+                        'and all their history. It cannot be undone.\n\n' +
+                        'Archive instead if you just want it off the list.'
+                      )
+                      if (!ok) return
+                      try {
+                        const r = await deleteProject(p.id!)
+                        toast.success(
+                          `Project deleted${r?.deletedTasks ? ` with ${r.deletedTasks} task(s)` : ''}`
+                        )
+                      } catch (e: any) { toast.error(e?.message || 'Could not delete project') }
+                    }}>
+                    Delete
+                  </Button>
+                </div>
               </Card>
             )
           })}

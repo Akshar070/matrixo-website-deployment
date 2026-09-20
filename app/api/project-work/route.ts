@@ -31,6 +31,7 @@ const MANAGER_ACTIONS = new Set([
   'createProject', 'updateProject', 'archiveProject',
   'createTask', 'updateTask', 'assignTask',
   'confirmTask', 'requestChanges', 'reopenTask', 'cancelTask',
+  'deleteTask', 'deleteProject',
 ])
 
 type Ctx = { db: FirebaseFirestore.Firestore; me: ResolvedEmployee }
@@ -407,6 +408,66 @@ const handlers: Record<string, (ctx: Ctx, body: any) => Promise<NextResponse>> =
       fromStatus: found.task.status, toStatus: to, note: reason?.trim() || null,
     })
     return NextResponse.json({ ok: true })
+  },
+
+
+  /**
+   * Permanently delete a task and its audit entries.
+   *
+   * Distinct from `cancelTask`, which is the soft option and keeps the history.
+   * This is unrecoverable, so the UI confirms first. Events are removed too --
+   * leaving them would orphan rows pointing at a task that no longer exists.
+   */
+  async deleteTask({ db, me }, { taskId }) {
+    const found = await loadTask(db, taskId)
+    if (!found) return bad(404, 'Task not found')
+
+    const events = await db.collection(EVENTS).where('taskId', '==', taskId).get()
+    const batch = db.batch()
+    events.docs.forEach((d) => batch.delete(d.ref))
+    batch.delete(found.ref)
+    await batch.commit()
+
+    console.log('[project-work] task deleted', {
+      taskId, title: found.task.title, by: me.uid, events: events.size,
+    })
+    return NextResponse.json({ ok: true, deletedEvents: events.size })
+  },
+
+  /**
+   * Permanently delete a project, every task in it, and their audit entries.
+   *
+   * Firestore has no cascade, so this is done explicitly. Batches cap at 500
+   * writes, so deletions are chunked.
+   */
+  async deleteProject({ db, me }, { projectId }) {
+    if (!projectId) return bad(400, 'projectId is required')
+
+    const projectRef = db.collection(PROJECTS).doc(projectId)
+    const project = await projectRef.get()
+    if (!project.exists) return bad(404, 'Project not found')
+
+    const tasks = await db.collection(TASKS).where('projectId', '==', projectId).get()
+    const events = await db.collection(EVENTS).where('projectId', '==', projectId).get()
+
+    const refs = [
+      ...events.docs.map((d) => d.ref),
+      ...tasks.docs.map((d) => d.ref),
+      projectRef,
+    ]
+
+    // Firestore allows at most 500 operations per batch.
+    for (let i = 0; i < refs.length; i += 450) {
+      const batch = db.batch()
+      refs.slice(i, i + 450).forEach((r) => batch.delete(r))
+      await batch.commit()
+    }
+
+    console.log('[project-work] project deleted', {
+      projectId, name: (project.data() as any)?.name,
+      by: me.uid, tasks: tasks.size, events: events.size,
+    })
+    return NextResponse.json({ ok: true, deletedTasks: tasks.size, deletedEvents: events.size })
   },
 
   async toggleChecklist({ db, me }, { taskId, itemId, done }) {

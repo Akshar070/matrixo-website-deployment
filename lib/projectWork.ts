@@ -511,6 +511,13 @@ export const createProject = (input: { name: string; description?: string }) =>
 export const setProjectArchived = (projectId: string, archived: boolean) =>
   callApi('archiveProject', { projectId, archived }).then(() => undefined)
 
+/**
+ * Permanently delete a project, all its tasks, and their audit history.
+ * Admin / Co-Admin only, and unrecoverable — archive is the reversible option.
+ */
+export const deleteProject = (projectId: string) =>
+  callApi<{ deletedTasks: number; deletedEvents: number }>('deleteProject', { projectId })
+
 // ---------- tasks ----------
 
 /**
@@ -587,6 +594,13 @@ export const setTaskCancelled = (taskId: string, cancelled: boolean, reason?: st
 
 export const toggleChecklistItem = (taskId: string, itemId: string, done: boolean) =>
   callApi('toggleChecklist', { taskId, itemId, done }).then(() => undefined)
+
+/**
+ * Permanently delete a task and its audit history. Admin / Co-Admin only.
+ * `setTaskCancelled` is the soft alternative that preserves the trail.
+ */
+export const deleteProjectTask = (taskId: string) =>
+  callApi('deleteTask', { taskId }).then(() => undefined)
 
 // ============================================================================
 // PROGRESS — always derived from task data, never user-entered

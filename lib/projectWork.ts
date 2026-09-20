@@ -312,20 +312,42 @@ export function canViewTask(task: ProjectTask, actor?: Actor | null): boolean {
 
 export function subscribeProjects(
   cb: (projects: Project[]) => void,
-  opts: { includeArchived?: boolean } = {}
+  opts: { includeArchived?: boolean; onError?: (message: string) => void } = {}
 ): Unsubscribe {
-  const constraints: QueryConstraint[] = []
-  if (!opts.includeArchived) constraints.push(where('status', '==', 'active'))
-  constraints.push(orderBy('createdAt', 'desc'))
-
+  // Deliberately NO orderBy here. Filtering on `status` while sorting on
+  // `createdAt` would need a composite index, and a project list is small
+  // enough to sort on the client. One less index to deploy is one less way for
+  // this screen to silently come up empty.
   return onSnapshot(
-    query(collection(db, PROJECTS_COLLECTION), ...constraints),
-    (snap) => cb(snap.docs.map((d) => ({ id: d.id, ...d.data() })) as Project[]),
+    query(collection(db, PROJECTS_COLLECTION)),
+    (snap) => {
+      const all = snap.docs.map((d) => ({ id: d.id, ...d.data() })) as Project[]
+      const visible = opts.includeArchived ? all : all.filter((p) => p.status !== 'archived')
+      visible.sort((a, b) => (b.createdAt?.toMillis?.() ?? 0) - (a.createdAt?.toMillis?.() ?? 0))
+      cb(visible)
+    },
     (err) => {
+      // Surfacing this matters: an empty list and a permission/index failure
+      // look identical on screen otherwise.
       console.error('[projectWork] projects listener error:', err)
+      opts.onError?.(describeFirestoreError(err, 'projects'))
       cb([])
     }
   )
+}
+
+/** Turns a raw Firestore listener error into something actionable. */
+export function describeFirestoreError(err: any, what: string): string {
+  const code = err?.code || ''
+  if (code === 'failed-precondition' || /requires an index/i.test(err?.message || '')) {
+    return `The ${what} list needs a Firestore index that has not been created yet. ` +
+           `Deploy indexes with: firebase deploy --only firestore:indexes`
+  }
+  if (code === 'permission-denied') {
+    return `You do not have permission to read ${what}. If you were just given a role, ` +
+           `sign out and back in to refresh your access.`
+  }
+  return `Could not load ${what}: ${err?.message || 'unknown error'}`
 }
 
 /**
@@ -336,13 +358,14 @@ export function subscribeProjects(
 export function subscribeProjectTasks(
   actor: Actor,
   cb: (tasks: ProjectTask[]) => void,
-  opts: { projectId?: string } = {}
+  opts: { projectId?: string; onError?: (message: string) => void } = {}
 ): Unsubscribe {
   const col = collection(db, PROJECT_TASKS_COLLECTION)
   const manager = isAdminOrSubAdmin(actor.role)
 
   const onErr = (err: unknown) => {
     console.error('[projectWork] tasks listener error:', err)
+    opts.onError?.(describeFirestoreError(err, 'project tasks'))
     cb([])
   }
 

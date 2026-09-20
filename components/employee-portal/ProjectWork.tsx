@@ -465,7 +465,14 @@ function CreateTaskModal({
     <Modal isOpen onClose={onClose} title="Create Project Task" size="lg">
       <div className="space-y-4">
         {projects.length === 0 && (
-          <Alert variant="warning">Create a project first — tasks must belong to one.</Alert>
+          <Alert variant="warning">
+            There are no projects yet, so there is nothing to attach a task to.
+            Close this and open the <strong>Projects</strong> tab to create one.
+            <span className="block mt-1 opacity-80">
+              If you know projects exist, the list failed to load — check the banner
+              behind this dialog.
+            </span>
+          </Alert>
         )}
         <Select
           label="Project"
@@ -634,6 +641,7 @@ export function ProjectWork() {
   const [tasks, setTasks] = useState<ProjectTask[]>([])
   const [employees, setEmployees] = useState<EmployeeProfile[]>([])
   const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState<string | null>(null)
   const [subTab, setSubTab] = useState<SubTab>('mine')
   const [openTask, setOpenTask] = useState<ProjectTask | null>(null)
   const [showCreate, setShowCreate] = useState(false)
@@ -668,8 +676,13 @@ export function ProjectWork() {
 
   useEffect(() => {
     if (!actor) return
-    const unsubP = subscribeProjects(setProjects)
-    const unsubT = subscribeProjectTasks(actor, (t) => { setTasks(t); setLoading(false) })
+    setLoadError(null)
+    const unsubP = subscribeProjects(setProjects, { onError: setLoadError })
+    const unsubT = subscribeProjectTasks(
+      actor,
+      (t) => { setTasks(t); setLoading(false) },
+      { onError: (m) => { setLoadError(m); setLoading(false) } }
+    )
     return () => { unsubP(); unsubT() }
   }, [actor?.employeeId, actor?.role, actor?.department]) // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -754,11 +767,21 @@ export function ProjectWork() {
           ))}
         </div>
         {manager && (
-          <Button size="sm" icon={<FaPlus />} onClick={() => setShowCreate(true)}>
-            Create Project Task
-          </Button>
+          projects.length === 0 ? (
+            <Button size="sm" icon={<FaFolderOpen />} onClick={() => setSubTab('projects')}>
+              Create a Project First
+            </Button>
+          ) : (
+            <Button size="sm" icon={<FaPlus />} onClick={() => setShowCreate(true)}>
+              Create Project Task
+            </Button>
+          )
         )}
       </div>
+
+      {loadError && (
+        <Alert variant="error">{loadError}</Alert>
+      )}
 
       {loading ? (
         <div className="flex justify-center py-12"><Spinner /></div>

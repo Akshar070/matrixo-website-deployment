@@ -17,6 +17,7 @@ interface CollegeSelectProps {
   disabled?: boolean
   onNotFound?: () => void
   showNotFoundOption?: boolean
+  state?: string
 }
 
 export function CollegeSelect({
@@ -26,6 +27,7 @@ export function CollegeSelect({
   disabled,
   onNotFound,
   showNotFoundOption = true,
+  state,
 }: CollegeSelectProps) {
   const [colleges, setColleges] = useState<College[]>([])
   const [loading, setLoading] = useState(false)
@@ -65,7 +67,11 @@ export function CollegeSelect({
       setColleges([]) // Clear stale colleges immediately
 
       try {
-        const res = await fetch(`/api/locations/colleges?district=${encodeURIComponent(district)}`, {
+        const url = new URL('/api/locations/colleges', window.location.origin)
+        if (district) url.searchParams.append('district', district)
+        if (state) url.searchParams.append('state', state)
+        
+        const res = await fetch(url.toString(), {
           signal: controller.signal,
         })
         if (!res.ok) throw new Error('Failed to fetch colleges')
@@ -90,7 +96,7 @@ export function CollegeSelect({
       isMounted = false
       controller.abort()
     }
-  }, [district])
+  }, [district, state])
 
   const filteredColleges = colleges.filter(c =>
     c.name.toLowerCase().includes(searchTerm.toLowerCase()) ||

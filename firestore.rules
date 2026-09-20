@@ -486,5 +486,25 @@ service cloud.firestore {
       allow update, delete: if false;
     }
 
+    // ================================================
+    // PUBLIC NOTIFICATIONS (global, visitor-facing)
+    // ================================================
+    // Readable by anyone so the public notification feed is accessible
+    // without login. ALL writes go through the Admin SDK in API routes.
+    match /publicNotifications/{notificationId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // ================================================
+    // PUBLIC NOTIFICATION READ STATE (per-user)
+    // ================================================
+    // Owner may read/write their own read state. Anonymous visitors
+    // handle read state client-side via localStorage.
+    match /publicNotificationReadState/{userId} {
+      allow read: if isAuthenticated() && request.auth.uid == userId;
+      allow write: if isAuthenticated() && request.auth.uid == userId;
+    }
   }
 }
+

@@ -700,7 +700,7 @@ export default function ApplicationForm({ roleId }: ApplicationFormProps) {
             <div className="glass-card overflow-hidden">
               {/* Header */}
               <div className="bg-gradient-to-r from-cyan-600 to-blue-700 p-6 sm:p-8">
-                <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-3">{role.title}</h1>
+                <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-3" style={{ textShadow: '0 2px 4px rgba(0, 0, 0, 0.3)' }}>{role.title}</h1>
                 <div className="flex flex-wrap gap-3 text-cyan-100 text-sm">
                   <span className="flex items-center gap-1.5 bg-white/15 px-3 py-1 rounded-full"><FaUsers className="text-xs" /> {role.team}</span>
                   <span className="flex items-center gap-1.5 bg-white/15 px-3 py-1 rounded-full"><FaMapMarkerAlt className="text-xs" /> {role.location}</span>

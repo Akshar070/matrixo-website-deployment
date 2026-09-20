@@ -3,6 +3,7 @@ import { getAdminFirestore } from '@/lib/firebaseAdmin'
 import { requireEmployee } from '@/lib/studentvault/auth'
 import { getOfferById, OFFERS_COLLECTION, slugExists } from '@/lib/studentvault/data'
 import { validateOffer } from '@/lib/studentvault/validation'
+import { createPublicNotification } from '@/lib/publicNotifications'
 
 export const dynamic = 'force-dynamic'
 
@@ -80,6 +81,21 @@ export async function PATCH(request: NextRequest, { params }: Params) {
         update.verifiedBy = auth.employee.name || auth.employee.email || 'matriXO employee'
       }
       await getAdminFirestore().collection(OFFERS_COLLECTION).doc(params.id).update(update)
+
+      // ── Auto-generate public notification on publish (non-fatal) ───
+      if (action === 'publish') {
+        await createPublicNotification({
+          type: 'NEW_OFFER',
+          category: 'STUDENTVAULT',
+          title: `New Student Offer: ${existing.name}`,
+          message: existing.summary?.slice(0, 120) || `${existing.name} is now available on StudentVault.`,
+          targetUrl: `/studentvault/${existing.slug}`,
+          entityId: params.id,
+          entityType: 'offer',
+          expiresAt: existing.expiresOn ? new Date(existing.expiresOn) : null,
+        })
+      }
+
       return NextResponse.json({ success: true, publishState: update.publishState })
     }
 

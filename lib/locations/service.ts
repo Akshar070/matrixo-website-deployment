@@ -317,9 +317,23 @@ export async function getDistrictsByState(state: string): Promise<District[]> {
 }
 
 // Get colleges for a district
-export async function getCollegesByDistrict(district: string): Promise<College[]> {
+export async function getCollegesByDistrict(district: string, state?: string): Promise<College[]> {
   if (!district) return [];
   const locations = await initializeLocations();
+
+  const upperState = (state || '').trim().toUpperCase();
+  const lowerState = (state || '').trim().toLowerCase();
+  const isTelangana = upperState === 'TS' || upperState === 'TG' || lowerState === 'telangana';
+
+  if (isTelangana) {
+    const matchingColleges = locations.colleges.filter(c => {
+      const cState = (c.state || '').trim().toUpperCase();
+      const cDistrict = (c.district || '').trim().toUpperCase();
+      return cState === 'TS' || cState === 'TG' || c.state?.toLowerCase() === 'telangana' || cDistrict.startsWith('TS-');
+    });
+    return matchingColleges.sort((a, b) => a.name.localeCompare(b.name));
+  }
+
   const canonicalDistrictId = resolveCanonicalDistrictId(district);
   const normalizedInput = district.trim().toLowerCase();
   const canonicalLower = canonicalDistrictId.toLowerCase();
@@ -341,7 +355,8 @@ export async function getCollegesByDistrict(district: string): Promise<College[]
 // Search colleges by name and optional district
 export async function searchColleges(
   query: string,
-  district?: string
+  district?: string,
+  state?: string
 ): Promise<College[]> {
   const locations = await initializeLocations();
   const normalized = query.toLowerCase().trim();
@@ -352,7 +367,17 @@ export async function searchColleges(
       (c.name && c.name.toLowerCase().includes(normalized))
   );
 
-  if (district) {
+  const upperState = (state || '').trim().toUpperCase();
+  const lowerState = (state || '').trim().toLowerCase();
+  const isTelangana = upperState === 'TS' || upperState === 'TG' || lowerState === 'telangana';
+
+  if (isTelangana) {
+    results = results.filter(c => {
+      const cState = (c.state || '').trim().toUpperCase();
+      const cDistrict = (c.district || '').trim().toUpperCase();
+      return cState === 'TS' || cState === 'TG' || c.state?.toLowerCase() === 'telangana' || cDistrict.startsWith('TS-');
+    });
+  } else if (district) {
     const canonicalDistrictId = resolveCanonicalDistrictId(district);
     const normalizedInput = district.trim().toLowerCase();
     const canonicalLower = canonicalDistrictId.toLowerCase();

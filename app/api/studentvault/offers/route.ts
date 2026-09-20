@@ -3,6 +3,7 @@ import { getAdminFirestore } from '@/lib/firebaseAdmin'
 import { requireEmployee } from '@/lib/studentvault/auth'
 import { getAllOffers, OFFERS_COLLECTION, slugExists } from '@/lib/studentvault/data'
 import { validateOffer } from '@/lib/studentvault/validation'
+import { createPublicNotification } from '@/lib/publicNotifications'
 
 export const dynamic = 'force-dynamic'
 
@@ -53,7 +54,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           error:
-            'Confirm you have verified this offer against the provider’s official source before publishing.',
+            'Confirm you have verified this offer against the provider\'s official source before publishing.',
         },
         { status: 400 }
       )
@@ -71,6 +72,20 @@ export async function POST(request: NextRequest) {
         updatedAt: now,
         createdBy: auth.employee.employeeId || auth.employee.uid,
       })
+
+    // ── Auto-generate public notification on publish (non-fatal) ─────
+    if (publishRequested) {
+      await createPublicNotification({
+        type: 'NEW_OFFER',
+        category: 'STUDENTVAULT',
+        title: `New Student Offer: ${value.name}`,
+        message: value.summary.slice(0, 120) || `${value.name} is now available on StudentVault.`,
+        targetUrl: `/studentvault/${value.slug}`,
+        entityId: doc.id,
+        entityType: 'offer',
+        expiresAt: value.expiresOn ? new Date(value.expiresOn) : null,
+      })
+    }
 
     return NextResponse.json({ success: true, id: doc.id, slug: value.slug })
   } catch (error) {

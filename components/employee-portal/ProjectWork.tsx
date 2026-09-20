@@ -29,7 +29,7 @@ import {
   toggleChecklistItem,
   computeProgress, sortTasks,
   STATUS_META, PROJECT_TASK_STATUSES, TASK_PRIORITIES, PRIORITY_META,
-  canManageProjects, canClaimTask, isTaskOwner,
+  canManageProjects, canClaimTask, isTaskOwner, setProjectWorkTokenGetter,
   type Project, type ProjectTask, type ProjectTaskStatus, type ProjectTaskEvent,
   type TaskPriority, type Actor,
 } from '@/lib/projectWork'
@@ -233,7 +233,7 @@ function TaskDetailModal({
                   checked={it.done}
                   disabled={busy || (!owner && !manager)}
                   onChange={(e) => run(
-                    () => toggleChecklistItem(task.id!, it.id, e.target.checked, actor),
+                    () => toggleChecklistItem(task.id!, it.id, e.target.checked),
                     'Checklist updated'
                   )}
                 />
@@ -260,13 +260,13 @@ function TaskDetailModal({
             <div className="flex flex-wrap gap-2">
               {canStart && (
                 <Button size="sm" icon={<FaPlay />} loading={busy}
-                  onClick={() => run(() => startProjectTask(task.id!, actor), 'Task started')}>
+                  onClick={() => run(() => startProjectTask(task.id!), 'Task started')}>
                   {task.status === 'CHANGES_REQUESTED' ? 'Resume Work' : 'Start Work'}
                 </Button>
               )}
               {canSubmit && (
                 <Button size="sm" variant="success" icon={<FaPaperPlane />} loading={busy}
-                  onClick={() => run(() => submitProjectTask(task.id!, note, actor), 'Submitted for confirmation')}>
+                  onClick={() => run(() => submitProjectTask(task.id!, note), 'Submitted for confirmation')}>
                   Mark Complete &amp; Submit
                 </Button>
               )}
@@ -275,7 +275,7 @@ function TaskDetailModal({
                   onClick={() => {
                     const why = blockReason.trim() || window.prompt('What is blocking this task?') || ''
                     if (!why.trim()) return
-                    run(() => setTaskBlocked(task.id!, true, why, actor), 'Marked as blocked')
+                    run(() => setTaskBlocked(task.id!, true, why), 'Marked as blocked')
                   }}>
                   Mark Blocked
                 </Button>
@@ -297,11 +297,11 @@ function TaskDetailModal({
             />
             <div className="flex flex-wrap gap-2">
               <Button size="sm" variant="success" icon={<FaCheck />} loading={busy}
-                onClick={() => run(() => confirmProjectTask(task.id!, actor, reviewNote || null), 'Task confirmed')}>
+                onClick={() => run(() => confirmProjectTask(task.id!, reviewNote || null), 'Task confirmed')}>
                 Confirm
               </Button>
               <Button size="sm" variant="danger" icon={<FaTimes />} loading={busy}
-                onClick={() => run(() => requestChangesOnTask(task.id!, reviewNote, actor), 'Changes requested')}>
+                onClick={() => run(() => requestChangesOnTask(task.id!, reviewNote), 'Changes requested')}>
                 Request Changes
               </Button>
             </div>
@@ -329,7 +329,10 @@ function TaskDetailModal({
                 onClick={() => {
                   const emp = employees.find((e) => e.employeeId === assignee)
                   run(
-                    () => assignProjectTask(task.id!, emp ? { employeeId: emp.employeeId, name: emp.name } : null, actor),
+                    () => assignProjectTask(
+                      task.id!,
+                      emp ? { employeeId: emp.employeeId, name: emp.name, email: emp.email } : null
+                    ),
                     emp ? `Assigned to ${emp.name}` : 'Returned to available pool'
                   )
                 }}>
@@ -339,24 +342,24 @@ function TaskDetailModal({
             <div className="flex flex-wrap gap-2 pt-1">
               {task.status === 'CONFIRMED' && (
                 <Button size="sm" variant="ghost" icon={<FaUndo />} loading={busy}
-                  onClick={() => run(() => reopenProjectTask(task.id!, actor), 'Task reopened')}>
+                  onClick={() => run(() => reopenProjectTask(task.id!), 'Task reopened')}>
                   Reopen
                 </Button>
               )}
               {task.status === 'BLOCKED' && (
                 <Button size="sm" variant="ghost" loading={busy}
-                  onClick={() => run(() => setTaskBlocked(task.id!, false, null, actor), 'Unblocked')}>
+                  onClick={() => run(() => setTaskBlocked(task.id!, false, null), 'Unblocked')}>
                   Unblock
                 </Button>
               )}
               {task.status !== 'CANCELLED' ? (
                 <Button size="sm" variant="danger" icon={<FaBan />} loading={busy}
-                  onClick={() => run(() => setTaskCancelled(task.id!, true, actor), 'Task cancelled')}>
+                  onClick={() => run(() => setTaskCancelled(task.id!, true), 'Task cancelled')}>
                   Cancel Task
                 </Button>
               ) : (
                 <Button size="sm" variant="ghost" loading={busy}
-                  onClick={() => run(() => setTaskCancelled(task.id!, false, actor), 'Task restored')}>
+                  onClick={() => run(() => setTaskCancelled(task.id!, false), 'Task restored')}>
                   Restore
                 </Button>
               )}
@@ -444,14 +447,13 @@ function CreateTaskModal({
         title: form.title,
         description: form.description,
         priority: form.priority,
-        assignedTo: emp?.employeeId || null,
-        assignedToName: emp?.name || null,
+        // Email is the only reliable link to an Auth UID; the server resolves it.
+        assignee: emp ? { employeeId: emp.employeeId, name: emp.name, email: emp.email } : null,
         assignedRole: form.assignedRole || null,
         allowClaiming: !emp && form.allowClaiming,
         dueDate: form.dueDate || null,
         referenceUrl: form.referenceUrl || null,
-        initialStatus: emp ? 'ASSIGNED' : form.allowClaiming ? 'AVAILABLE' : 'NOT_STARTED',
-      }, actor)
+      })
       toast.success('Task created')
       onClose()
     } catch (e: any) {
@@ -537,7 +539,7 @@ function ProjectsPanel({ projects, tasks, actor }: { projects: Project[]; tasks:
     if (!form.name.trim()) return toast.error('Project name is required')
     setBusy(true)
     try {
-      await createProject(form, actor)
+      await createProject(form)
       toast.success('Project created')
       setForm({ name: '', description: '' })
       setShowNew(false)
@@ -589,7 +591,7 @@ function ProjectsPanel({ projects, tasks, actor }: { projects: Project[]; tasks:
 
                 <Button size="sm" variant="ghost" icon={<FaArchive />}
                   onClick={async () => {
-                    try { await setProjectArchived(p.id!, true, actor); toast.success('Project archived') }
+                    try { await setProjectArchived(p.id!, true); toast.success('Project archived') }
                     catch (e: any) { toast.error(e?.message || 'Could not archive') }
                   }}>
                   Archive
@@ -627,7 +629,7 @@ function ProjectsPanel({ projects, tasks, actor }: { projects: Project[]; tasks:
 type SubTab = 'mine' | 'projects' | 'workboard'
 
 export function ProjectWork() {
-  const { employee, getAllEmployees } = useEmployeeAuth()
+  const { employee, user, getAllEmployees } = useEmployeeAuth()
   const [projects, setProjects] = useState<Project[]>([])
   const [tasks, setTasks] = useState<ProjectTask[]>([])
   const [employees, setEmployees] = useState<EmployeeProfile[]>([])
@@ -644,14 +646,25 @@ export function ProjectWork() {
   const [fPriority, setFPriority] = useState('')
   const [search, setSearch] = useState('')
 
+  // UID comes from Firebase Auth, not the Employees document — the document may
+  // be keyed by name, so its ID is not a usable identity.
   const actor: Actor | null = useMemo(
-    () => employee ? {
-      employeeId: employee.employeeId, name: employee.name,
-      role: employee.role, department: employee.department,
+    () => employee && user ? {
+      uid: user.uid,
+      employeeId: employee.employeeId,
+      name: employee.name,
+      email: employee.email ?? user.email,
+      role: employee.role,
+      department: employee.department,
     } : null,
-    [employee]
+    [employee, user]
   )
   const manager = canManageProjects(actor)
+
+  // lib/projectWork calls the API with the caller's ID token.
+  useEffect(() => {
+    setProjectWorkTokenGetter(async () => (user ? await user.getIdToken() : null))
+  }, [user])
 
   useEffect(() => {
     if (!actor) return
@@ -667,7 +680,7 @@ export function ProjectWork() {
 
   const claim = useCallback(async (t: ProjectTask) => {
     if (!actor) return
-    try { await claimProjectTask(t.id!, actor); toast.success(`“${t.title}” is yours`) }
+    try { await claimProjectTask(t.id!); toast.success(`“${t.title}” is yours`) }
     catch (e: any) { toast.error(e?.message || 'Could not claim this task') }
   }, [actor])
 

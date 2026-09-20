@@ -403,87 +403,64 @@ service cloud.firestore {
       }
     }
 
-    // --- Project Work authorization helpers ---------------------------
-    // Atomic claim: the doc must still be unassigned and claimable, and the
-    // caller may only assign it to themselves. Firestore evaluates this
-    // against the CURRENT document, so a loser in a race fails here.
-    function claimIsValid() {
-      return isEmployee()
-             && resource.data.status == 'AVAILABLE'
-             && resource.data.allowClaiming == true
-             && resource.data.assignedTo == null
-             && request.resource.data.assignedTo == myEmployeeId()
-             && request.resource.data.status == 'ASSIGNED'
-             && request.resource.data.selectedBy == myEmployeeId()
-             && request.resource.data.confirmedBy == null;
+    // --- Project Work authorization ------------------------------------
+    //
+    // IMPORTANT: the `Employees` collection has MIXED document IDs -- some are
+    // keyed by Auth UID, others by employee name. Rules cannot run queries, so
+    // `get(/Employees/$(request.auth.uid))` silently fails for name-keyed
+    // records and would lock those employees (including admins) out entirely.
+    //
+    // These rules therefore never read `Employees`. They rely only on values
+    // carried in the verified auth token:
+    //   * request.auth.uid              -- always present, matches assignedToUid
+    //   * request.auth.token.portalRole -- a custom claim set server-side by
+    //                                      /api/project-work (Admin SDK only,
+    //                                      so it cannot be self-granted)
+    //
+    // All WRITES are denied to clients: every mutation goes through
+    // /api/project-work, which resolves identity against both document shapes.
+
+    // Reads the custom claim defensively: the claim is absent until the user's
+    // first call to /api/project-work, and touching a missing token key would
+    // otherwise abort rule evaluation.
+    function portalRole() {
+      return isAuthenticated() && 'portalRole' in request.auth.token
+        ? request.auth.token.portalRole
+        : '';
     }
 
-    // Fields only management may ever change.
-    function managerOnlyFields() {
-      return ['confirmedBy', 'confirmedByName', 'confirmedAt', 'reviewComment',
-              'createdBy', 'createdByName', 'createdAt', 'projectId', 'projectName',
-              'title', 'description', 'priority', 'dueDate', 'assignedRole',
-              'allowClaiming', 'referenceUrl', 'assignedTo', 'assignedToName'];
-    }
-
-    // An employee working their own task. They may move it between working
-    // states and submit it, but 'CONFIRMED' is absent from this list, so the
-    // final approval step is unreachable from a client write.
-    function ownerUpdateIsValid() {
-      return isEmployee()
-             && resource.data.assignedTo == myEmployeeId()
-             && request.resource.data.assignedTo == myEmployeeId()
-             // Source states an employee may act from. Crucially this excludes
-             // CONFIRMED and CANCELLED, so an owner cannot un-confirm their own
-             // finished work, and excludes COMPLETED_AWAITING_CONFIRMATION so a
-             // submission cannot be silently withdrawn while under review.
-             && resource.data.status in
-                  ['ASSIGNED', 'IN_PROGRESS', 'CHANGES_REQUESTED', 'BLOCKED']
-             // Destination states. CONFIRMED is absent -- final approval is
-             // unreachable from any client write by a non-manager.
-             && request.resource.data.status in
-                  ['IN_PROGRESS', 'COMPLETED_AWAITING_CONFIRMATION', 'BLOCKED']
-             && !request.resource.data.diff(resource.data)
-                  .affectedKeys().hasAny(managerOnlyFields());
+    function isProjectManager() {
+      return isAuthenticated() && (portalRole() == 'admin' || portalRole() == 'sub-admin');
     }
 
     // ================================================
     // PROJECT WORK (To-Do List -> Project Work)
-    // Only Admin / Co-Admin ('sub-admin') may create, assign, confirm or
-    // cancel. Employees may claim an available task and drive ONLY their own
-    // task forward, and can never reach CONFIRMED.
     // ================================================
 
     match /projects/{projectId} {
-      allow read: if isEmployee();
-      allow create, update, delete: if isManager();
+      // Any signed-in portal user may see the project list; managers see the
+      // same data plus the management controls in the UI.
+      allow read: if isAuthenticated();
+      allow write: if false; // server-only, via /api/project-work
     }
 
     match /projectTasks/{taskId} {
-      allow read: if isEmployee();
+      // A manager sees everything. Everyone else sees only tasks assigned to
+      // them (matched on UID, which needs no Employees lookup) and the open
+      // claimable pool.
+      allow read: if isProjectManager()
+                  || (isAuthenticated() && resource.data.assignedToUid == request.auth.uid)
+                  || (isAuthenticated() && resource.data.status == 'AVAILABLE'
+                      && resource.data.allowClaiming == true);
 
-      // Creation and destruction are management-only.
-      allow create: if isManager()
-                    && request.resource.data.title is string
-                    && request.resource.data.title.size() > 0
-                    && request.resource.data.projectId is string
-                    && request.resource.data.createdBy == myEmployeeId()
-                    // A new task can never be born confirmed.
-                    && request.resource.data.status != 'CONFIRMED'
-                    && request.resource.data.confirmedBy == null;
-
-      allow delete: if isManager();
-
-      allow update: if isManager() || claimIsValid() || ownerUpdateIsValid();
+      allow write: if false; // server-only, via /api/project-work
     }
 
-    // Immutable audit trail: append-only, and the actor cannot be forged.
     match /projectTaskEvents/{eventId} {
-      allow read: if isEmployee();
-      allow create: if isEmployee()
-                    && request.resource.data.actorId == myEmployeeId()
-                    && request.resource.data.taskId is string;
-      allow update, delete: if false;
+      // The audit trail is readable by managers and by the actor themselves.
+      allow read: if isProjectManager()
+                  || (isAuthenticated() && resource.data.actorUid == request.auth.uid);
+      allow write: if false; // append-only, written server-side
     }
 
     // ================================================

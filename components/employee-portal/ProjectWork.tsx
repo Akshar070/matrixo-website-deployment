@@ -66,6 +66,38 @@ function isOverdue(t: ProjectTask) {
   return new Date(t.dueDate) < new Date(new Date().toDateString())
 }
 
+/**
+ * Real teams, extracted from messy employee data.
+ *
+ * `department` is inconsistent in this database: for many employees it simply
+ * repeats their `role` ("Admin", "Intern", "admin", "intern"), and casing
+ * varies. AdminPanel already works around this by only showing the department
+ * badge when `department !== role`; this applies the same rule, and also
+ * de-duplicates case-insensitively so "Intern" and "intern" collapse into one.
+ */
+function teamsFrom(employees: EmployeeProfile[]): string[] {
+  const roleWords = new Set(
+    employees.map((e) => (e.role || '').trim().toLowerCase()).filter(Boolean)
+  )
+  const byKey = new Map<string, string>()
+
+  for (const e of employees) {
+    const dept = (e.department || '').trim()
+    if (!dept) continue
+    const key = dept.toLowerCase()
+    // Drop values that are really just the person's role.
+    if (key === (e.role || '').trim().toLowerCase()) continue
+    if (roleWords.has(key)) continue
+    // Keep the first spelling seen, preferring one that isn't all-lowercase.
+    const existing = byKey.get(key)
+    if (!existing || (existing === existing.toLowerCase() && dept !== dept.toLowerCase())) {
+      byKey.set(key, dept)
+    }
+  }
+
+  return Array.from(byKey.values()).sort((a, b) => a.localeCompare(b))
+}
+
 // ============================================================================
 // TASK CARD
 // ============================================================================
@@ -423,10 +455,7 @@ function CreateTaskModal({
     allowClaiming: true,
   })
 
-  const roles = useMemo(
-    () => Array.from(new Set(employees.map((e) => e.department).filter(Boolean))) as string[],
-    [employees]
-  )
+  const roles = useMemo(() => teamsFrom(employees), [employees])
   // Only offer people from the chosen team, so assignment lists stay relevant.
   const selectable = useMemo(
     () => form.assignedRole ? employees.filter((e) => e.department === form.assignedRole) : employees,
@@ -733,10 +762,7 @@ export function ProjectWork() {
     () => computeProgress(fProject ? tasks.filter((t) => t.projectId === fProject) : tasks),
     [tasks, fProject]
   )
-  const roles = useMemo(
-    () => Array.from(new Set(employees.map((e) => e.department).filter(Boolean))) as string[],
-    [employees]
-  )
+  const roles = useMemo(() => teamsFrom(employees), [employees])
 
   if (!actor) {
     return <Alert variant="warning">Sign in to the employee portal to view project work.</Alert>

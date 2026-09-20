@@ -51,6 +51,7 @@ import Link from 'next/link'
 import Calendar from '@/components/employee-portal/Calendar'
 import Attendance from '@/components/employee-portal/Attendance'
 import Tasks from '@/components/employee-portal/Tasks'
+import TodoList from '@/components/employee-portal/TodoList'
 import Discussions from '@/components/employee-portal/Discussions'
 import Meetings from '@/components/employee-portal/Meetings'
 import AdminPanel from '@/components/employee-portal/AdminPanel'
@@ -248,6 +249,7 @@ const navigationItems = [
   { id: 'dashboard', label: 'Dashboard', icon: FaChartLine },
   { id: 'history', label: 'History', icon: FaHistory },
   { id: 'calendar', label: 'Calendar', icon: FaCalendarAlt },
+  { id: 'todo-list', label: 'To-Do List', icon: FaListAlt },
   { id: 'tasks', label: 'Tasks', icon: FaTasks },
   { id: 'meetings', label: 'Meetings', icon: FaVideo },
   { id: 'discussions', label: 'Discussions', icon: FaComments },
@@ -637,13 +639,11 @@ function TopNavbar({
 // DASHBOARD OVERVIEW (for Dashboard tab)
 // ============================================
 
-function DashboardOverview({ onTaskClick, onShowMyTasks }: { onTaskClick?: (taskId: string) => void; onShowMyTasks?: () => void }) {
-  const { employee, getAttendanceRecords, getMonthlyAttendanceStats, tasks = [], personalTodos = [], addPersonalTodo, updatePersonalTodo, deletePersonalTodo } = useEmployeeAuth()
+function DashboardOverview({ onTaskClick, onShowMyTasks, onOpenTodoList }: { onTaskClick?: (taskId: string) => void; onShowMyTasks?: () => void; onOpenTodoList?: () => void }) {
+  const { employee, getAttendanceRecords, getMonthlyAttendanceStats, tasks = [], personalTodos = [] } = useEmployeeAuth()
   const { darkMode } = useTheme()
   const [attendanceRecords, setAttendanceRecords] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
-  const [newTodoTitle, setNewTodoTitle] = useState('')
-  const [addingTodo, setAddingTodo] = useState(false)
 
   useEffect(() => {
     const fetchAttendance = async () => {
@@ -686,44 +686,11 @@ function DashboardOverview({ onTaskClick, onShowMyTasks }: { onTaskClick?: (task
   })
 
   // Helpers for todo list
-  const handleAddTodo = async () => {
-    if (!newTodoTitle.trim()) return
-    setAddingTodo(true)
-    try {
-      await addPersonalTodo(newTodoTitle.trim())
-      setNewTodoTitle('')
-      toast.success('Todo added')
-    } catch (error: any) {
-      console.error('Todo add error:', error)
-      toast.error(error?.message || 'Failed to add todo')
-    } finally {
-      setAddingTodo(false)
-    }
-  }
-
-  const handleToggleTodo = async (id: string, currentStatus: 'pending' | 'completed') => {
-    try {
-      await updatePersonalTodo(id, { status: currentStatus === 'pending' ? 'completed' : 'pending' })
-    } catch (error) {
-      toast.error('Failed to update todo')
-    }
-  }
-
-  const handleDeleteTodo = async (id: string) => {
-    try {
-      await deletePersonalTodo(id)
-      toast.success('Todo deleted')
-    } catch (error) {
-      toast.error('Failed to delete todo')
-    }
-  }
 
   // Filter: pending first, then completed
-  const sortedTodos = [...personalTodos].sort((a, b) => {
-    if (a.status === 'pending' && b.status === 'completed') return -1
-    if (a.status === 'completed' && b.status === 'pending') return 1
-    return 0
-  })
+  // Only the open count is needed now that the list itself lives on the
+  // To-Do List page.
+  const openTodoCount = personalTodos.filter((t) => t.status !== 'completed').length
 
   if (loading) {
     return (
@@ -825,75 +792,36 @@ function DashboardOverview({ onTaskClick, onShowMyTasks }: { onTaskClick?: (task
           )}
         </div>
 
+        {/* Personal to-dos now live on the dedicated To-Do List page (which also
+            hosts Project Work). This card is a summary + entry point so the
+            dashboard keeps its two-column layout without duplicating the
+            management UI. */}
         <div
-          className="rounded-[20px] p-4 sm:p-6 bg-[#FFFFFF] dark:bg-[#101C30] border border-[rgba(15,23,42,0.06)] dark:border-[rgba(255,255,255,0.06)] shadow-[0_4px_20px_rgba(15,23,42,0.02)] dark:shadow-[0_10px_30px_rgba(0,0,0,0.25)]"
+          className="rounded-[20px] p-4 sm:p-6 bg-[#FFFFFF] dark:bg-[#101C30] border border-[rgba(15,23,42,0.06)] dark:border-[rgba(255,255,255,0.06)] shadow-[0_4px_20px_rgba(15,23,42,0.02)] dark:shadow-[0_10px_30px_rgba(0,0,0,0.25)] flex flex-col"
         >
           <h3 className="text-base sm:text-lg font-bold mb-3 sm:mb-4 flex items-center gap-2 text-[#0F172A] dark:text-[#F8FAFC]">
             <FaListAlt className="text-[#2563EB]" />
-            My Todo List
+            My To-Dos
           </h3>
-          
-          {/* Add Todo Input */}
-          <div className="flex gap-2 mb-3 sm:mb-4">
-            <input
-              type="text"
-              value={newTodoTitle}
-              onChange={(e) => setNewTodoTitle(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleAddTodo()}
-              placeholder="Add a new todo..."
-              className="flex-1 px-3 py-2 rounded-lg sm:rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/50 min-w-0 transition-all text-[#0F172A] dark:text-[#F8FAFC] placeholder-[#64748B] dark:placeholder-[#94A3B8] bg-[#F5F7FB] dark:bg-[#152542] border border-[rgba(15,23,42,0.08)] dark:border-[rgba(255,255,255,0.08)]"
-            />
-            <button
-              onClick={handleAddTodo}
-              disabled={addingTodo || !newTodoTitle.trim()}
-              className="px-3 py-2 hover:bg-[#1D4ED8] disabled:bg-[#94A3B8] disabled:dark:bg-neutral-700 disabled:cursor-not-allowed rounded-lg sm:rounded-xl flex-shrink-0 cta-glass"
-            >
-              {addingTodo ? <FaSpinner className="animate-spin" /> : <FaPlus />}
-            </button>
-          </div>
 
-          {sortedTodos.length === 0 ? (
-            <p className="text-center py-4 text-[#64748B] dark:text-[#94A3B8]">No todos yet. Add one above!</p>
-          ) : (
-            <div className="space-y-2 max-h-48 overflow-y-auto">
-              {sortedTodos.slice(0, 6).map((todo) => (
-                <div 
-                  key={todo.id} 
-                  className={`flex items-center justify-between p-3 rounded-xl transition-all border border-[rgba(15,23,42,0.04)] dark:border-[rgba(255,255,255,0.04)] ${
-                    todo.status === 'completed' 
-                      ? 'bg-[#EEF3F8] dark:bg-[rgba(255,255,255,0.02)]'
-                      : 'bg-[#F8FAFC] dark:bg-[rgba(255,255,255,0.05)] hover:bg-[#EEF3F8] dark:hover:bg-[rgba(255,255,255,0.08)]'
-                  }`}
-                >
-                  <div className="flex items-center gap-3 flex-1 min-w-0">
-                    <button
-                      onClick={() => todo.id && handleToggleTodo(todo.id, todo.status)}
-                      className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${
-                        todo.status === 'completed' 
-                          ? 'bg-emerald-500 border-emerald-500 text-white' 
-                          : 'border-[rgba(15,23,42,0.3)] dark:border-neutral-500 hover:border-[#2563EB]'
-                      }`}
-                    >
-                      {todo.status === 'completed' && <FaCheckCircle className="text-xs" />}
-                    </button>
-                    <span className={`text-sm truncate ${
-                      todo.status === 'completed' 
-                        ? 'text-[#94A3B8] dark:text-neutral-500 line-through'
-                        : 'text-[#0F172A] dark:text-white'
-                    }`}>
-                      {todo.title}
-                    </span>
-                  </div>
-                  <button
-                    onClick={() => todo.id && handleDeleteTodo(todo.id)}
-                    className="text-neutral-500 hover:text-red-400 transition-colors ml-2"
-                  >
-                    <FaTrash className="text-xs" />
-                  </button>
-                </div>
-              ))}
-            </div>
-          )}
+          <div className="flex items-baseline gap-2 mb-1">
+            <span className="text-3xl font-bold text-[#0F172A] dark:text-white">{openTodoCount}</span>
+            <span className="text-sm text-[#64748B] dark:text-[#94A3B8]">
+              open item{openTodoCount === 1 ? '' : 's'}
+            </span>
+          </div>
+          <p className="text-sm text-[#64748B] dark:text-[#94A3B8] mb-4">
+            {openTodoCount === 0
+              ? 'Nothing outstanding right now.'
+              : 'Open the To-Do List to work through them.'}
+          </p>
+
+          <button
+            onClick={onOpenTodoList}
+            className="mt-auto w-full px-4 py-2.5 rounded-xl text-sm font-semibold cta-glass"
+          >
+            Open To-Do List
+          </button>
         </div>
       </div>
 
@@ -1490,9 +1418,10 @@ function Dashboard() {
             className="w-full"
           >
             {activeTab === 'attendance' && employee?.role !== 'admin' && <Attendance />}
-            {activeTab === 'dashboard' && <DashboardOverview onTaskClick={handlePendingTaskClick} onShowMyTasks={handleShowMyTasks} />}
+            {activeTab === 'dashboard' && <DashboardOverview onTaskClick={handlePendingTaskClick} onShowMyTasks={handleShowMyTasks} onOpenTodoList={() => setActiveTab('todo-list')} />}
             {activeTab === 'history' && <HistoryTab />}
             {activeTab === 'calendar' && <Calendar />}
+            {activeTab === 'todo-list' && <TodoList />}
             {activeTab === 'tasks' && <Tasks selectedTaskId={selectedTaskId} onTaskOpened={() => setSelectedTaskId(null)} showOnlyMyTasks={showOnlyMyTasks} />}
             {activeTab === 'discussions' && <Discussions />}
             {activeTab === 'meetings' && <Meetings />}

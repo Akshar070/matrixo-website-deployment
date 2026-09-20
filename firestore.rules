@@ -7,6 +7,31 @@ service cloud.firestore {
       return request.auth != null;
     }
 
+    // ------------------------------------------------------------------
+    // ROLE HELPERS (added for Project Work)
+    // Employees docs are keyed by auth uid. A legacy doc whose ID is NOT the
+    // user's uid fails these checks and is treated as a non-employee -- that
+    // fails closed, which is the safe direction. See DEPLOYMENT NOTES.
+    // ------------------------------------------------------------------
+    function employeeDoc() {
+      return get(/databases/$(database)/documents/Employees/$(request.auth.uid));
+    }
+
+    function isEmployee() {
+      return isAuthenticated() &&
+             exists(/databases/$(database)/documents/Employees/$(request.auth.uid));
+    }
+
+    // Mirrors isAdminOrSubAdmin() in lib/employeePortalContext.ts
+    function isManager() {
+      return isEmployee() &&
+             (employeeDoc().data.role == 'admin' || employeeDoc().data.role == 'sub-admin');
+    }
+
+    function myEmployeeId() {
+      return employeeDoc().data.employeeId;
+    }
+
     // ================================================
     // SYSTEM CONFIG COLLECTION (Work Mode, etc.)
     // ================================================
@@ -28,7 +53,17 @@ service cloud.firestore {
     // ================================================
     match /Employees/{employeeId} {
       allow read: if true;
-      allow write: if isAuthenticated();
+
+      // HARDENED: previously `allow write: if isAuthenticated()`, which let any
+      // signed-in user set their own role to 'admin' and defeat every
+      // role-based rule below. No client code writes this collection (docs are
+      // provisioned via console / Admin SDK), so restricting it breaks nothing
+      // while making the role checks actually meaningful.
+      allow create, delete: if isManager();
+      allow update: if isManager() ||
+                       (isAuthenticated() &&
+                        !request.resource.data.diff(resource.data)
+                          .affectedKeys().hasAny(['role', 'employeeId', 'email']));
     }
 
     // ================================================
@@ -367,5 +402,89 @@ service cloud.firestore {
         allow read, write: if isAuthenticated() && request.auth.uid == userId;
       }
     }
+
+    // --- Project Work authorization helpers ---------------------------
+    // Atomic claim: the doc must still be unassigned and claimable, and the
+    // caller may only assign it to themselves. Firestore evaluates this
+    // against the CURRENT document, so a loser in a race fails here.
+    function claimIsValid() {
+      return isEmployee()
+             && resource.data.status == 'AVAILABLE'
+             && resource.data.allowClaiming == true
+             && resource.data.assignedTo == null
+             && request.resource.data.assignedTo == myEmployeeId()
+             && request.resource.data.status == 'ASSIGNED'
+             && request.resource.data.selectedBy == myEmployeeId()
+             && request.resource.data.confirmedBy == null;
+    }
+
+    // Fields only management may ever change.
+    function managerOnlyFields() {
+      return ['confirmedBy', 'confirmedByName', 'confirmedAt', 'reviewComment',
+              'createdBy', 'createdByName', 'createdAt', 'projectId', 'projectName',
+              'title', 'description', 'priority', 'dueDate', 'assignedRole',
+              'allowClaiming', 'referenceUrl', 'assignedTo', 'assignedToName'];
+    }
+
+    // An employee working their own task. They may move it between working
+    // states and submit it, but 'CONFIRMED' is absent from this list, so the
+    // final approval step is unreachable from a client write.
+    function ownerUpdateIsValid() {
+      return isEmployee()
+             && resource.data.assignedTo == myEmployeeId()
+             && request.resource.data.assignedTo == myEmployeeId()
+             // Source states an employee may act from. Crucially this excludes
+             // CONFIRMED and CANCELLED, so an owner cannot un-confirm their own
+             // finished work, and excludes COMPLETED_AWAITING_CONFIRMATION so a
+             // submission cannot be silently withdrawn while under review.
+             && resource.data.status in
+                  ['ASSIGNED', 'IN_PROGRESS', 'CHANGES_REQUESTED', 'BLOCKED']
+             // Destination states. CONFIRMED is absent -- final approval is
+             // unreachable from any client write by a non-manager.
+             && request.resource.data.status in
+                  ['IN_PROGRESS', 'COMPLETED_AWAITING_CONFIRMATION', 'BLOCKED']
+             && !request.resource.data.diff(resource.data)
+                  .affectedKeys().hasAny(managerOnlyFields());
+    }
+
+    // ================================================
+    // PROJECT WORK (To-Do List -> Project Work)
+    // Only Admin / Co-Admin ('sub-admin') may create, assign, confirm or
+    // cancel. Employees may claim an available task and drive ONLY their own
+    // task forward, and can never reach CONFIRMED.
+    // ================================================
+
+    match /projects/{projectId} {
+      allow read: if isEmployee();
+      allow create, update, delete: if isManager();
+    }
+
+    match /projectTasks/{taskId} {
+      allow read: if isEmployee();
+
+      // Creation and destruction are management-only.
+      allow create: if isManager()
+                    && request.resource.data.title is string
+                    && request.resource.data.title.size() > 0
+                    && request.resource.data.projectId is string
+                    && request.resource.data.createdBy == myEmployeeId()
+                    // A new task can never be born confirmed.
+                    && request.resource.data.status != 'CONFIRMED'
+                    && request.resource.data.confirmedBy == null;
+
+      allow delete: if isManager();
+
+      allow update: if isManager() || claimIsValid() || ownerUpdateIsValid();
+    }
+
+    // Immutable audit trail: append-only, and the actor cannot be forged.
+    match /projectTaskEvents/{eventId} {
+      allow read: if isEmployee();
+      allow create: if isEmployee()
+                    && request.resource.data.actorId == myEmployeeId()
+                    && request.resource.data.taskId is string;
+      allow update, delete: if false;
+    }
+
   }
 }

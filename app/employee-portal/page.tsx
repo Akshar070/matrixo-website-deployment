@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
@@ -25,6 +25,8 @@ import {
   ListTodo as FaTasks,
   MessageSquare as FaComments,
   ChevronDown as FaChevronDown,
+  ChevronLeft as FaChevronLeft,
+  ChevronRight as FaChevronRight,
   Plus as FaPlus,
   Trash2 as FaTrash,
   List as FaListAlt,
@@ -295,6 +297,55 @@ function TopNavbar({
     setMounted(true)
   }, [])
 
+  /**
+   * The desktop nav row scrolls sideways when it is wider than the space
+   * between the logo and the right-hand controls, and its scrollbar is hidden.
+   * Without an affordance the tabs past the right edge -- Careers is the last
+   * one -- simply look like they do not exist. These arrows appear only when
+   * there is something to scroll to.
+   */
+  const navScrollRef = useRef<HTMLDivElement>(null)
+  const [navOverflow, setNavOverflow] = useState({ left: false, right: false })
+
+  const syncNavOverflow = useCallback(() => {
+    const el = navScrollRef.current
+    if (!el) return
+    const max = el.scrollWidth - el.clientWidth
+    setNavOverflow({ left: el.scrollLeft > 4, right: el.scrollLeft < max - 4 })
+  }, [])
+
+  useEffect(() => {
+    const el = navScrollRef.current
+    if (!el) return
+    syncNavOverflow()
+    el.addEventListener('scroll', syncNavOverflow, { passive: true })
+    const observer = new ResizeObserver(syncNavOverflow)
+    observer.observe(el)
+    return () => {
+      el.removeEventListener('scroll', syncNavOverflow)
+      observer.disconnect()
+    }
+  }, [syncNavOverflow, isAdmin])
+
+  const scrollNav = (direction: -1 | 1) => {
+    navScrollRef.current?.scrollBy({ left: direction * 240, behavior: 'smooth' })
+  }
+
+  // Keep the selected tab visible -- scrollBy on the container only, so the
+  // page itself never jumps the way scrollIntoView would.
+  useEffect(() => {
+    const container = navScrollRef.current
+    const button = container?.querySelector<HTMLElement>(`[data-nav-id="${activeTab}"]`)
+    if (!container || !button) return
+    const c = container.getBoundingClientRect()
+    const b = button.getBoundingClientRect()
+    if (b.left >= c.left && b.right <= c.right) return
+    container.scrollBy({
+      left: (b.left + b.width / 2) - (c.left + c.width / 2),
+      behavior: 'smooth',
+    })
+  }, [activeTab, isAdmin])
+
   // Close user menu on ESC and outside click
   useEffect(() => {
     if (!userMenuOpen) return
@@ -379,48 +430,78 @@ function TopNavbar({
           </Link>
 
           {/* Desktop Navigation - Centered (Scrollable on overflow) */}
-          <div className="hidden lg:flex items-center flex-1 min-w-0 overflow-x-auto [&::-webkit-scrollbar]:hidden" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-            <div className="flex-1 min-w-0 shrink"></div>
-            <div className="flex items-center gap-0.5 px-2 shrink-0">
-              {navigationItems.filter(item => !item.adminOnly && !(item.adminHidden && employee?.role === 'admin')).map((item) => (
-                <button
-                  key={item.id}
-                  onClick={() => setActiveTab(item.id)}
-                  className={`
-                    relative flex items-center gap-1.5 px-3 py-2 rounded-[14px] transition-all duration-150 font-medium text-xs whitespace-nowrap
-                    ${activeTab === item.id
-                      ? 'cta-glass'
-                      : 'text-[#475569] hover:text-[#0F172A] hover:bg-[#EEF3F8] dark:text-[#94A3B8] dark:hover:text-[#F8FAFC] dark:hover:bg-[#152542]'
-                    }
-                  `}
-                >
-                  <item.icon className="text-xs shrink-0" />
-                  <span>{item.label}</span>
-                </button>
-              ))}
-              
-              {isAdmin && (
-                <button
-                  onClick={() => setActiveTab('job-postings')}
-                  className={`
-                    relative flex items-center gap-1.5 px-3 py-2 rounded-[14px] transition-all duration-150 font-medium text-xs whitespace-nowrap
-                    ${activeTab === 'job-postings'
-                      ? 'bg-[#0F2B5B] text-white dark:bg-[#1E3A8A] dark:text-[#F8FAFC]'
-                      : 'text-[#475569] hover:text-[#0F172A] hover:bg-[#EEF3F8] dark:text-[#94A3B8] dark:hover:text-[#F8FAFC] dark:hover:bg-[#152542]'
-                    }
-                  `}
-                >
-                  <FaBriefcase className="text-xs shrink-0" />
-                  <span>Careers</span>
-                  {pendingAppCount > 0 && (
-                    <span className="absolute -top-1 -right-1 min-w-[16px] h-[16px] px-0.5 bg-red-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center">
-                      {pendingAppCount > 99 ? '99+' : pendingAppCount}
-                    </span>
-                  )}
-                </button>
-              )}
+          <div className="hidden lg:flex relative items-center flex-1 min-w-0">
+            <div
+              ref={navScrollRef}
+              className="flex items-center w-full min-w-0 overflow-x-auto [&::-webkit-scrollbar]:hidden"
+              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+            >
+              <div className="flex-1 min-w-0 shrink"></div>
+              <div className="flex items-center gap-0.5 px-2 shrink-0">
+                {navigationItems.filter(item => !item.adminOnly && !(item.adminHidden && employee?.role === 'admin')).map((item) => (
+                  <button
+                    key={item.id}
+                    data-nav-id={item.id}
+                    onClick={() => setActiveTab(item.id)}
+                    className={`
+                      relative flex items-center gap-1.5 px-3 py-2 rounded-[14px] transition-all duration-150 font-medium text-xs whitespace-nowrap
+                      ${activeTab === item.id
+                        ? 'cta-glass'
+                        : 'text-[#475569] hover:text-[#0F172A] hover:bg-[#EEF3F8] dark:text-[#94A3B8] dark:hover:text-[#F8FAFC] dark:hover:bg-[#152542]'
+                      }
+                    `}
+                  >
+                    <item.icon className="text-xs shrink-0" />
+                    <span>{item.label}</span>
+                  </button>
+                ))}
+
+                {isAdmin && (
+                  <button
+                    data-nav-id="job-postings"
+                    onClick={() => setActiveTab('job-postings')}
+                    className={`
+                      relative flex items-center gap-1.5 px-3 py-2 rounded-[14px] transition-all duration-150 font-medium text-xs whitespace-nowrap
+                      ${activeTab === 'job-postings'
+                        ? 'bg-[#0F2B5B] text-white dark:bg-[#1E3A8A] dark:text-[#F8FAFC]'
+                        : 'text-[#475569] hover:text-[#0F172A] hover:bg-[#EEF3F8] dark:text-[#94A3B8] dark:hover:text-[#F8FAFC] dark:hover:bg-[#152542]'
+                      }
+                    `}
+                  >
+                    <FaBriefcase className="text-xs shrink-0" />
+                    <span>Careers</span>
+                    {pendingAppCount > 0 && (
+                      <span className="absolute -top-1 -right-1 min-w-[16px] h-[16px] px-0.5 bg-red-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center">
+                        {pendingAppCount > 99 ? '99+' : pendingAppCount}
+                      </span>
+                    )}
+                  </button>
+                )}
+              </div>
+              <div className="flex-1 min-w-0 shrink"></div>
             </div>
-            <div className="flex-1 min-w-0 shrink"></div>
+
+            {navOverflow.left && (
+              <button
+                onClick={() => scrollNav(-1)}
+                aria-label="Scroll navigation left"
+                className="absolute left-0 top-1/2 -translate-y-1/2 z-10 flex items-center justify-center w-7 h-7 rounded-full text-[#475569] hover:text-[#0F172A] dark:text-[#94A3B8] dark:hover:text-[#F8FAFC] bg-[#FFFFFF]/90 dark:bg-[#0B1220]/90 shadow-md backdrop-blur-sm"
+              >
+                <FaChevronLeft className="w-3.5 h-3.5" />
+              </button>
+            )}
+            {navOverflow.right && (
+              <button
+                onClick={() => scrollNav(1)}
+                aria-label="Scroll navigation right"
+                className="absolute right-0 top-1/2 -translate-y-1/2 z-10 flex items-center justify-center w-7 h-7 rounded-full text-[#475569] hover:text-[#0F172A] dark:text-[#94A3B8] dark:hover:text-[#F8FAFC] bg-[#FFFFFF]/90 dark:bg-[#0B1220]/90 shadow-md backdrop-blur-sm"
+              >
+                <FaChevronRight className="w-3.5 h-3.5" />
+                {pendingAppCount > 0 && activeTab !== 'job-postings' && (
+                  <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-red-500 rounded-full" />
+                )}
+              </button>
+            )}
           </div>
 
           {/* Right side */}
@@ -541,6 +622,20 @@ function TopNavbar({
                         <FaUserCircle />
                         <span>My Profile</span>
                       </button>
+                      {isAdmin && (
+                        <button
+                          onClick={() => { setActiveTab('job-postings'); setUserMenuOpen(false) }}
+                          className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${darkMode ? 'text-neutral-300 hover:bg-white/8' : 'text-gray-700 hover:bg-black/5'}`}
+                        >
+                          <FaBriefcase />
+                          <span>Careers &amp; Applications</span>
+                          {pendingAppCount > 0 && (
+                            <span className="ml-auto min-w-[18px] h-[18px] px-1 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                              {pendingAppCount > 99 ? '99+' : pendingAppCount}
+                            </span>
+                          )}
+                        </button>
+                      )}
                       {isAdmin && (
                         <button
                           onClick={() => { setActiveTab('admin'); setUserMenuOpen(false) }}

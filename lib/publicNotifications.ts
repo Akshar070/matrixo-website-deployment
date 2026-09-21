@@ -23,6 +23,9 @@ export const READ_STATE_COLLECTION = 'publicNotificationReadState'
 // ════════════════════════════════════════════════════════════════════
 
 export type NotificationType =
+  | 'EVENT_NEW'
+  | 'EVENT_UPDATED'
+  | 'STUDENTVAULT_OFFER'
   | 'NEW_EVENT'
   | 'NEW_HACKATHON'
   | 'NEW_BOOTCAMP'
@@ -39,8 +42,9 @@ export interface PublicNotification {
   title: string
   message: string
   targetUrl: string
-  entityId: string
-  entityType: string
+  source: string
+  sourceId: string
+  version?: string
   audience: 'PUBLIC'
   isActive: boolean
   expiresAt: string | null
@@ -54,8 +58,9 @@ export interface CreatePublicNotificationParams {
   title: string
   message: string
   targetUrl: string
-  entityId: string
-  entityType: 'offer' | 'event'
+  source: string
+  sourceId: string
+  version?: string
   expiresAt?: Date | null
 }
 
@@ -89,8 +94,9 @@ function normalizeNotification(
     title: (raw.title as string) ?? '',
     message: (raw.message as string) ?? '',
     targetUrl: (raw.targetUrl as string) ?? '',
-    entityId: (raw.entityId as string) ?? '',
-    entityType: (raw.entityType as string) ?? '',
+    source: (raw.source as string) ?? (raw.entityType as string) ?? '',
+    sourceId: (raw.sourceId as string) ?? (raw.entityId as string) ?? '',
+    version: raw.version as string | undefined,
     audience: 'PUBLIC',
     isActive: raw.isActive !== false,
     expiresAt: toIsoSafe(raw.expiresAt),
@@ -104,8 +110,8 @@ function normalizeNotification(
 // ════════════════════════════════════════════════════════════════════
 
 /**
- * Creates a public notification. If a notification for the same `entityId` +
- * `entityType` already exists, silently skips creation and returns `null`.
+ * Creates a public notification. If a notification for the same `source` +
+ * `sourceId` + `version` (optional) already exists, silently skips creation and returns `null`.
  *
  * This prevents duplicates from retried publishes, re-deployments, or
  * repeated admin actions.
@@ -118,15 +124,19 @@ export async function createPublicNotification(
     const collection = firestore.collection(PUBLIC_NOTIFICATIONS_COLLECTION)
 
     // ── Duplicate check ──────────────────────────────────────────────
-    const existing = await collection
-      .where('entityId', '==', params.entityId)
-      .where('entityType', '==', params.entityType)
-      .limit(1)
-      .get()
+    let existingQuery = collection
+      .where('source', '==', params.source)
+      .where('sourceId', '==', params.sourceId)
+    
+    if (params.version !== undefined) {
+      existingQuery = existingQuery.where('version', '==', params.version)
+    }
+
+    const existing = await existingQuery.limit(1).get()
 
     if (!existing.empty) {
       console.log(
-        `[PublicNotification] Skipping duplicate: ${params.entityType}/${params.entityId} already has a notification`
+        `[PublicNotification] Skipping duplicate: ${params.source}/${params.sourceId} (version: ${params.version}) already has a notification`
       )
       return null
     }
@@ -139,8 +149,9 @@ export async function createPublicNotification(
       title: params.title,
       message: params.message,
       targetUrl: params.targetUrl,
-      entityId: params.entityId,
-      entityType: params.entityType,
+      source: params.source,
+      sourceId: params.sourceId,
+      version: params.version ?? null,
       audience: 'PUBLIC',
       isActive: true,
       expiresAt: params.expiresAt ?? null,
@@ -149,7 +160,7 @@ export async function createPublicNotification(
     })
 
     console.log(
-      `[PublicNotification] Created: ${params.type} for ${params.entityType}/${params.entityId} → ${doc.id}`
+      `[PublicNotification] Created: ${params.type} for ${params.source}/${params.sourceId} → ${doc.id}`
     )
 
     return { id: doc.id }

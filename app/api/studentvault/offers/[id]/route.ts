@@ -85,13 +85,14 @@ export async function PATCH(request: NextRequest, { params }: Params) {
       // ── Auto-generate public notification on publish (non-fatal) ───
       if (action === 'publish') {
         await createPublicNotification({
-          type: 'NEW_OFFER',
+          type: 'STUDENTVAULT_OFFER',
           category: 'STUDENTVAULT',
           title: `New Student Offer: ${existing.name}`,
           message: existing.summary?.slice(0, 120) || `${existing.name} is now available on StudentVault.`,
           targetUrl: `/studentvault/${existing.slug}`,
-          entityId: params.id,
-          entityType: 'offer',
+          source: 'STUDENTVAULT',
+          sourceId: params.id,
+          version: '1',
           expiresAt: existing.expiresOn ? new Date(existing.expiresOn) : null,
         })
       }

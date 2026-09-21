@@ -602,13 +602,32 @@ export function computeProgress(tasks: ProjectTask[]): ProjectProgress {
   }
 }
 
+/**
+ * Numeric-aware comparison, so "Task 10" sorts after "Task 9" rather than
+ * between "Task 1" and "Task 2" the way a plain string compare would.
+ */
+const naturalOrder = new Intl.Collator(undefined, {
+  numeric: true,
+  sensitivity: 'base',
+})
+
+/**
+ * Tasks in ascending order: Task 1, Task 2 … Task 10 … Task 14, grouped by
+ * project so two projects' numbering cannot interleave.
+ *
+ * This used to sort by priority and then newest-first, which scrambled the
+ * numbering — the step you are meant to do first could land anywhere in the
+ * list. Priority is still on the card as a badge; it just no longer decides
+ * position. `createdAt` breaks ties for tasks whose titles aren't numbered.
+ */
 export function sortTasks(tasks: ProjectTask[]): ProjectTask[] {
   return [...tasks].sort((a, b) => {
-    const pa = PRIORITY_META[a.priority]?.rank ?? 9
-    const pb = PRIORITY_META[b.priority]?.rank ?? 9
-    if (pa !== pb) return pa - pb
-    const ta = a.createdAt?.toMillis?.() ?? 0
-    const tb = b.createdAt?.toMillis?.() ?? 0
-    return tb - ta
+    const byProject = naturalOrder.compare(a.projectName || '', b.projectName || '')
+    if (byProject !== 0) return byProject
+
+    const byTitle = naturalOrder.compare(a.title || '', b.title || '')
+    if (byTitle !== 0) return byTitle
+
+    return (a.createdAt?.toMillis?.() ?? 0) - (b.createdAt?.toMillis?.() ?? 0)
   })
 }

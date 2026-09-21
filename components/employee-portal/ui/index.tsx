@@ -73,11 +73,17 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(({
   type = 'button',
   className = '',
 }, ref) => {
-  const baseStyles = 'inline-flex items-center justify-center font-medium rounded-[14px] transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#07111F]'
-  
+  // The focus ring's offset colour has to follow the theme. It was pinned to
+  // the dark page colour, which drew a near-black halo around every focused
+  // button in light mode.
+  const baseStyles = 'inline-flex items-center justify-center font-medium rounded-[14px] transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-[#2563EB] focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-[#07111F]'
+
   const variants = {
     primary: 'bg-[#0F2B5B] hover:bg-[#1E40AF] text-white dark:bg-[#2563EB] dark:hover:bg-[#3B82F6] border border-transparent shadow-[0_8px_30px_rgba(15,23,42,0.06)] dark:shadow-[0_2px_8px_rgba(37,99,235,0.2)]',
-    secondary: 'bg-white hover:bg-[#F8FAFC] text-[#0F2B5B] border border-[rgba(15,23,42,0.10)] dark:bg-transparent dark:hover:bg-[#152542] dark:text-[#F8FAFC] dark:border-[rgba(255,255,255,0.12)]',
+    // Cards are #FFFFFF in light mode, so a white secondary button was white
+    // on white — only a 10%-opacity border separated it, and on card hover even
+    // that inverted. It now carries its own tint and a border you can see.
+    secondary: 'bg-[#F1F5F9] hover:bg-[#E2E8F0] text-[#0F2B5B] border border-[rgba(15,23,42,0.18)] dark:bg-transparent dark:hover:bg-[#152542] dark:text-[#F8FAFC] dark:border-[rgba(255,255,255,0.12)]',
     ghost: 'bg-transparent hover:bg-[#EEF3F8] text-[#475569] hover:text-[#0F172A] dark:hover:bg-[#152542] dark:text-[#94A3B8] dark:hover:text-[#F8FAFC]',
     danger: 'bg-[#FEF2F2] hover:bg-red-100 text-[#DC2626] dark:bg-[rgba(239,68,68,0.12)] dark:hover:bg-[#EF4444] dark:text-[#F87171] dark:hover:text-white border border-[rgba(220,38,38,0.2)] dark:border-[rgba(239,68,68,0.2)]',
     success: 'bg-[#ECFDF3] hover:bg-green-100 text-[#16A34A] dark:bg-[rgba(34,197,94,0.12)] dark:hover:bg-[#22C55E] dark:text-[#4ADE80] dark:hover:text-white border border-[rgba(22,163,74,0.2)] dark:border-[rgba(34,197,94,0.2)]',

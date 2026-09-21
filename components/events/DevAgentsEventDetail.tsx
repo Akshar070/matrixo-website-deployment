@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { format } from "date-fns";
 import Image from "next/image";
-import { useTheme } from "next-themes";
 import {
   FaCalendar,
   FaMapMarkerAlt,
@@ -319,7 +318,7 @@ function PartnerLogo({ name, src }: { name: string; src: string }) {
   if (failed || !src) {
     return (
       <div
-        className="w-6 h-6 rounded-md flex items-center justify-center text-[10px] font-bold text-gray-900 dark:text-white flex-shrink-0"
+        className="w-6 h-6 rounded-md flex items-center justify-center text-[10px] font-bold text-white flex-shrink-0"
         style={{
           background: "linear-gradient(135deg,#3b82f6,#8b5cf6)",
         }}
@@ -348,7 +347,6 @@ function PartnerLogo({ name, src }: { name: string; src: string }) {
    Component
 ═════════════════════════════════════════════════════════════════════════ */
 export default function DevAgentsEventDetail({ event }: { event: any }) {
-  const { resolvedTheme } = useTheme();
   const [showRegistration, setShowRegistration] = useState(false);
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
   const [countdown, setCountdown] = useState<CountdownType>({
@@ -359,23 +357,26 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
   });
   const [countdownExpired, setCountdownExpired] = useState(false);
   const [showStickyCTA, setShowStickyCTA] = useState(false);
-  const isDarkMode = resolvedTheme !== "light";
-  const pageBgClass = isDarkMode
-    ? "bg-[radial-gradient(circle_at_top,_rgba(15,23,42,0.95),_rgba(9,9,15,1)_55%)]"
-    : "bg-gradient-to-b from-slate-50 via-white to-slate-100";
-  const surfaceClass = isDarkMode
-    ? "bg-[rgba(22,22,35,0.85)] border-[rgba(255,255,255,0.08)] backdrop-blur-xl"
-    : "bg-white/80 border-slate-200/80 backdrop-blur-xl shadow-sm";
-  const textPrimaryClass = isDarkMode ? "text-white" : "text-slate-900";
-  const textSecondaryClass = isDarkMode ? "text-slate-300" : "text-slate-600";
-  const mutedPanelClass = isDarkMode
-    ? "bg-[rgba(22,22,35,0.85)] border-[rgba(255,255,255,0.08)]"
-    : "bg-slate-100 border-slate-200";
+  /**
+   * THEMING
+   * -------
+   * Every colour on this page resolves through the `--da-*` custom properties
+   * declared in the <style> block below. They are declared once for light and
+   * re-declared under `.dark` -- the same class next-themes puts on <html>,
+   * which layout.tsx sets in a blocking script before first paint.
+   *
+   * Driving the inline styles AND the utility classes off that one source is
+   * what makes the whole page follow the navbar toggle. The previous version
+   * picked colours in JS from `resolvedTheme`, which covered only part of the
+   * page (the rest was hard-coded dark) and painted the wrong palette on the
+   * first render, because `resolvedTheme` is undefined until after hydration.
+   */
+  const pageBgClass = "da-page-bg";
+  const surfaceClass = "da-surface";
+  const textPrimaryClass = "da-text-1";
+  const textSecondaryClass = "da-text-2";
   const accentButtonClass =
-    "bg-gradient-to-r from-blue-600 via-violet-500 to-pink-500 text-white shadow-lg shadow-blue-500/25 hover:shadow-xl hover:shadow-violet-500/25 hover:scale-[1.03] active:scale-[.98]";
-  const secondaryButtonClass = isDarkMode
-    ? "bg-white/5 text-white border border-white/[.12] hover:bg-white/10 hover:border-[#7C3AED]"
-    : "bg-white text-slate-900 border border-slate-200 hover:bg-slate-50";
+    "da-cta bg-gradient-to-r from-blue-600 via-violet-500 to-pink-500 text-white shadow-lg shadow-blue-500/25 hover:shadow-xl hover:shadow-violet-500/25 hover:scale-[1.03] active:scale-[.98]";
 
   /* Countdown ──────────────────────────────────────────────────────────── */
   useEffect(() => {
@@ -445,7 +446,6 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
   return (
     <div
       className={`devagents-shell min-h-screen font-sans overflow-x-hidden ${pageBgClass} -mt-24`}
-      data-theme={isDarkMode ? "dark" : "light"}
     >
       {/* ── Injected CSS keyframes ────────────────────────────────────────── */}
       <style>{`
@@ -483,22 +483,113 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
           box-shadow: 0 20px 40px rgba(124,58,237,.25), 0 0 0 1px rgba(124,58,237,.35);
         }
 
-        .devagents-shell[data-theme="light"] .text-white,
-        .devagents-shell[data-theme="light"] .text-slate-300,
-        .devagents-shell[data-theme="light"] .text-slate-400,
-        .devagents-shell[data-theme="light"] .text-slate-500,
-        .devagents-shell[data-theme="light"] .text-blue-400,
-        .devagents-shell[data-theme="light"] .text-violet-300 {
-          color: #0f172a !important;
+
+        /* THEME TOKENS ===================================================
+           Light is the base declaration; .dark on the html element wins.
+           Everything below -- inline styles included -- reads these, so one
+           class flip repaints the entire page.                            */
+        .devagents-shell {
+          --da-page:           linear-gradient(to bottom, #F8FAFC 0%, #FFFFFF 45%, #F1F5F9 100%);
+          --da-hero:           linear-gradient(135deg, #F8FAFC 0%, #EEF3F8 50%, #F8FAFC 100%);
+          --da-surface:        rgba(255,255,255,.85);
+          --da-surface-raised: rgba(255,255,255,.95);
+          --da-soft:           rgba(15,23,42,.04);
+          --da-subtle:         rgba(15,23,42,.03);
+          --da-border:         rgba(148,163,184,.30);
+          --da-border-soft:    rgba(148,163,184,.20);
+          --da-border-strong:  rgba(148,163,184,.42);
+          --da-accent-tint:    rgba(124,58,237,.08);
+          --da-accent-border:  rgba(124,58,237,.22);
+          --da-accent-border-2:rgba(124,58,237,.30);
+          --da-chip:           linear-gradient(135deg, rgba(59,130,246,.14), rgba(139,92,246,.14));
+          --da-glass:          rgba(255,255,255,.80);
+          /* A shade deeper than the page gradient's last stop (#F1F5F9), or
+             the footer would be invisible against it.                      */
+          --da-footer:         #E6EDF5;
+          --da-text:           #0F172A;
+          --da-text-2:         #334155;
+          --da-text-3:         #475569;
+          --da-text-4:         #64748B;
+          /* Dimmest step. On dark it can sink to slate-600; on a light
+             surface that would be unreadable, so it only goes this far.   */
+          --da-text-5:         #7C8A9C;
+          --da-accent:         #2563EB;
+          --da-violet:         #6D28D9;
+          --da-grid:           rgba(124,58,237,.08);
+          --da-orb:            .10;
+          --da-particle:       .35;
+          --da-card-shadow:    0 1px 2px rgba(15,23,42,.04), 0 8px 24px rgba(15,23,42,.06);
+          --da-sticky-fade:    linear-gradient(to top, rgba(248,250,252,.97) 60%, transparent);
+          --da-gallery-s:      45%;
+          --da-gallery-l1:     93%;
+          --da-gallery-l2:     88%;
+          --da-gallery-veil:   rgba(255,255,255,.35);
+          --da-sticky-bg:      rgba(255,255,255,.95);
         }
 
-        .devagents-shell[data-theme="light"] .text-transparent {
-          color: transparent !important;
+        .dark .devagents-shell {
+          --da-page:           radial-gradient(circle at top, rgba(15,23,42,.95), rgba(9,9,15,1) 55%);
+          --da-hero:           linear-gradient(135deg, #09090F 0%, #0F172A 50%, #09090F 100%);
+          --da-surface:        rgba(22,22,35,.85);
+          --da-surface-raised: rgba(22,22,35,.60);
+          --da-soft:           rgba(255,255,255,.05);
+          --da-subtle:         rgba(255,255,255,.03);
+          --da-border:         rgba(255,255,255,.08);
+          --da-border-soft:    rgba(255,255,255,.05);
+          --da-border-strong:  rgba(255,255,255,.12);
+          --da-accent-tint:    rgba(124,58,237,.12);
+          --da-accent-border:  rgba(124,58,237,.25);
+          --da-accent-border-2:rgba(124,58,237,.30);
+          --da-chip:           linear-gradient(135deg, rgba(59,130,246,.20), rgba(139,92,246,.20));
+          --da-glass:          rgba(9,9,15,.60);
+          --da-footer:         rgba(9,9,15,.60);
+          --da-text:           #FFFFFF;
+          --da-text-2:         #CBD5E1;
+          --da-text-3:         #94A3B8;
+          --da-text-4:         #64748B;
+          --da-text-5:         #475569;
+          --da-accent:         #60A5FA;
+          --da-violet:         #C4B5FD;
+          --da-grid:           rgba(124,58,237,.07);
+          --da-orb:            .20;
+          --da-particle:       1;
+          --da-card-shadow:    none;
+          --da-sticky-fade:    linear-gradient(to top, rgba(9,9,15,.97) 60%, transparent);
+          --da-gallery-s:      60%;
+          --da-gallery-l1:     9%;
+          --da-gallery-l2:     12%;
+          --da-gallery-veil:   rgba(9,9,15,.35);
+          --da-sticky-bg:      rgba(22,22,35,.90);
         }
 
-        .devagents-shell[data-theme="light"] .devagents-light-strong {
-          color: #020617 !important;
+        /* SEMANTIC CLASSES =============================================== */
+        .devagents-shell.da-page-bg    { background: var(--da-page); }
+        .devagents-shell .da-hero-bg   { background: var(--da-hero); }
+        .devagents-shell .da-surface   {
+          background: var(--da-surface);
+          border: 1px solid var(--da-border);
+          backdrop-filter: blur(20px);
+          -webkit-backdrop-filter: blur(20px);
+          box-shadow: var(--da-card-shadow);
         }
+        .devagents-shell .da-text-1    { color: var(--da-text);   }
+        .devagents-shell .da-text-2    { color: var(--da-text-2); }
+        .devagents-shell .da-text-3    { color: var(--da-text-3); }
+        .devagents-shell .da-text-4    { color: var(--da-text-4); }
+        .devagents-shell .da-text-5    { color: var(--da-text-5); }
+        .devagents-shell .da-accent    { color: var(--da-accent); }
+        .devagents-shell .da-violet    { color: var(--da-violet); }
+        .devagents-shell .da-hover-1:hover { color: var(--da-text);   }
+        .devagents-shell .da-hover-3:hover { color: var(--da-text-3); }
+        .devagents-shell .da-orb-1     { opacity: calc(var(--da-orb) * 1);   }
+        .devagents-shell .da-orb-2     { opacity: calc(var(--da-orb) * .75); }
+        .devagents-shell .da-orb-3     { opacity: calc(var(--da-orb) * .5);  }
+        .devagents-shell .da-particles { opacity: var(--da-particle); }
+
+        /* The CTA keeps its brand gradient in both themes, so its label stays
+           white -- it is never page text and must not pick up --da-text.    */
+        .devagents-shell .da-cta,
+        .devagents-shell .da-cta:hover { color: #FFFFFF; }
       `}</style>
 
       {/* ══════════════════════════════════════════════════════════════════
@@ -508,21 +599,15 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
         {/* Background stack */}
         <div className="absolute inset-0 pointer-events-none select-none">
           {/* Base gradient */}
-          <div
-            className="absolute inset-0"
-            style={{
-              background:
-                "linear-gradient(135deg, #09090F 0%, #0F172A 50%, #09090F 100%)",
-            }}
-          />
+          <div className="absolute inset-0 da-hero-bg" />
 
           {/* Animated grid */}
           <div
             className="absolute inset-0 opacity-25"
             style={{
               backgroundImage:
-                "linear-gradient(rgba(124,58,237,.07) 1px, transparent 1px)," +
-                "linear-gradient(90deg, rgba(124,58,237,.07) 1px, transparent 1px)",
+                "linear-gradient(var(--da-grid) 1px, transparent 1px)," +
+                "linear-gradient(90deg, var(--da-grid) 1px, transparent 1px)",
               backgroundSize: "60px 60px",
               animation: "gridMove 20s linear infinite",
             }}
@@ -530,19 +615,19 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
 
           {/* Gradient orbs */}
           <div
-            className="absolute -top-40 -left-40 w-[520px] h-[520px] rounded-full blur-3xl opacity-20"
+            className="absolute -top-40 -left-40 w-[520px] h-[520px] rounded-full blur-3xl da-orb-1"
             style={{
               background: "radial-gradient(circle, #3b82f6, transparent)",
             }}
           />
           <div
-            className="absolute -bottom-20 -right-20 w-[620px] h-[620px] rounded-full blur-3xl opacity-15"
+            className="absolute -bottom-20 -right-20 w-[620px] h-[620px] rounded-full blur-3xl da-orb-2"
             style={{
               background: "radial-gradient(circle, #8b5cf6, transparent)",
             }}
           />
           <div
-            className="absolute top-1/3 right-1/4 w-80 h-80 rounded-full blur-3xl opacity-10"
+            className="absolute top-1/3 right-1/4 w-80 h-80 rounded-full blur-3xl da-orb-3"
             style={{
               background: "radial-gradient(circle, #ec4899, transparent)",
             }}
@@ -552,7 +637,7 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
           {PARTICLES.map((p) => (
             <div
               key={p.id}
-              className="absolute rounded-full"
+              className="absolute rounded-full da-particles"
               style={{
                 top: p.top,
                 left: p.left,
@@ -574,15 +659,13 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
             <div
               className="inline-flex items-center gap-2 px-4 py-2 rounded-full"
               style={{
-                background: isDarkMode ? "rgba(9,9,15,.6)" : "rgba(255,255,255,.8)",
+                background: "var(--da-glass)",
                 backdropFilter: "blur(12px)",
-                border: isDarkMode
-                  ? "1px solid rgba(34,197,94,.3)"
-                  : "1px solid rgba(34,197,94,.18)",
+                border: "1px solid rgba(34,197,94,.3)",
               }}
             >
               <span className="w-2 h-2 rounded-full bg-green-500 da-pulse-dot" />
-              <span className="text-xs font-bold tracking-widest text-green-400">
+              <span className="text-xs font-bold tracking-widest text-green-600 dark:text-green-400">
                 LIVE · OFFLINE
               </span>
             </div>
@@ -598,22 +681,18 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
             <div
               className="flex items-center gap-2 px-5 py-2 rounded-full text-sm font-medium"
               style={{
-                background: isDarkMode
-                  ? "rgba(124,58,237,.12)"
-                  : "rgba(15,23,42,.04)",
+                background: "var(--da-accent-tint)",
                 backdropFilter: "blur(12px)",
-                border: isDarkMode
-                  ? "1px solid rgba(124,58,237,.30)"
-                  : "1px solid rgba(124,58,237,.18)",
+                border: "1px solid var(--da-accent-border-2)",
               }}
             >
-              <span className="text-blue-400">✦</span>
+              <span className="da-accent">✦</span>
               <span
                 className={`bg-gradient-to-r from-[#4F8BFF] via-violet-500 to-pink-500 bg-clip-text text-transparent font-semibold`}
               >
                 Agentic AI Workshop · matriXO
               </span>
-              <span className="text-violet-400">✦</span>
+              <span className="da-violet">✦</span>
             </div>
           </motion.div>
 
@@ -649,7 +728,7 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
             animate="visible"
             className="flex items-center justify-center gap-2 mb-10"
           >
-            <p className="text-sm font-medium text-slate-400">Join <strong className="text-gray-900 dark:text-white">100+ developers</strong> from top tech companies & universities.</p>
+            <p className="text-sm font-medium da-text-3">Join <strong className="da-text-1">100+ developers</strong> from top tech companies & universities.</p>
           </motion.div>
 
           {/* CTA row */}
@@ -664,9 +743,7 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
                 onClick={() => setShowRegistration(true)}
                 className={`flex-1 px-8 py-4 rounded-2xl font-extrabold text-white text-lg transition-all duration-300 relative overflow-hidden group ${accentButtonClass}`}
                 style={{
-                  boxShadow: isDarkMode
-                    ? "0 8px 30px rgba(124,58,237,.45)"
-                    : "0 8px 24px rgba(124,58,237,.30)",
+                  boxShadow: "0 8px 26px rgba(124,58,237,.38)",
                 }}
               >
                 <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-in-out" />
@@ -679,7 +756,7 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
             {/* Scarcity Trigger */}
             <div className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-orange-500/10 border border-orange-500/20">
               <span className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
-              <span className="text-xs font-semibold text-orange-400 tracking-wide uppercase">Selling Fast: Only 14 Seats Left</span>
+              <span className="text-xs font-semibold text-orange-600 dark:text-orange-400 tracking-wide uppercase">Selling Fast: Only 14 Seats Left</span>
             </div>
           </motion.div>
 
@@ -691,16 +768,16 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
             className="flex flex-wrap justify-center gap-6 max-w-3xl mx-auto mb-12 opacity-80"
           >
             <div className="flex items-center gap-2">
-              <FaLock className="text-slate-400" />
-              <span className="text-xs font-medium text-slate-400">100% Secure Checkout</span>
+              <FaLock className="da-text-3" />
+              <span className="text-xs font-medium da-text-3">100% Secure Checkout</span>
             </div>
             <div className="flex items-center gap-2">
-              <FaCheckCircle className="text-slate-400" />
-              <span className="text-xs font-medium text-slate-400">Microsoft Learn Curriculum</span>
+              <FaCheckCircle className="da-text-3" />
+              <span className="text-xs font-medium da-text-3">Microsoft Learn Curriculum</span>
             </div>
             <div className="flex items-center gap-2">
-              <HiSparkles className="text-slate-400" />
-              <span className="text-xs font-medium text-slate-400">Digital Certificate Included</span>
+              <HiSparkles className="da-text-3" />
+              <span className="text-xs font-medium da-text-3">Digital Certificate Included</span>
             </div>
           </motion.div>
 
@@ -721,13 +798,9 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
                 key={s.label}
                 className="flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-medium justify-center"
                 style={{
-                  background: isDarkMode
-                    ? "rgba(255,255,255,.05)"
-                    : "rgba(15,23,42,.04)",
+                  background: "var(--da-soft)",
                   backdropFilter: "blur(12px)",
-                  border: isDarkMode
-                    ? "1px solid rgba(255,255,255,.12)"
-                    : "1px solid rgba(148,163,184,.22)",
+                  border: "1px solid var(--da-border-strong)",
                 }}
               >
                 <span>{s.emoji}</span>
@@ -746,15 +819,15 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
             >
               <div className="flex flex-col md:flex-row items-center justify-center md:justify-between gap-6 px-8 py-6 rounded-3xl"
                 style={{
-                  background: "rgba(22,22,35,.6)",
+                  background: "var(--da-surface-raised)",
                   backdropFilter: "blur(20px)",
-                  border: "1px solid rgba(124,58,237,.2)"
+                  border: "1px solid var(--da-accent-border)"
                 }}>
                 <div className="flex flex-col md:flex-row items-center gap-4">
                   <Image src={MATRIXO_LOGO_DARK_URL} alt="matriXO" width={120} height={40} className="hidden dark:block" />
                   <Image src={MATRIXO_LOGO_LIGHT_URL} alt="matriXO" width={120} height={40} className="block dark:hidden" />
-                  <div className="h-8 w-px bg-slate-700 hidden md:block"></div>
-                  <p className="text-xs font-semibold tracking-widest uppercase text-slate-400 mt-2 md:mt-0">
+                  <div className="h-8 w-px bg-slate-300 dark:bg-slate-700 hidden md:block"></div>
+                  <p className="text-xs font-semibold tracking-widest uppercase da-text-3 mt-2 md:mt-0">
                     Event Starts In
                   </p>
                 </div>
@@ -771,9 +844,9 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
                       <div
                         className="w-14 h-14 md:w-16 md:h-16 rounded-xl flex items-center justify-center"
                         style={{
-                          background: "rgba(22,22,35,.85)",
+                          background: "var(--da-surface)",
                           backdropFilter: "blur(12px)",
-                          border: "1px solid rgba(124,58,237,.3)",
+                          border: "1px solid var(--da-accent-border-2)",
                         }}
                       >
                         <AnimatePresence mode="wait">
@@ -783,13 +856,13 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: 8 }}
                             transition={{ duration: 0.2 }}
-                            className="text-xl md:text-2xl font-bold font-display text-gray-900 dark:text-white tabular-nums"
+                            className="text-xl md:text-2xl font-bold font-display da-text-1 tabular-nums"
                           >
                             {String(v).padStart(2, "0")}
                           </motion.span>
                         </AnimatePresence>
                       </div>
-                      <span className="text-[10px] text-slate-500 font-medium">
+                      <span className="text-[10px] da-text-4 font-medium">
                         {l}
                       </span>
                     </div>
@@ -841,7 +914,7 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
                       {item.icon}
                     </span>
                     <div className="min-w-0">
-                      <p className="text-xs text-slate-500 uppercase tracking-wider font-medium">
+                      <p className="text-xs da-text-4 uppercase tracking-wider font-medium">
                         {item.label}
                       </p>
                       <p
@@ -862,9 +935,7 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
                       aria-label="View directions to DraperU India"
                       className="flex items-start gap-3 p-3 rounded-xl w-full text-left cursor-pointer transition-all duration-300 ease-out hover:scale-[1.02] hover:shadow-[0_0_0_1px_rgba(124,58,237,.4),0_8px_28px_rgba(124,58,237,.28)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400"
                       style={{
-                        background: isDarkMode
-                          ? "rgba(255,255,255,.03)"
-                          : "rgba(15,23,42,.03)",
+                        background: "var(--da-subtle)",
                       }}
                     >
                       {cardContent}
@@ -877,9 +948,7 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
                     key={item.label}
                     className="flex items-start gap-3 p-3 rounded-xl"
                     style={{
-                      background: isDarkMode
-                        ? "rgba(255,255,255,.03)"
-                        : "rgba(15,23,42,.03)",
+                      background: "var(--da-subtle)",
                     }}
                   >
                     {cardContent}
@@ -941,7 +1010,7 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
                     className={`flex items-start gap-3 text-sm ${textSecondaryClass}`}
                   >
                     <span className="mt-0.5 flex-shrink-0 w-5 h-5 rounded-full bg-blue-500/20 flex items-center justify-center">
-                      <FaCheckCircle className="text-blue-400 text-[10px]" />
+                      <FaCheckCircle className="da-accent text-[10px]" />
                     </span>
                     {point}
                   </li>
@@ -970,9 +1039,7 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
                     key={stat}
                     className="flex items-center gap-4 p-4 rounded-2xl"
                     style={{
-                      background: isDarkMode
-                        ? "rgba(255,255,255,.04)"
-                        : "rgba(15,23,42,.04)",
+                      background: "var(--da-soft)",
                     }}
                   >
                     <span className="text-3xl leading-none flex-shrink-0">
@@ -1031,7 +1098,7 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
                     className="w-9 h-9 rounded-xl flex items-center justify-center mb-2 text-base"
                     style={{
                       background:
-                        "linear-gradient(135deg,rgba(59,130,246,.2),rgba(139,92,246,.2))",
+                        "var(--da-chip)",
                     }}
                   >
                     {item.icon}
@@ -1058,10 +1125,10 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
               viewport={{ once: true }}
               className="text-center mb-12"
             >
-              <h2 className="text-3xl md:text-4xl font-bold font-display text-gray-900 dark:text-white mb-4">
+              <h2 className="text-3xl md:text-4xl font-bold font-display da-text-1 mb-4">
                 Workshop Agenda
               </h2>
-              <p className="text-slate-400">
+              <p className="da-text-3">
                 A packed 3.5-hour journey into Agentic AI
               </p>
             </motion.div>
@@ -1097,7 +1164,7 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
                       >
                         {item.icon}
                       </div>
-                      <span className="text-[11px] text-blue-400 font-semibold tabular-nums font-display">
+                      <span className="text-[11px] da-accent font-semibold tabular-nums font-display">
                         {item.time}
                       </span>
                     </div>
@@ -1106,17 +1173,17 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
                     <div
                       className="flex-1 p-3 rounded-xl mb-1"
                       style={{
-                        background: "rgba(22,22,35,.85)",
-                        border: "1px solid rgba(255,255,255,.08)",
+                        background: "var(--da-surface)",
+                        border: "1px solid var(--da-border)",
                       }}
                     >
                       <div className="flex flex-wrap items-start justify-between gap-2">
-                        <h3 className="font-bold text-gray-900 dark:text-white text-sm">
+                        <h3 className="font-bold da-text-1 text-sm">
                           {item.title}
                         </h3>
                         {item.badge && (
                           <span
-                            className="text-xs px-2 py-0.5 rounded-full text-yellow-400 font-medium flex-shrink-0"
+                            className="text-xs px-2 py-0.5 rounded-full text-yellow-700 dark:text-yellow-400 font-medium flex-shrink-0"
                             style={{
                               background: "rgba(234,179,8,.1)",
                               border: "1px solid rgba(234,179,8,.25)",
@@ -1126,7 +1193,7 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
                           </span>
                         )}
                       </div>
-                      <p className="text-xs text-slate-500 mt-1.5 leading-relaxed">
+                      <p className="text-xs da-text-4 mt-1.5 leading-relaxed">
                         {item.desc}
                       </p>
                     </div>
@@ -1152,10 +1219,10 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
               viewport={{ once: true }}
               className="text-center mb-12"
             >
-              <h2 className="text-3xl md:text-4xl font-bold font-display text-gray-900 dark:text-white mb-4">
+              <h2 className="text-3xl md:text-4xl font-bold font-display da-text-1 mb-4">
                 Event Highlights
               </h2>
-              <p className="text-slate-400">
+              <p className="da-text-3">
                 Everything you get at DevAgentic 1.0
               </p>
             </motion.div>
@@ -1171,24 +1238,24 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
                   transition={{ delay: i * 0.06 }}
                   className="da-card-hover da-border-glow p-5 rounded-2xl text-center cursor-default"
                   style={{
-                    background: "rgba(22,22,35,.85)",
+                    background: "var(--da-surface)",
                     backdropFilter: "blur(12px)",
-                    border: "1px solid rgba(255,255,255,.08)",
+                    border: "1px solid var(--da-border)",
                   }}
                 >
                   <div
                     className="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-3"
                     style={{
                       background:
-                        "linear-gradient(135deg,rgba(59,130,246,.15),rgba(139,92,246,.15))",
+                        "var(--da-chip)",
                     }}
                   >
                     {item.icon}
                   </div>
-                  <h3 className="font-bold text-gray-900 dark:text-white text-sm mb-1">
+                  <h3 className="font-bold da-text-1 text-sm mb-1">
                     {item.title}
                   </h3>
-                  <p className="text-xs text-slate-500">{item.desc}</p>
+                  <p className="text-xs da-text-4">{item.desc}</p>
                 </motion.div>
               ))}
             </div>
@@ -1203,10 +1270,10 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
               viewport={{ once: true }}
               className="text-center mb-10"
             >
-              <h2 className="text-3xl md:text-4xl font-bold font-display text-gray-900 dark:text-white mb-4">
+              <h2 className="text-3xl md:text-4xl font-bold font-display da-text-1 mb-4">
                 What&apos;s Included
               </h2>
-              <p className="text-slate-400">
+              <p className="da-text-3">
                 Everything bundled in your ₹199 pass
               </p>
             </motion.div>
@@ -1218,18 +1285,18 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
               viewport={{ once: true }}
               className="rounded-2xl p-8"
               style={{
-                background: "rgba(22,22,35,.85)",
+                background: "var(--da-surface)",
                 backdropFilter: "blur(20px)",
-                border: "1px solid rgba(255,255,255,.08)",
+                border: "1px solid var(--da-border)",
               }}
             >
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-3">
                 {WHATS_INCLUDED.map((item) => (
                   <div key={item} className="flex items-start gap-3">
                     <div className="mt-0.5 flex-shrink-0 w-5 h-5 rounded-full bg-green-500/20 flex items-center justify-center">
-                      <FaCheckCircle className="text-green-400 text-[10px]" />
+                      <FaCheckCircle className="text-green-600 dark:text-green-400 text-[10px]" />
                     </div>
-                    <span className="text-slate-300 text-sm">{item}</span>
+                    <span className="da-text-2 text-sm">{item}</span>
                   </div>
                 ))}
               </div>
@@ -1274,16 +1341,16 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
                   className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
                   style={{
                     background:
-                      "linear-gradient(135deg,rgba(59,130,246,.2),rgba(139,92,246,.2))",
+                      "var(--da-chip)",
                   }}
                 >
-                  <FaMapMarkerAlt className="text-blue-400 text-lg" />
+                  <FaMapMarkerAlt className="da-accent text-lg" />
                 </div>
                 <div className="min-w-0">
                   <h3 className={`font-bold text-lg ${textPrimaryClass}`}>
                     DraperU India
                   </h3>
-                  <p className="text-xs text-slate-500">
+                  <p className="text-xs da-text-4">
                     (Formerly Draper Startup House Hyderabad)
                   </p>
                   <p className={`text-sm mt-1 ${textSecondaryClass}`}>
@@ -1336,16 +1403,16 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
                     className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
                     style={{
                       background:
-                        "linear-gradient(135deg,rgba(59,130,246,.2),rgba(139,92,246,.2))",
+                        "var(--da-chip)",
                     }}
                   >
-                    <FaSubway className="text-blue-400" />
+                    <FaSubway className="da-accent" />
                   </div>
                   <h3 className={`font-bold ${textPrimaryClass}`}>By Metro</h3>
                 </div>
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between gap-3">
-                    <span className="text-slate-500">Nearest Metro</span>
+                    <span className="da-text-4">Nearest Metro</span>
                     <span
                       className={`font-semibold text-right ${textPrimaryClass}`}
                     >
@@ -1353,13 +1420,13 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
                     </span>
                   </div>
                   <div className="flex justify-between gap-3">
-                    <span className="text-slate-500">Distance</span>
+                    <span className="da-text-4">Distance</span>
                     <span className={`font-semibold ${textPrimaryClass}`}>
                       ~2 km
                     </span>
                   </div>
                   <div className="flex justify-between gap-3">
-                    <span className="text-slate-500">Travel Time</span>
+                    <span className="da-text-4">Travel Time</span>
                     <span
                       className={`font-semibold text-right ${textPrimaryClass}`}
                     >
@@ -1383,15 +1450,15 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
                     className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
                     style={{
                       background:
-                        "linear-gradient(135deg,rgba(59,130,246,.2),rgba(139,92,246,.2))",
+                        "var(--da-chip)",
                     }}
                   >
-                    <FaBus className="text-violet-400" />
+                    <FaBus className="da-violet" />
                   </div>
                   <h3 className={`font-bold ${textPrimaryClass}`}>By Bus</h3>
                 </div>
 
-                <p className="text-xs uppercase tracking-wider text-slate-500 font-medium mb-2">
+                <p className="text-xs uppercase tracking-wider da-text-4 font-medium mb-2">
                   Nearby Bus Stops
                 </p>
                 <div className="flex flex-wrap gap-2 mb-4">
@@ -1401,12 +1468,8 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
                         key={stop}
                         className={`px-3 py-1 rounded-full text-xs font-medium border ${textSecondaryClass}`}
                         style={{
-                          background: isDarkMode
-                            ? "rgba(255,255,255,.05)"
-                            : "rgba(15,23,42,.04)",
-                          borderColor: isDarkMode
-                            ? "rgba(255,255,255,.1)"
-                            : "rgba(15,23,42,.1)",
+                          background: "var(--da-soft)",
+                          borderColor: "var(--da-border)",
                         }}
                       >
                         {stop}
@@ -1415,7 +1478,7 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
                   )}
                 </div>
 
-                <p className="text-xs uppercase tracking-wider text-slate-500 font-medium mb-2">
+                <p className="text-xs uppercase tracking-wider da-text-4 font-medium mb-2">
                   Bus Routes
                 </p>
                 <div className="flex flex-wrap gap-2">
@@ -1423,11 +1486,10 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
                     (route) => (
                       <span
                         key={route}
-                        className="px-3 py-1 rounded-full text-xs font-bold text-violet-300"
+                        className="px-3 py-1 rounded-full text-xs font-bold da-violet"
                         style={{
-                          background:
-                            "linear-gradient(135deg,rgba(59,130,246,.15),rgba(139,92,246,.15))",
-                          border: "1px solid rgba(124,58,237,.3)",
+                          background: "var(--da-chip)",
+                          border: "1px solid var(--da-accent-border-2)",
                         }}
                       >
                         {route}
@@ -1451,10 +1513,10 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
                     className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
                     style={{
                       background:
-                        "linear-gradient(135deg,rgba(59,130,246,.2),rgba(139,92,246,.2))",
+                        "var(--da-chip)",
                     }}
                   >
-                    <FaTaxi className="text-pink-400" />
+                    <FaTaxi className="text-pink-600 dark:text-pink-400" />
                   </div>
                   <h3 className={`font-bold ${textPrimaryClass}`}>
                     Rapido / Uber
@@ -1464,19 +1526,19 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
                 <div className="space-y-3">
                   {[
                     {
-                      icon: <FaMotorcycle className="text-blue-400" />,
+                      icon: <FaMotorcycle className="da-accent" />,
                       label: "Rapido Bike",
                       time: "5–8 min",
                       price: "₹35–70",
                     },
                     {
-                      icon: <FaTaxi className="text-violet-400" />,
+                      icon: <FaTaxi className="da-violet" />,
                       label: "Uber/Ola Auto",
                       time: "5–10 min",
                       price: "₹60–120",
                     },
                     {
-                      icon: <FaTaxi className="text-pink-400" />,
+                      icon: <FaTaxi className="text-pink-600 dark:text-pink-400" />,
                       label: "Uber Cab",
                       time: "5–8 min",
                       price: "₹120–220",
@@ -1486,9 +1548,7 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
                       key={r.label}
                       className="flex items-center justify-between gap-3 p-3 rounded-xl"
                       style={{
-                        background: isDarkMode
-                          ? "rgba(255,255,255,.03)"
-                          : "rgba(15,23,42,.03)",
+                        background: "var(--da-subtle)",
                       }}
                     >
                       <div className="flex items-center gap-2.5 min-w-0">
@@ -1503,7 +1563,7 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
                         <p className={`text-sm font-bold ${textPrimaryClass}`}>
                           {r.price}
                         </p>
-                        <p className="text-xs text-slate-500">{r.time}</p>
+                        <p className="text-xs da-text-4">{r.time}</p>
                       </div>
                     </div>
                   ))}
@@ -1526,10 +1586,10 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
             viewport={{ once: true }}
             className="text-center mb-10"
           >
-            <h2 className="text-3xl md:text-4xl font-bold font-display text-gray-900 dark:text-white mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold font-display da-text-1 mb-4">
               Get Your Pass
             </h2>
-            <p className="text-slate-400">Secure your spot at DevAgentic 1.0</p>
+            <p className="da-text-3">Secure your spot at DevAgentic 1.0</p>
           </motion.div>
 
           <motion.div
@@ -1539,9 +1599,9 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
             viewport={{ once: true }}
             className="rounded-2xl overflow-hidden da-pulse-glow"
             style={{
-              background: "rgba(22,22,35,.85)",
+              background: "var(--da-surface)",
               backdropFilter: "blur(20px)",
-              border: "1px solid rgba(124,58,237,.35)",
+              border: "1px solid var(--da-accent-border-2)",
             }}
           >
             {/* Rainbow top bar */}
@@ -1556,11 +1616,10 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
               {/* Pass badge */}
               <div className="flex justify-center mb-6">
                 <span
-                  className="px-4 py-1.5 rounded-full text-xs font-bold tracking-widest uppercase text-violet-300"
+                  className="px-4 py-1.5 rounded-full text-xs font-bold tracking-widest uppercase da-violet"
                   style={{
-                    background:
-                      "linear-gradient(135deg,rgba(59,130,246,.2),rgba(139,92,246,.2))",
-                    border: "1px solid rgba(124,58,237,.35)",
+                    background: "var(--da-chip)",
+                    border: "1px solid var(--da-accent-border-2)",
                   }}
                 >
                   DevAgentic 1.0 Pass
@@ -1572,7 +1631,7 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
                 <p className="text-6xl font-bold font-display bg-gradient-to-r from-[#4F8BFF] via-violet-500 to-pink-500 bg-clip-text text-transparent">
                   ₹199
                 </p>
-                <p className="text-slate-500 text-sm mt-1">
+                <p className="da-text-4 text-sm mt-1">
                   One-time · No hidden fees
                 </p>
               </div>
@@ -1589,9 +1648,9 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
                 ].map((item) => (
                   <div key={item} className="flex items-center gap-3">
                     <div className="w-5 h-5 rounded-full bg-green-500/20 flex items-center justify-center flex-shrink-0">
-                      <FaCheckCircle className="text-green-400 text-[10px]" />
+                      <FaCheckCircle className="text-green-600 dark:text-green-400 text-[10px]" />
                     </div>
-                    <span className="text-slate-300 text-sm">{item}</span>
+                    <span className="da-text-2 text-sm">{item}</span>
                   </div>
                 ))}
               </div>
@@ -1599,7 +1658,7 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
               {/* CTA */}
               <button
                 onClick={() => setShowRegistration(true)}
-                className="w-full py-4 rounded-xl font-bold text-gray-900 dark:text-white text-lg transition-all duration-200 hover:scale-[1.02] active:scale-[.98]"
+                className="da-cta w-full py-4 rounded-xl font-bold text-white text-lg transition-all duration-200 hover:scale-[1.02] active:scale-[.98]"
                 style={{
                   background:
                     "linear-gradient(135deg, #2563EB, #8B5CF6, #EC4899)",
@@ -1612,14 +1671,14 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
               {/* Trust badges */}
               <div
                 className="flex flex-wrap justify-center gap-4 mt-5 pt-5 border-t"
-                style={{ borderColor: "rgba(255,255,255,.06)" }}
+                style={{ borderColor: "var(--da-border)" }}
               >
                 {[
                   "🔒 Secure Payments",
                   "⚡ Instant Verification",
                   "🎟️ Limited to 150 seats",
                 ].map((b) => (
-                  <span key={b} className="text-xs text-slate-500">
+                  <span key={b} className="text-xs da-text-4">
                     {b}
                   </span>
                 ))}
@@ -1641,7 +1700,7 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
             viewport={{ once: true }}
             className="text-center mb-12"
           >
-            <h2 className="text-3xl md:text-4xl font-bold font-display text-gray-900 dark:text-white mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold font-display da-text-1 mb-4">
               Speakers
             </h2>
           </motion.div>
@@ -1655,9 +1714,9 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
               viewport={{ once: true }}
               className="rounded-2xl p-8 text-center"
               style={{
-                background: "rgba(22,22,35,.85)",
+                background: "var(--da-surface)",
                 backdropFilter: "blur(20px)",
-                border: "1px solid rgba(124,58,237,.25)",
+                border: "1px solid var(--da-accent-border)",
               }}
             >
               {/* Gradient avatar */}
@@ -1673,7 +1732,7 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
                   />
                 ) : (
                   <div
-                    className="w-full h-full flex items-center justify-center text-3xl font-bold text-gray-900 dark:text-white font-display"
+                    className="w-full h-full flex items-center justify-center text-3xl font-bold text-white font-display"
                     style={{
                       background: "linear-gradient(135deg, #3b82f6, #8b5cf6)",
                     }}
@@ -1682,20 +1741,20 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
                   </div>
                 )}
               </div>
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-1">
+              <h3 className="text-xl font-bold da-text-1 mb-1">
                 Shiva Ganesh Talikota
               </h3>
-              <p className="text-sm text-blue-400 font-medium mb-1">
+              <p className="text-sm da-accent font-medium mb-1">
                 Founder — matriXO
               </p>
-              <p className="text-xs text-slate-500 mb-5">
+              <p className="text-xs da-text-4 mb-5">
                 Agentic AI Speaker · AI Educator · Startup Founder
               </p>
               <a
                 href="https://www.linkedin.com/in/shivaganesht/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs text-blue-400 transition-colors hover:text-blue-300"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs da-accent transition-colors da-hover-1"
                 style={{
                   background: "rgba(59,130,246,.1)",
                   border: "1px solid rgba(59,130,246,.2)",
@@ -1713,14 +1772,14 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
               viewport={{ once: true }}
               className="rounded-2xl p-8 text-center"
               style={{
-                background: "rgba(22,22,35,.85)",
+                background: "var(--da-surface)",
                 backdropFilter: "blur(20px)",
-                border: "1px solid rgba(124,58,237,.25)",
+                border: "1px solid var(--da-accent-border)",
               }}
             >
               <div className="w-24 h-24 rounded-full mx-auto mb-5 overflow-hidden flex items-center justify-center border border-gray-200 dark:border-white/10 bg-white/5">
                 <div
-                  className="w-full h-full flex items-center justify-center text-3xl font-bold text-gray-900 dark:text-white font-display"
+                  className="w-full h-full flex items-center justify-center text-3xl font-bold text-white font-display"
                   style={{
                     background: "linear-gradient(135deg, #f59e0b, #ef4444)",
                   }}
@@ -1728,20 +1787,20 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
                   SR
                 </div>
               </div>
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-1">
+              <h3 className="text-xl font-bold da-text-1 mb-1">
                 Saideep Reddy
               </h3>
-              <p className="text-sm text-blue-400 font-medium mb-1">
+              <p className="text-sm da-accent font-medium mb-1">
                 Guest Speaker
               </p>
-              <p className="text-xs text-slate-500 mb-5">
+              <p className="text-xs da-text-4 mb-5">
                 AI & Development Enthusiast
               </p>
               <a
                 href="https://www.linkedin.com/in/saideep-reddy7/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs text-blue-400 transition-colors hover:text-blue-300"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs da-accent transition-colors da-hover-1"
                 style={{
                   background: "rgba(59,130,246,.1)",
                   border: "1px solid rgba(59,130,246,.2)",
@@ -1759,14 +1818,14 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
               viewport={{ once: true }}
               className="rounded-2xl p-8 text-center"
               style={{
-                background: "rgba(22,22,35,.85)",
+                background: "var(--da-surface)",
                 backdropFilter: "blur(20px)",
-                border: "1px solid rgba(124,58,237,.25)",
+                border: "1px solid var(--da-accent-border)",
               }}
             >
               <div className="w-24 h-24 rounded-full mx-auto mb-5 overflow-hidden flex items-center justify-center border border-gray-200 dark:border-white/10 bg-white/5">
                 <div
-                  className="w-full h-full flex items-center justify-center text-3xl font-bold text-gray-900 dark:text-white font-display"
+                  className="w-full h-full flex items-center justify-center text-3xl font-bold text-white font-display"
                   style={{
                     background: "linear-gradient(135deg, #10b981, #3b82f6)",
                   }}
@@ -1774,20 +1833,20 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
                   BP
                 </div>
               </div>
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-1">
+              <h3 className="text-xl font-bold da-text-1 mb-1">
                 Bhargavi Papolu
               </h3>
-              <p className="text-sm text-blue-400 font-medium mb-1">
+              <p className="text-sm da-accent font-medium mb-1">
                 Guest Speaker
               </p>
-              <p className="text-xs text-slate-500 mb-5">
+              <p className="text-xs da-text-4 mb-5">
                 AI & Development Enthusiast
               </p>
               <a
                 href="https://www.linkedin.com/in/bhargavi-papolu-311989210/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs text-blue-400 transition-colors hover:text-blue-300"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs da-accent transition-colors da-hover-1"
                 style={{
                   background: "rgba(59,130,246,.1)",
                   border: "1px solid rgba(59,130,246,.2)",
@@ -1812,10 +1871,10 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
             viewport={{ once: true }}
             className="text-center mb-12"
           >
-            <h2 className="text-3xl md:text-4xl font-bold font-display text-gray-900 dark:text-white mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold font-display da-text-1 mb-4">
               Who Should Attend
             </h2>
-            <p className="text-slate-400">
+            <p className="da-text-3">
               DevAgentic 1.0 is for everyone curious about AI
             </p>
           </motion.div>
@@ -1830,13 +1889,13 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
                 viewport={{ once: true }}
                 className="flex items-center gap-2 px-5 py-3 rounded-full text-sm font-medium da-card-hover cursor-default"
                 style={{
-                  background: "rgba(124,58,237,.12)",
+                  background: "var(--da-accent-tint)",
                   backdropFilter: "blur(12px)",
-                  border: "1px solid rgba(124,58,237,.30)",
+                  border: "1px solid var(--da-accent-border-2)",
                 }}
               >
                 <span>{item.icon}</span>
-                <span className="text-slate-300">{item.label}</span>
+                <span className="da-text-2">{item.label}</span>
               </motion.div>
             ))}
           </div>
@@ -1855,7 +1914,7 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
             viewport={{ once: true }}
             className="text-center mb-12"
           >
-            <h2 className="text-3xl md:text-4xl font-bold font-display text-gray-900 dark:text-white mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold font-display da-text-1 mb-4">
               Frequently Asked Questions
             </h2>
           </motion.div>
@@ -1870,8 +1929,8 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
                 viewport={{ once: true }}
                 className="rounded-xl overflow-hidden"
                 style={{
-                  background: "rgba(22,22,35,.85)",
-                  border: `1px solid ${expandedFaq === index ? "rgba(124,58,237,.4)" : "rgba(255,255,255,.08)"}`,
+                  background: "var(--da-surface)",
+                  border: `1px solid ${expandedFaq === index ? "var(--da-accent-border-2)" : "var(--da-border)"}`,
                   transition: "border-color .3s",
                 }}
               >
@@ -1881,11 +1940,11 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
                   }
                   className="w-full flex items-center justify-between p-5 text-left gap-4"
                 >
-                  <span className="text-gray-900 dark:text-white font-medium text-sm">
+                  <span className="da-text-1 font-medium text-sm">
                     {faq.q}
                   </span>
                   <FaChevronDown
-                    className="text-slate-400 flex-shrink-0 transition-transform duration-300"
+                    className="da-text-3 flex-shrink-0 transition-transform duration-300"
                     style={{
                       transform:
                         expandedFaq === index
@@ -1906,8 +1965,8 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
                       className="overflow-hidden"
                     >
                       <div
-                        className="px-5 pb-5 border-t text-slate-400 text-sm leading-relaxed"
-                        style={{ borderColor: "rgba(255,255,255,.05)" }}
+                        className="px-5 pb-5 border-t da-text-3 text-sm leading-relaxed"
+                        style={{ borderColor: "var(--da-border-soft)" }}
                       >
                         <div className="pt-4">{faq.a}</div>
                       </div>
@@ -1932,10 +1991,10 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
             viewport={{ once: true }}
             className="text-center mb-10"
           >
-            <h2 className="text-3xl md:text-4xl font-bold font-display text-gray-900 dark:text-white mb-3">
+            <h2 className="text-3xl md:text-4xl font-bold font-display da-text-1 mb-3">
               Event Gallery
             </h2>
-            <p className="text-slate-500 text-sm">
+            <p className="da-text-4 text-sm">
               Photos will be added after the event
             </p>
           </motion.div>
@@ -1951,24 +2010,24 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
                 transition={{ delay: i * 0.07 }}
                 className="relative h-52 rounded-2xl overflow-hidden flex items-center justify-center"
                 style={{
-                  background: `linear-gradient(135deg, hsl(${220 + i * 20},60%,9%), hsl(${260 + i * 15},60%,12%))`,
-                  border: "1px solid rgba(255,255,255,.06)",
+                  background: `linear-gradient(135deg, hsl(${220 + i * 20} var(--da-gallery-s) var(--da-gallery-l1)), hsl(${260 + i * 15} var(--da-gallery-s) var(--da-gallery-l2)))`,
+                  border: "1px solid var(--da-border)",
                 }}
               >
                 <div
                   className="absolute inset-0"
                   style={{
                     backdropFilter: "blur(2px)",
-                    background: "rgba(9,9,15,.35)",
+                    background: "var(--da-gallery-veil)",
                   }}
                 />
                 <div className="relative flex flex-col items-center gap-2">
                   <span className="text-5xl">📷</span>
                   <span
-                    className="text-xs font-medium px-3 py-1 rounded-full text-slate-400"
+                    className="text-xs font-medium px-3 py-1 rounded-full da-text-3"
                     style={{
-                      background: "rgba(9,9,15,.6)",
-                      border: "1px solid rgba(255,255,255,.1)",
+                      background: "var(--da-glass)",
+                      border: "1px solid var(--da-border-strong)",
                     }}
                   >
                     Coming Soon
@@ -1992,7 +2051,7 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
             viewport={{ once: true }}
             className="text-center mb-12"
           >
-            <h2 className="text-3xl md:text-4xl font-bold font-display text-gray-900 dark:text-white mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold font-display da-text-1 mb-4">
               Sponsors &amp; Partners
             </h2>
           </motion.div>
@@ -2008,30 +2067,30 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
               <div
                 className="flex items-center gap-3 px-6 py-3 rounded-full"
                 style={{
-                  background: isDarkMode
-                    ? "rgba(124,58,237,.12)"
-                    : "rgba(255,255,255,.8)",
-                  border: isDarkMode
-                    ? "1px solid rgba(124,58,237,.30)"
-                    : "1px solid rgba(148,163,184,.22)",
+                  background: "var(--da-accent-tint)",
+                  border: "1px solid var(--da-accent-border-2)",
                 }}
               >
                 <div className="w-8 h-8 rounded-lg overflow-hidden flex items-center justify-center bg-white/10 flex-shrink-0">
                   <Image
-                    src={
-                      isDarkMode
-                        ? MATRIXO_LOGO_DARK_URL
-                        : MATRIXO_LOGO_LIGHT_URL
-                    }
+                    src={MATRIXO_LOGO_LIGHT_URL}
                     alt="matriXO"
                     width={32}
                     height={32}
-                    className="object-contain w-full h-full"
+                    className="object-contain w-full h-full block dark:hidden"
+                    unoptimized
+                  />
+                  <Image
+                    src={MATRIXO_LOGO_DARK_URL}
+                    alt="matriXO"
+                    width={32}
+                    height={32}
+                    className="object-contain w-full h-full hidden dark:block"
                     unoptimized
                   />
                 </div>
-                <span className="text-gray-900 dark:text-white font-semibold">matriXO</span>
-                <span className="text-xs text-slate-500">— Main Organizer</span>
+                <span className="da-text-1 font-semibold">matriXO</span>
+                <span className="text-xs da-text-4">— Main Organizer</span>
               </div>
             </motion.div>
 
@@ -2046,18 +2105,22 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
                   viewport={{ once: true }}
                   className="h-20 rounded-xl flex flex-col items-center justify-center gap-0.5 px-2"
                   style={{
-                    border: "1px dashed rgba(255,255,255,.1)",
-                    background: "rgba(255,255,255,.02)",
+                    border: "1px dashed var(--da-border-strong)",
+                    background: "var(--da-subtle)",
                   }}
                 >
-                  <PartnerLogo
-                    name={partner.name}
-                    src={isDarkMode ? partner.logoDark : partner.logoLight}
-                  />
-                  <p className="text-slate-300 text-[11px] font-semibold leading-tight text-center">
+                  {/* Both logos render; CSS picks one, so the correct
+                      variant is present on the very first paint. */}
+                  <span className="block dark:hidden">
+                    <PartnerLogo name={partner.name} src={partner.logoLight} />
+                  </span>
+                  <span className="hidden dark:block">
+                    <PartnerLogo name={partner.name} src={partner.logoDark} />
+                  </span>
+                  <p className="da-text-2 text-[11px] font-semibold leading-tight text-center">
                     {partner.name}
                   </p>
-                  <p className="text-slate-600 text-[10px] leading-tight text-center">
+                  <p className="da-text-5 text-[10px] leading-tight text-center">
                     {partner.role}
                   </p>
                 </motion.div>
@@ -2079,10 +2142,10 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
             viewport={{ once: true }}
             className="text-center mb-12"
           >
-            <h2 className="text-3xl md:text-4xl font-bold font-display text-gray-900 dark:text-white mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold font-display da-text-1 mb-4">
               Get in Touch
             </h2>
-            <p className="text-slate-400">
+            <p className="da-text-3">
               Have questions? Reach us through any of these channels
             </p>
           </motion.div>
@@ -2135,18 +2198,18 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
                 viewport={{ once: true }}
                 className="flex items-center gap-4 p-5 rounded-xl da-card-hover"
                 style={{
-                  background: "rgba(22,22,35,.85)",
-                  border: "1px solid rgba(255,255,255,.08)",
+                  background: "var(--da-surface)",
+                  border: "1px solid var(--da-border)",
                 }}
               >
                 <span className="text-2xl leading-none flex-shrink-0">
                   {item.icon}
                 </span>
                 <div className="min-w-0">
-                  <p className="text-xs text-slate-500 uppercase tracking-wider">
+                  <p className="text-xs da-text-4 uppercase tracking-wider">
                     {item.label}
                   </p>
-                  <p className="text-gray-900 dark:text-white text-sm font-medium truncate">
+                  <p className="da-text-1 text-sm font-medium truncate">
                     {item.value}
                   </p>
                 </div>
@@ -2170,16 +2233,16 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
           <div
             className="flex items-start gap-4 px-6 py-4 rounded-2xl text-sm font-medium w-full text-left shadow-2xl shadow-red-500/10"
             style={{
-              background: "rgba(220, 38, 38, 0.15)",
+              background: "rgba(220, 38, 38, 0.10)",
               backdropFilter: "blur(16px)",
               border: "1px solid rgba(239, 68, 68, 0.4)",
             }}
           >
-            <span className="text-red-400 text-2xl mt-0.5">⚠️</span>
+            <span className="text-red-600 dark:text-red-400 text-2xl mt-0.5">⚠️</span>
             <div className="flex-1">
-              <span className="text-red-400 font-bold text-base block mb-1 tracking-wide">URGENT: EVENT POSTPONED</span>
+              <span className="text-red-700 dark:text-red-400 font-bold text-base block mb-1 tracking-wide">URGENT: EVENT POSTPONED</span>
               <span className="text-gray-900/90 dark:text-white/90 text-sm leading-relaxed">
-                Due to extremely high demand, the event has been rescheduled to <strong className="text-gray-900 dark:text-white">Saturday, 11th July 2026 (3:00 PM - 6:00 PM)</strong>.
+                Due to extremely high demand, the event has been rescheduled to <strong className="da-text-1">Saturday, 11th July 2026 (3:00 PM - 6:00 PM)</strong>.
                 All existing registrations remain completely valid.
               </span>
             </div>
@@ -2193,8 +2256,8 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
       <footer
         className="py-16 px-4"
         style={{
-          background: "rgba(9,9,15,.6)",
-          borderTop: "1px solid rgba(255,255,255,.05)",
+          background: "var(--da-footer)",
+          borderTop: "1px solid var(--da-border)",
         }}
       >
         <div className="max-w-4xl mx-auto text-center space-y-6">
@@ -2207,7 +2270,7 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
             <h3 className="text-3xl font-bold font-display bg-gradient-to-r from-[#4F8BFF] via-violet-500 to-pink-500 bg-clip-text text-transparent">
               DevAgentic 1.0
             </h3>
-            <p className="text-slate-600 text-sm mt-1">Built by matriXO</p>
+            <p className="da-text-5 text-sm mt-1">Built by matriXO</p>
           </motion.div>
 
           {/* Links */}
@@ -2216,21 +2279,21 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
-            className="flex flex-wrap justify-center gap-6 text-xs text-slate-600"
+            className="flex flex-wrap justify-center gap-6 text-xs da-text-5"
           >
             <span>© 2026 matriXO</span>
             <a
               href="/privacy"
-              className="hover:text-slate-400 transition-colors"
+              className="da-hover-3 transition-colors"
             >
               Privacy Policy
             </a>
-            <a href="/terms" className="hover:text-slate-400 transition-colors">
+            <a href="/terms" className="da-hover-3 transition-colors">
               Terms
             </a>
             <a
               href="/refund"
-              className="hover:text-slate-400 transition-colors"
+              className="da-hover-3 transition-colors"
             >
               Refund Policy
             </a>
@@ -2267,10 +2330,10 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={label}
-                className="w-9 h-9 rounded-full flex items-center justify-center text-slate-500 hover:text-gray-900 dark:hover:text-white transition-all duration-200 hover:scale-110 hover:border-[#7C3AED]"
+                className="w-9 h-9 rounded-full flex items-center justify-center da-text-4 da-hover-1 transition-all duration-200 hover:scale-110 hover:border-[#7C3AED]"
                 style={{
-                  background: "rgba(255,255,255,.05)",
-                  border: "1px solid rgba(255,255,255,.12)",
+                  background: "var(--da-soft)",
+                  border: "1px solid var(--da-border-strong)",
                 }}
               >
                 <Icon />
@@ -2278,7 +2341,7 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
             ))}
           </motion.div>
 
-          <p className="text-xs text-slate-700">
+          <p className="text-xs da-text-5">
             © 2026 matriXO. All rights reserved.
           </p>
         </div>
@@ -2296,26 +2359,25 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
             className="fixed bottom-0 left-0 right-0 z-40 p-4"
             style={{
-              background:
-                "linear-gradient(to top, rgba(9,9,15,.97) 60%, transparent)",
+              background: "var(--da-sticky-fade)",
             }}
           >
             <div
               className="max-w-md mx-auto flex items-center justify-between gap-4 px-5 py-4 rounded-2xl"
               style={{
-                background: "rgba(22,22,35,.9)",
+                background: "var(--da-sticky-bg)",
                 backdropFilter: "blur(20px)",
-                border: "1px solid rgba(124,58,237,.35)",
+                border: "1px solid var(--da-accent-border-2)",
               }}
             >
               <div>
-                <p className="text-gray-900 dark:text-white font-bold text-sm">
+                <p className="da-text-1 font-bold text-sm">
                   DevAgentic 1.0
                 </p>
                 <div className="flex items-center gap-2 mt-0.5">
-                  <p className="text-emerald-400 text-xs font-bold">₹199 Only</p>
+                  <p className="text-emerald-600 dark:text-emerald-400 text-xs font-bold">₹199 Only</p>
                   <span className="w-1 h-1 rounded-full bg-slate-600" />
-                  <p className="text-orange-400 text-[10px] font-bold uppercase tracking-wide flex items-center gap-1">
+                  <p className="text-orange-600 dark:text-orange-400 text-[10px] font-bold uppercase tracking-wide flex items-center gap-1">
                     <span className="w-1.5 h-1.5 rounded-full bg-orange-500 animate-pulse" />
                     14 Left
                   </p>
@@ -2323,7 +2385,7 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
               </div>
               <button
                 onClick={() => setShowRegistration(true)}
-                className="flex-shrink-0 px-6 py-3 rounded-xl font-extrabold text-gray-900 dark:text-white text-sm transition-all duration-200 hover:scale-[1.03] active:scale-[.97] relative overflow-hidden group"
+                className="da-cta flex-shrink-0 px-6 py-3 rounded-xl font-extrabold text-white text-sm transition-all duration-200 hover:scale-[1.03] active:scale-[.97] relative overflow-hidden group"
                 style={{
                   background:
                     "linear-gradient(135deg, #2563EB, #8B5CF6, #EC4899)",

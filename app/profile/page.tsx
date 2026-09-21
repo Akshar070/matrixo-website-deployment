@@ -7,7 +7,7 @@ import {
   FaUser, FaIdCard, FaPhone, FaEnvelope, FaUniversity,
   FaGraduationCap, FaCodeBranch, FaEdit, FaSave, FaTimes, FaSpinner,
   FaArrowLeft, FaShieldAlt, FaShareAlt, FaCamera, FaCopy, FaCheck,
-  FaLinkedin, FaGithub, FaGlobe, FaLink, FaEye, FaEyeSlash
+  FaLinkedin, FaGithub, FaGlobe, FaLink, FaEye, FaEyeSlash, FaChevronDown
 } from 'react-icons/fa'
 import { useAuth } from '@/lib/AuthContext'
 import { useProfile, DEFAULT_PRIVACY, PrivacySettings } from '@/lib/ProfileContext'
@@ -77,6 +77,7 @@ export default function ProfilePage() {
   const [newUsername, setNewUsername] = useState('')
   const [usernameStatus, setUsernameStatus] = useState<'idle' | 'checking' | 'available' | 'taken'>('idle')
   const [savingUsername, setSavingUsername] = useState(false)
+  const [branchDropdownOpen, setBranchDropdownOpen] = useState(false)
 
   // Detect dark mode
   useEffect(() => {
@@ -521,12 +522,64 @@ export default function ProfilePage() {
                         </select>
                         {errors.year && <p className="text-red-400 text-xs mt-1">{errors.year}</p>}
                       </div>
-                      <div>
+                      <div className="relative z-20">
                         <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5 block">Branch</label>
-                        <select name="branch" value={editData.branch} onChange={handleChange} className={`${inputCls('branch')} appearance-none`}>
-                          <option value="">Select</option>
-                          {BRANCH_OPTIONS.map(b => <option key={b} value={b}>{b}</option>)}
-                        </select>
+                        <div className="relative">
+                          <button
+                            type="button"
+                            onClick={() => setBranchDropdownOpen(!branchDropdownOpen)}
+                            className={`${inputCls('branch')} text-left flex justify-between items-center w-full appearance-none`}
+                          >
+                            <span className={editData.branch ? 'text-gray-900 dark:text-white' : 'text-gray-500'}>
+                              {editData.branch || 'Select'}
+                            </span>
+                            <FaChevronDown className={`text-gray-500 text-xs transition-transform ${branchDropdownOpen ? 'rotate-180' : ''}`} />
+                          </button>
+
+                          <AnimatePresence>
+                            {branchDropdownOpen && (
+                              <>
+                                <div
+                                  className="fixed inset-0 z-40"
+                                  onClick={() => setBranchDropdownOpen(false)}
+                                />
+                                <motion.div
+                                  initial={{ opacity: 0, y: -10 }}
+                                  animate={{ opacity: 1, y: 0 }}
+                                  exit={{ opacity: 0, y: -10 }}
+                                  transition={{ duration: 0.15 }}
+                                  className="absolute left-0 right-0 top-full mt-2 bg-white dark:bg-[#1a1f2c] border border-gray-200 dark:border-white/10 rounded-xl shadow-xl z-50 overflow-hidden"
+                                >
+                                  <div className="max-h-60 overflow-y-auto p-1.5 relative z-50">
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        setEditData(prev => ({ ...prev, branch: '' }))
+                                        setBranchDropdownOpen(false)
+                                      }}
+                                      className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${!editData.branch ? 'bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400 font-medium' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/5'}`}
+                                    >
+                                      Select
+                                    </button>
+                                    {BRANCH_OPTIONS.map(b => (
+                                      <button
+                                        key={b}
+                                        type="button"
+                                        onClick={() => {
+                                          setEditData(prev => ({ ...prev, branch: b }))
+                                          setBranchDropdownOpen(false)
+                                        }}
+                                        className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${editData.branch === b ? 'bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400 font-medium' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/5'}`}
+                                      >
+                                        {b}
+                                      </button>
+                                    ))}
+                                  </div>
+                                </motion.div>
+                              </>
+                            )}
+                          </AnimatePresence>
+                        </div>
                         {errors.branch && <p className="text-red-400 text-xs mt-1">{errors.branch}</p>}
                       </div>
                     </div>

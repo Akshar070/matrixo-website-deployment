@@ -25,9 +25,10 @@ export default function RootChrome({
     pathname === '/talk-with-us' ||
     pathname.startsWith('/talk-with-us/')
   const isEmployeePortal = hostIsEmployeeSubdomain || pathname.startsWith('/employee-portal')
+  const isAuthPage = pathname === '/auth' || pathname.startsWith('/auth/')
 
   const showNavbar = !isEmployeePortal && !isContactPage
-  const showFooter = !isEmployeePortal && !isContactPage
+  const showFooter = !isEmployeePortal && !isContactPage && !isAuthPage
 
   const baseMainClassName = isEmployeePortal || isContactPage
     ? 'min-h-screen overflow-x-hidden'

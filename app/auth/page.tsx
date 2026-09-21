@@ -250,31 +250,26 @@ export default function AuthPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200 dark:from-gray-950 dark:via-gray-900 dark:to-black text-gray-900 dark:text-white relative overflow-hidden">
+    <div className="flex-1 flex flex-col lg:h-[calc(100dvh-6rem)] lg:min-h-0 bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-white relative overflow-y-auto lg:overflow-hidden">
       {/* Animated Grid Background */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#e5e5e5_1px,transparent_1px),linear-gradient(to_bottom,#e5e5e5_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#1f1f1f_1px,transparent_1px),linear-gradient(to_bottom,#1f1f1f_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_0%,#000_70%,transparent_110%)]" />
       
-      {/* Gradient Orbs */}
-      <div className="absolute top-0 -left-4 w-96 h-96 bg-purple-500/30 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob" />
-      <div className="absolute top-0 -right-4 w-96 h-96 bg-cyan-500/30 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-2000" />
-      <div className="absolute -bottom-8 left-20 w-96 h-96 bg-pink-500/30 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-4000" />
-
-      <div className="relative z-10 flex items-center justify-center min-h-screen px-4 sm:px-6 lg:px-8 py-20 sm:py-24">
-        <div className="w-full max-w-6xl grid lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-16 items-center">
+      <div className="relative z-10 flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-0">
+        <div className="w-full max-w-6xl grid lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12 items-center">
           
           {/* Left Side - Branding */}
           <motion.div
             initial={{ opacity: 0, x: -50 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6 }}
-            className="text-left space-y-6 hidden lg:block"
+            className="text-left space-y-5 hidden lg:block"
           >
-            <div className="space-y-4">
+            <div className="space-y-3">
               <div>
-                <h1 className="text-5xl font-bold text-gray-900 dark:text-white mb-2">
+                <h1 className="text-5xl font-bold text-gray-900 dark:text-white mb-1">
                   <HeadingHighlight text="Experience" />
                 </h1>
-                <h2 className="text-5xl font-bold pb-1 leading-tight">
+                <h2 className="text-5xl font-bold pb-0.5 leading-tight">
                   <HeadingHighlight text="Personalized Learning" />
                 </h2>
               </div>
@@ -283,7 +278,7 @@ export default function AuthPage() {
               </p>
             </div>
 
-            <div className="space-y-4 pt-8">
+            <div className="space-y-3 pt-4">
               <div className="flex items-start gap-4 group">
                 <div className="p-3 bg-purple-500/10 rounded-xl group-hover:bg-purple-500/20 transition-colors">
                   <FaShieldAlt className="text-2xl text-purple-400" />
@@ -321,7 +316,7 @@ export default function AuthPage() {
               </div>
             </div>
 
-            <div className="pt-8 flex items-center gap-4 text-sm text-gray-500 dark:text-gray-500">
+            <div className="pt-4 flex items-center gap-4 text-sm text-gray-500 dark:text-gray-500">
               <span>Trusted by 10,000+ students</span>
               <span>•</span>
               <span>500+ institutions</span>
@@ -335,9 +330,9 @@ export default function AuthPage() {
             transition={{ duration: 0.6 }}
             className="w-full"
           >
-            <div className="rounded-2xl bg-white dark:bg-[#0B1220] border border-gray-200 dark:border-white/[0.08] shadow-sm p-6 lg:p-8">
+            <div className="rounded-2xl bg-white dark:bg-[#0B1220] border border-gray-200 dark:border-white/[0.08] shadow-sm p-6 lg:px-8 lg:py-6">
               {/* Mobile Logo */}
-              <div className="lg:hidden mb-8 flex justify-center relative h-12">
+              <div className="lg:hidden mb-6 flex justify-center relative h-12">
                 {/* Light Mode Logo (Black) */}
                 <img 
                   src="/logos/logo-light.png" 
@@ -394,7 +389,7 @@ export default function AuthPage() {
 
               {/* Tab Switcher */}
               {authStep === 'form' && (
-              <div className="flex gap-2 mb-6 p-1 bg-transparent rounded-xl border border-gray-200 dark:border-white/[0.08]">
+              <div className="flex gap-2 mb-5 p-1 bg-transparent rounded-xl border border-gray-200 dark:border-white/[0.08]">
                 <button
                   onClick={() => setIsLogin(true)}
                   className={`flex-1 py-2.5 px-5 rounded-lg font-medium transition-colors duration-200 ${
@@ -508,11 +503,11 @@ export default function AuthPage() {
               <>
 
               {/* OAuth Buttons */}
-              <div className="space-y-2.5 mb-6">
+              <div className="space-y-2.5 mb-5">
                 <button
                   onClick={handleGoogleSignIn}
                   disabled={loading}
-                  className="w-full flex items-center justify-center gap-3 py-3 px-5 bg-white text-gray-900 rounded-xl font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
+                  className="w-full flex items-center justify-center gap-3 py-2.5 px-5 bg-white text-gray-900 rounded-xl font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
                 >
                   {loading ? (
                     <div className="w-5 h-5 border-2 border-gray-400 border-t-gray-900 rounded-full animate-spin" />
@@ -525,7 +520,7 @@ export default function AuthPage() {
                 </button>
               </div>
 
-              <div className="relative mb-6">
+              <div className="relative mb-5">
                 <div className="absolute inset-0 flex items-center">
                   <div className="w-full border-t border-gray-200/30 dark:border-white/[0.06]" />
                 </div>
@@ -535,7 +530,7 @@ export default function AuthPage() {
               </div>
 
               {/* Email Form */}
-              <form onSubmit={handleSubmit} className="space-y-4">
+              <form onSubmit={handleSubmit} className="space-y-3.5">
                 <AnimatePresence mode="wait">
                   {!isLogin && (
                     <motion.div
@@ -551,7 +546,7 @@ export default function AuthPage() {
                         value={formData.name}
                         onChange={handleChange}
                         required={!isLogin}
-                        className="w-full py-3 px-5 rounded-xl bg-slate-100 text-gray-900 placeholder-gray-500 border border-transparent focus:border-blue-600 focus:outline-none focus:ring-0 transition-colors"
+                        className="w-full py-2.5 px-4 rounded-xl bg-slate-100 text-gray-900 placeholder-gray-500 border border-transparent focus:border-blue-600 focus:outline-none focus:ring-0 transition-colors"
                       />
                     </motion.div>
                   )}
@@ -564,7 +559,7 @@ export default function AuthPage() {
                   value={formData.email}
                   onChange={handleChange}
                   required
-                  className="w-full py-3 px-5 rounded-xl bg-slate-100 text-gray-900 placeholder-gray-500 border border-transparent focus:border-blue-600 focus:outline-none focus:ring-0 transition-colors"
+                  className="w-full py-2.5 px-4 rounded-xl bg-slate-100 text-gray-900 placeholder-gray-500 border border-transparent focus:border-blue-600 focus:outline-none focus:ring-0 transition-colors"
                 />
 
                 <input
@@ -574,7 +569,7 @@ export default function AuthPage() {
                   value={formData.password}
                   onChange={handleChange}
                   required
-                  className="w-full py-3 px-5 rounded-xl bg-slate-100 text-gray-900 placeholder-gray-500 border border-transparent focus:border-blue-600 focus:outline-none focus:ring-0 transition-colors"
+                  className="w-full py-2.5 px-4 rounded-xl bg-slate-100 text-gray-900 placeholder-gray-500 border border-transparent focus:border-blue-600 focus:outline-none focus:ring-0 transition-colors"
                 />
 
                 <AnimatePresence mode="wait">
@@ -592,14 +587,14 @@ export default function AuthPage() {
                         value={formData.confirmPassword}
                         onChange={handleChange}
                         required={!isLogin}
-                        className="w-full py-3 px-5 rounded-xl bg-slate-100 text-gray-900 placeholder-gray-500 border border-transparent focus:border-blue-600 focus:outline-none focus:ring-0 transition-colors"
+                        className="w-full py-2.5 px-4 rounded-xl bg-slate-100 text-gray-900 placeholder-gray-500 border border-transparent focus:border-blue-600 focus:outline-none focus:ring-0 transition-colors"
                       />
                     </motion.div>
                   )}
                 </AnimatePresence>
 
                 {isLogin && (
-                  <div className="flex justify-end">
+                  <div className="flex justify-end pt-1">
                     <Link href="/forgot-password" className="text-sm text-blue-400 hover:underline transition-colors">
                       Forgot password?
                     </Link>
@@ -609,7 +604,7 @@ export default function AuthPage() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full py-3 px-5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 group"
+                  className="w-full py-2.5 px-5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 group"
                 >
                   {loading ? (
                     <div className="w-6 h-6 border-3 border-white/30 border-t-white rounded-full animate-spin" />
@@ -622,7 +617,7 @@ export default function AuthPage() {
                 </button>
               </form>
 
-              <div className="mt-8 text-center text-sm text-gray-600 dark:text-gray-400">
+              <div className="mt-5 text-center text-sm text-gray-600 dark:text-gray-400">
                 By continuing, you agree to our{' '}
                 <Link href="/terms" className="text-blue-600 hover:underline">
                   Terms
@@ -642,23 +637,6 @@ export default function AuthPage() {
         </div>
       </div>
 
-      <style jsx>{`
-        @keyframes blob {
-          0% { transform: translate(0px, 0px) scale(1); }
-          33% { transform: translate(30px, -50px) scale(1.1); }
-          66% { transform: translate(-20px, 20px) scale(0.9); }
-          100% { transform: translate(0px, 0px) scale(1); }
-        }
-        .animate-blob {
-          animation: blob 7s infinite;
-        }
-        .animation-delay-2000 {
-          animation-delay: 2s;
-        }
-        .animation-delay-4000 {
-          animation-delay: 4s;
-        }
-      `}</style>
     </div>
   )
 }

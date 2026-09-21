@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { FaBell, FaCheckDouble, FaGift, FaCalendarAlt, FaBullhorn, FaGraduationCap } from 'react-icons/fa'
+import { FaBell, FaGift, FaCalendarAlt, FaBullhorn, FaGraduationCap, FaTimes } from 'react-icons/fa'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { usePublicNotifications } from '@/hooks/usePublicNotifications'
@@ -37,8 +37,11 @@ export default function PublicNotificationBell() {
     readIds, 
     unreadCount, 
     markAsRead, 
-    markAllAsRead, 
-    isLoading 
+    isLoading,
+    error,
+    fetchNotifications,
+    isEmployee,
+    deleteNotification
   } = usePublicNotifications()
 
   // Handle outside click
@@ -51,11 +54,12 @@ export default function PublicNotificationBell() {
     
     if (isOpen) {
       document.addEventListener('mousedown', handleClickOutside)
+      fetchNotifications()
     }
     return () => {
       document.removeEventListener('mousedown', handleClickOutside)
     }
-  }, [isOpen])
+  }, [isOpen, fetchNotifications])
 
   // Handle Escape key
   useEffect(() => {
@@ -114,22 +118,15 @@ export default function PublicNotificationBell() {
             {/* Header */}
             <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 dark:border-white/10">
               <h3 className="font-semibold text-gray-900 dark:text-white">Notifications</h3>
-              {unreadCount > 0 && (
-                <button 
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    markAllAsRead();
-                  }}
-                  className="text-xs flex items-center gap-1 text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors"
-                >
-                  <FaCheckDouble /> Mark all read
-                </button>
-              )}
             </div>
 
             {/* Content */}
             <div className="max-h-[350px] overflow-y-auto">
-              {isLoading && notifications.length === 0 ? (
+              {error ? (
+                <div className="px-4 py-8 text-center text-sm text-gray-500 dark:text-gray-400">
+                  Unable to load notifications.
+                </div>
+              ) : isLoading && notifications.length === 0 ? (
                 <div className="px-4 py-8 text-center text-sm text-gray-500 dark:text-gray-400">
                   <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-gray-500 mx-auto mb-2"></div>
                   Loading...
@@ -146,7 +143,7 @@ export default function PublicNotificationBell() {
                       <button
                         key={notification.id}
                         onClick={() => handleNotificationClick(notification)}
-                        className={`w-full text-left px-4 py-3 hover:bg-gray-50 dark:hover:bg-white/[0.04] transition-colors flex gap-3 ${
+                        className={`w-full text-left px-4 py-3 hover:bg-gray-50 dark:hover:bg-white/[0.04] transition-colors flex gap-3 relative group ${
                           isUnread ? 'bg-blue-50/30 dark:bg-blue-900/10' : ''
                         }`}
                       >
@@ -169,6 +166,18 @@ export default function PublicNotificationBell() {
                             {getRelativeTime(notification.publishedAt)}
                           </p>
                         </div>
+                        {isEmployee && (
+                          <div 
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              deleteNotification(notification.id)
+                            }}
+                            className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 p-1.5 rounded-full hover:bg-gray-200 dark:hover:bg-white/10 text-gray-400 hover:text-red-500 transition-all"
+                            title="Remove notification"
+                          >
+                            <FaTimes size={12} />
+                          </div>
+                        )}
                       </button>
                     )
                   })}

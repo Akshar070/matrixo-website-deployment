@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import {
   getActivePublicNotifications,
+  createPublicNotification,
   type NotificationCategory,
 } from '@/lib/publicNotifications'
+import { getPublishedOffers } from '@/lib/studentvault/data'
 
 export const dynamic = 'force-dynamic'
 
@@ -46,6 +48,36 @@ export async function GET(request: NextRequest) {
     // ── Cursor ───────────────────────────────────────────────────────
     const afterId = searchParams.get('after') || undefined
 
+    // ── Self-Healing Sync: Ensure existing StudentVault offers have notifications ──
+    try {
+      // Fetch published offers; this fails gracefully if Firebase isn't configured
+      const publishedOffers = await getPublishedOffers()
+      
+      // We limit synchronization to only un-paginated requests or first page loads
+      // to avoid repeatedly checking this on every infinite scroll request.
+      if (!afterId && publishedOffers.length > 0) {
+        // Run checks concurrently; createPublicNotification uses deduplication logic.
+        await Promise.allSettled(
+          publishedOffers.map(offer => 
+            createPublicNotification({
+              type: 'STUDENTVAULT_OFFER',
+              category: 'STUDENTVAULT',
+              title: `New StudentVault Offer: ${offer.name}`,
+              message: offer.summary?.slice(0, 120) || `${offer.name} is now available on StudentVault.`,
+              targetUrl: `/studentvault/${offer.slug}`,
+              source: 'STUDENTVAULT',
+              sourceId: offer.id,
+              version: '1',
+              expiresAt: offer.expiresOn ? new Date(offer.expiresOn) : null,
+            })
+          )
+        )
+      }
+    } catch (syncError) {
+      console.error('[Notifications API] Auto-sync of StudentVault offers failed:', syncError)
+    }
+
+    // ── Fetch active public notifications ────────────────────────────
     const result = await getActivePublicNotifications({
       limit,
       category: rawCategory,

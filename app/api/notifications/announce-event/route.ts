@@ -61,18 +61,37 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // ── Map category → notification type ───────────────────────────────
-    const notificationType = mapEventCategoryToNotificationType(event.category)
+    // ── Generate a deterministic hash for the event's meaningful details ──
+    const hashData = `${event.title}|${event.description || ''}|${event.tagline || ''}|${event.date || ''}|${event.venue || ''}|${event.status || ''}|${event.category || ''}`
+    const crypto = await import('crypto')
+    const versionHash = crypto.createHash('sha256').update(hashData).digest('hex')
+    const sourceId = event.id || event.slug
+
+    // ── Check if any notification exists to decide NEW vs UPDATED ────────
+    const { getAdminFirestore } = await import('@/lib/firebaseAdmin')
+    const { PUBLIC_NOTIFICATIONS_COLLECTION } = await import('@/lib/publicNotifications')
+    
+    const existing = await getAdminFirestore()
+      .collection(PUBLIC_NOTIFICATIONS_COLLECTION)
+      .where('source', '==', 'EVENTS')
+      .where('sourceId', '==', sourceId)
+      .limit(1)
+      .get()
+
+    const isUpdate = !existing.empty
+    const notificationType = isUpdate ? 'EVENT_UPDATED' : 'EVENT_NEW'
+    const title = isUpdate ? `Event Updated: ${event.title}` : `New Event Added: ${event.title}`
 
     // ── Create notification (with built-in duplicate prevention) ───────
     const result = await createPublicNotification({
       type: notificationType,
       category: 'EVENTS',
-      title: `New ${event.category}: ${event.title}`,
+      title,
       message: event.tagline || event.description?.slice(0, 120) || event.title,
       targetUrl: `/events/${event.slug}`,
-      entityId: event.id || event.slug,
-      entityType: 'event',
+      source: 'EVENTS',
+      sourceId,
+      version: versionHash,
       expiresAt: event.date ? new Date(event.date) : null,
     })
 
@@ -81,7 +100,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({
         success: true,
         duplicate: true,
-        message: `Notification for event "${event.title}" already exists.`,
+        message: `Notification for event "${event.title}" is already up to date.`,
       })
     }
 

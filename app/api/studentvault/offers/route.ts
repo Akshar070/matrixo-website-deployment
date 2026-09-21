@@ -76,13 +76,14 @@ export async function POST(request: NextRequest) {
     // ── Auto-generate public notification on publish (non-fatal) ─────
     if (publishRequested) {
       await createPublicNotification({
-        type: 'NEW_OFFER',
+        type: 'STUDENTVAULT_OFFER',
         category: 'STUDENTVAULT',
         title: `New Student Offer: ${value.name}`,
         message: value.summary.slice(0, 120) || `${value.name} is now available on StudentVault.`,
         targetUrl: `/studentvault/${value.slug}`,
-        entityId: doc.id,
-        entityType: 'offer',
+        source: 'STUDENTVAULT',
+        sourceId: doc.id,
+        version: '1',
         expiresAt: value.expiresOn ? new Date(value.expiresOn) : null,
       })
     }

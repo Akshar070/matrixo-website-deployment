@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { useAuth } from '@/lib/AuthContext'
 import { PublicNotification } from '@/lib/publicNotifications'
 
@@ -24,19 +24,23 @@ export function usePublicNotifications() {
     }
   }
 
+  const lastNotificationIdRef = useRef<string>('')
+
   // Load notifications from API
   const fetchNotifications = useCallback(async (loadMore = false) => {
     try {
       setIsLoading(true)
-      const afterId = loadMore && notifications.length > 0 
-        ? notifications[notifications.length - 1].id 
-        : ''
+      const afterId = loadMore ? lastNotificationIdRef.current : ''
       
       const res = await fetch(`/api/notifications?limit=20${afterId ? `&after=${afterId}` : ''}`)
       if (!res.ok) throw new Error('Failed to fetch notifications')
       
       const data = await res.json()
       
+      if (data.notifications && data.notifications.length > 0) {
+        lastNotificationIdRef.current = data.notifications[data.notifications.length - 1].id
+      }
+
       if (loadMore) {
         setNotifications(prev => [...prev, ...data.notifications])
       } else {
@@ -51,7 +55,7 @@ export function usePublicNotifications() {
     } finally {
       setIsLoading(false)
     }
-  }, [notifications])
+  }, [])
 
   // Load read state
   const fetchReadState = useCallback(async () => {
@@ -77,9 +81,13 @@ export function usePublicNotifications() {
     setReadIds(new Set(getLocalReadIds()))
   }, [user])
 
-  // Initial load
+  // Initial load & lightweight polling
   useEffect(() => {
     fetchNotifications()
+    const interval = setInterval(() => {
+      fetchNotifications()
+    }, 60000) // Poll every 60 seconds
+    return () => clearInterval(interval)
   }, [fetchNotifications])
 
   // Load read state initially and on user change
@@ -125,6 +133,36 @@ export function usePublicNotifications() {
   }
 
   const unreadCount = notifications.filter(n => !readIds.has(n.id)).length
+  
+  // Client-side UI check (backend enforces actual security)
+  const isEmployee = Boolean(
+    user?.email && 
+    (user.email.endsWith('@matrixo.in') || user.email.endsWith('.matrixo@gmail.com'))
+  )
+
+  const deleteNotification = async (id: string) => {
+    // Optimistic UI update
+    setNotifications(prev => prev.filter(n => n.id !== id))
+    
+    if (user) {
+      try {
+        const token = await user.getIdToken()
+        const res = await fetch(`/api/notifications/${id}`, {
+          method: 'DELETE',
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        })
+        if (!res.ok) {
+          // Revert optimistic update on failure by refetching
+          fetchNotifications()
+          throw new Error('Failed to delete notification')
+        }
+      } catch (err) {
+        console.error('Failed to delete notification', err)
+      }
+    }
+  }
 
   return {
     notifications,
@@ -133,8 +171,10 @@ export function usePublicNotifications() {
     hasMore,
     error,
     unreadCount,
+    isEmployee,
     fetchNotifications,
     markAsRead,
-    markAllAsRead
+    markAllAsRead,
+    deleteNotification
   }
 }

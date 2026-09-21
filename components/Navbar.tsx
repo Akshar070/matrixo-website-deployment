@@ -381,7 +381,7 @@ export default function Navbar() {
                            rounded-full font-semibold text-sm whitespace-nowrap hover:scale-[1.02] transition-all duration-300 flex-shrink-0"
                 >
                   <FaUser className="text-sm" />
-                  Login
+                  Sign in
                 </Link>
               </div>
             )}

@@ -1724,6 +1724,33 @@ body.printing-profile .min-h-screen {
         border-color: rgba(255, 255, 255, 0.06);
     }
 
+    /* Employee-portal primary buttons opt in with `.cta-glass .portal-cta`.
+       Light mode is plain .cta-glass -- the portal's own primary was #0F2B5B,
+       a near-black navy pill that was the only heavy element on an otherwise
+       light page. Dark mode keeps the portal's blue, which already reads well
+       there, so this is a light-mode correction and not a redesign.
+       `.dark .cta-glass.portal-cta` (0,3,0) outranks `.dark .cta-glass`. */
+    .dark .cta-glass.portal-cta {
+        background: #2563eb;
+        border-color: transparent;
+        color: #ffffff;
+        box-shadow: 0 2px 8px rgba(37, 99, 235, 0.2);
+    }
+
+    .dark .cta-glass.portal-cta:hover,
+    .dark .cta-glass.portal-cta:focus-visible {
+        background: #3b82f6;
+        border-color: transparent;
+        color: #ffffff;
+        box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3);
+    }
+
+    /* The sweep exists to lift a near-white pill. Over a solid blue it just
+       muddies it, so dark mode gets the colour change instead. */
+    .dark .cta-glass.portal-cta::before {
+        display: none;
+    }
+
     /* A disabled button shouldn't invite a click. */
     .cta-glass:disabled,
     .cta-glass[aria-disabled="true"] {

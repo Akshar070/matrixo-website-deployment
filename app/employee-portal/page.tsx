@@ -457,25 +457,31 @@ function TopNavbar({
                 ))}
 
                 {isAdmin && (
-                  <button
-                    data-nav-id="job-postings"
-                    onClick={() => setActiveTab('job-postings')}
-                    className={`
-                      relative flex items-center gap-1.5 px-3 py-2 rounded-[14px] transition-all duration-150 font-medium text-xs whitespace-nowrap
-                      ${activeTab === 'job-postings'
-                        ? 'bg-[#0F2B5B] text-white dark:bg-[#1E3A8A] dark:text-[#F8FAFC]'
-                        : 'text-[#475569] hover:text-[#0F172A] hover:bg-[#EEF3F8] dark:text-[#94A3B8] dark:hover:text-[#F8FAFC] dark:hover:bg-[#152542]'
-                      }
-                    `}
-                  >
-                    <FaBriefcase className="text-xs shrink-0" />
-                    <span>Careers</span>
+                  // The count badge lives on a wrapper, not inside the button:
+                  // when this tab is active it uses .cta-glass, whose
+                  // `overflow: hidden` (there to contain the gradient sweep)
+                  // would clip a badge that hangs outside the button's box.
+                  <div className="relative shrink-0">
+                    <button
+                      data-nav-id="job-postings"
+                      onClick={() => setActiveTab('job-postings')}
+                      className={`
+                        relative flex items-center gap-1.5 px-3 py-2 rounded-[14px] transition-all duration-150 font-medium text-xs whitespace-nowrap
+                        ${activeTab === 'job-postings'
+                          ? 'cta-glass'
+                          : 'text-[#475569] hover:text-[#0F172A] hover:bg-[#EEF3F8] dark:text-[#94A3B8] dark:hover:text-[#F8FAFC] dark:hover:bg-[#152542]'
+                        }
+                      `}
+                    >
+                      <FaBriefcase className="text-xs shrink-0" />
+                      <span>Careers</span>
+                    </button>
                     {pendingAppCount > 0 && (
-                      <span className="absolute -top-1 -right-1 min-w-[16px] h-[16px] px-0.5 bg-red-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center">
+                      <span className="pointer-events-none absolute -top-1 -right-1 min-w-[16px] h-[16px] px-0.5 bg-red-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center">
                         {pendingAppCount > 99 ? '99+' : pendingAppCount}
                       </span>
                     )}
-                  </button>
+                  </div>
                 )}
               </div>
               <div className="flex-1 min-w-0 shrink"></div>

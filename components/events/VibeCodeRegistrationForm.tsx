@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import { createPortal } from 'react-dom'
 import { motion } from 'framer-motion'
 import Image from 'next/image'
 import { QRCodeSVG } from 'qrcode.react'
@@ -331,7 +332,13 @@ export default function VibeCodeRegistrationForm({ event, ticket, onClose }: Vib
     onClose()
   }
 
-  return (
+  // Portal the modal to document.body so that `fixed inset-0` is relative to
+  // the viewport — not the template.tsx motion.div whose `willChange: transform`
+  // would otherwise create a new containing block, and so the z-index escapes
+  // the `isolation: isolate` stacking context of `.site-ambient`.
+  if (typeof document === 'undefined') return null
+
+  return createPortal(
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
@@ -344,8 +351,8 @@ export default function VibeCodeRegistrationForm({ event, ticket, onClose }: Vib
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.9, opacity: 0 }}
         onClick={(e) => e.stopPropagation()}
-        className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto bg-gradient-to-b from-[#0a1525] to-[#0d1830] 
-                   border border-cyan-500/30 rounded-3xl shadow-2xl shadow-cyan-500/20"
+        className={`relative w-full max-w-2xl max-h-[90vh] ${showPaymentInfo ? 'overflow-hidden' : 'overflow-y-auto'} bg-gradient-to-b from-[#0a1525] to-[#0d1830] 
+                   border border-cyan-500/30 rounded-3xl shadow-2xl shadow-cyan-500/20`}
       >
         {/* Close Button */}
         <button
@@ -754,6 +761,7 @@ export default function VibeCodeRegistrationForm({ event, ticket, onClose }: Vib
           </div>
         </motion.div>
       )}
-    </motion.div>
+    </motion.div>,
+    document.body
   )
 }

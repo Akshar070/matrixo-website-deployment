@@ -247,6 +247,16 @@ function TaskDetailModal({
           <Alert variant="warning">Blocked: {task.blockedReason}</Alert>
         )}
 
+        {/* Everyone can open any task, so say plainly why there are no buttons. */}
+        {!owner && !manager && (
+          <p className="text-xs text-[#64748B] dark:text-neutral-500">
+            View only —{' '}
+            {task.assignedToName
+              ? `only ${task.assignedToName} can change this task's status.`
+              : 'nobody has taken this task yet, so its status cannot change.'}
+          </p>
+        )}
+
         {/* Checklist */}
         {!!task.checklist?.length && (
           <div className="space-y-1.5">
@@ -407,7 +417,11 @@ function TaskDetailModal({
           </div>
         )}
 
-        {/* AUDIT TRAIL */}
+        {/* AUDIT TRAIL
+            Everyone can see the task, but projectTaskEvents stays readable only
+            by a manager or the actor who created the entry. Offering the toggle
+            to anyone else would just produce a permission error. */}
+        {(manager || owner) && (
         <div className="border-t border-[rgba(15,23,42,0.08)] dark:border-neutral-700 pt-4">
           <button
             onClick={() => setShowHistory((v) => !v)}
@@ -436,6 +450,7 @@ function TaskDetailModal({
             </div>
           )}
         </div>
+        )}
       </div>
     </Modal>
   )
@@ -763,9 +778,12 @@ export function ProjectWork() {
     [openTask, tasks]
   )
 
+  // isTaskOwner matches on UID first and only falls back to employeeId. Testing
+  // `assignedTo` alone missed every task assigned after UID became the primary
+  // identity, and missed claimed tasks whose owner has a name-keyed record.
   const myTasks = useMemo(
-    () => sortTasks(tasks.filter((t) => t.assignedTo === actor?.employeeId && t.status !== 'CANCELLED')),
-    [tasks, actor?.employeeId]
+    () => sortTasks(tasks.filter((t) => isTaskOwner(t, actor) && t.status !== 'CANCELLED')),
+    [tasks, actor]
   )
   const availableTasks = useMemo(
     () => sortTasks(tasks.filter((t) => canClaimTask(t, actor))),
@@ -793,18 +811,37 @@ export function ProjectWork() {
     () => computeProgress(fProject ? tasks.filter((t) => t.projectId === fProject) : tasks),
     [tasks, fProject]
   )
-  const roles = useMemo(() => teamsFrom(employees), [employees])
+  /**
+   * Board filter options are derived from the tasks, not the employee
+   * directory: everyone can see the board now, but only managers load the
+   * directory. Deriving from the data also keeps each list to values that
+   * actually match something.
+   */
+  const roles = useMemo(() => {
+    const seen = new Set<string>()
+    for (const t of tasks) if (t.assignedRole) seen.add(t.assignedRole)
+    return Array.from(seen).sort((a, b) => a.localeCompare(b))
+  }, [tasks])
+
+  const people = useMemo(() => {
+    const byId = new Map<string, string>()
+    for (const t of tasks) {
+      if (t.assignedTo && t.assignedToName) byId.set(t.assignedTo, t.assignedToName)
+    }
+    return Array.from(byId, ([value, label]) => ({ value, label }))
+      .sort((a, b) => a.label.localeCompare(b.label))
+  }, [tasks])
 
   if (!actor) {
     return <Alert variant="warning">Sign in to the employee portal to view project work.</Alert>
   }
 
+  // "All Tasks" is open to everyone: shared visibility of what the team is
+  // working on. "Projects" stays with managers because it is CRUD, not a view.
   const subTabs = [
     { id: 'mine', label: 'My Project Work' },
-    ...(manager ? [
-      { id: 'projects', label: 'Projects' },
-      { id: 'workboard', label: 'Project Workboard' },
-    ] : []),
+    { id: 'workboard', label: 'All Tasks' },
+    ...(manager ? [{ id: 'projects', label: 'Projects' }] : []),
   ]
 
   return (
@@ -883,9 +920,16 @@ export function ProjectWork() {
             <ProjectsPanel projects={projects} tasks={tasks} actor={actor} />
           )}
 
-          {/* ---------------- WORKBOARD ---------------- */}
-          {subTab === 'workboard' && manager && (
+          {/* ---------------- ALL TASKS (everyone) ---------------- */}
+          {subTab === 'workboard' && (
             <div className="space-y-4">
+              {!manager && (
+                <Alert variant="info">
+                  Everyone can see every task and its status here. You can only change
+                  the status of tasks assigned to you or that you took yourself —
+                  Admins and Co-Admins confirm completed work.
+                </Alert>
+              )}
               {/* Progress summary — derived from task data only */}
               <Card padding="md">
                 <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
@@ -924,7 +968,7 @@ export function ProjectWork() {
                     options={[{ value: '', label: 'All teams' }, ...roles.map((r) => ({ value: r, label: r }))]}
                     onChange={setFRole} />
                   <Select label="Employee" value={fEmployee} placeholder="All employees"
-                    options={[{ value: '', label: 'All employees' }, ...employees.map((e) => ({ value: e.employeeId, label: e.name }))]}
+                    options={[{ value: '', label: 'All employees' }, ...people]}
                     onChange={setFEmployee} />
                   <Select label="Status" value={fStatus} placeholder="All statuses"
                     options={[{ value: '', label: 'All statuses' }, ...PROJECT_TASK_STATUSES.map((s) => ({ value: s, label: STATUS_META[s].label }))]}

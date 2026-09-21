@@ -445,13 +445,11 @@ service cloud.firestore {
     }
 
     match /projectTasks/{taskId} {
-      // A manager sees everything. Everyone else sees only tasks assigned to
-      // them (matched on UID, which needs no Employees lookup) and the open
-      // claimable pool.
-      allow read: if isProjectManager()
-                  || (isAuthenticated() && resource.data.assignedToUid == request.auth.uid)
-                  || (isAuthenticated() && resource.data.status == 'AVAILABLE'
-                      && resource.data.allowClaiming == true);
+      // Shared visibility: every signed-in employee sees every task and its
+      // status. Reading is the ONLY thing this grants -- writes stay closed to
+      // clients entirely, so who may start, submit or confirm a task is decided
+      // in /api/project-work, not here. A wider read does not widen that.
+      allow read: if isAuthenticated();
 
       allow write: if false; // server-only, via /api/project-work
     }

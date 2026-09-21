@@ -26,7 +26,6 @@ import {
   limit,
   onSnapshot,
   Timestamp,
-  type QueryConstraint,
   type Unsubscribe,
 } from 'firebase/firestore'
 import { db } from './firebaseConfig'
@@ -292,13 +291,16 @@ export function canClaimTask(task: ProjectTask, actor?: Actor | null): boolean {
   return true
 }
 
-/** Can the actor see this task at all? */
-export function canViewTask(task: ProjectTask, actor?: Actor | null): boolean {
-  if (!actor) return false
-  if (isAdminOrSubAdmin(actor.role)) return true
-  if (isTaskOwner(task, actor)) return true
-  if (task.status === 'AVAILABLE' && task.allowClaiming) return canClaimTask(task, actor)
-  return false
+/**
+ * Can the actor see this task at all?
+ *
+ * Every signed-in employee can see every task and its status — the board is
+ * shared visibility by design, so people can see what the team is working on.
+ * Seeing a task confers nothing: `isTaskOwner` still gates status changes and
+ * `canConfirmTask` still gates confirmation, both re-checked server-side.
+ */
+export function canViewTask(_task: ProjectTask, actor?: Actor | null): boolean {
+  return !!actor
 }
 
 // ============================================================================
@@ -351,9 +353,17 @@ export function describeFirestoreError(err: any, what: string): string {
 }
 
 /**
- * Managers see everything (optionally scoped to one project). Employees get two
- * narrow queries instead of the whole collection: tasks assigned to their UID,
- * plus the claimable pool.
+ * Every signed-in employee gets the whole task list, so the board shows the
+ * same picture to everyone.
+ *
+ * This used to fork: managers read the collection, everyone else got two narrow
+ * queries (own tasks + claimable pool) unioned client-side. That is gone —
+ * shared visibility is the point of the board, and the two-query union could
+ * never show a colleague's task at all.
+ *
+ * Deliberately no `where`/`orderBy`: a filter combined with a sort needs a
+ * composite index, and an undeployed index is a silent empty list. Sorting is
+ * `sortTasks` at the call site; `projectId` narrowing happens in memory.
  */
 export function subscribeProjectTasks(
   actor: Actor,
@@ -361,61 +371,20 @@ export function subscribeProjectTasks(
   opts: { projectId?: string; onError?: (message: string) => void } = {}
 ): Unsubscribe {
   const col = collection(db, PROJECT_TASKS_COLLECTION)
-  const manager = isAdminOrSubAdmin(actor.role)
 
-  const onErr = (err: unknown) => {
-    console.error('[projectWork] tasks listener error:', err)
-    opts.onError?.(describeFirestoreError(err, 'project tasks'))
-    cb([])
-  }
-
-  if (manager) {
-    const constraints: QueryConstraint[] = []
-    if (opts.projectId) constraints.push(where('projectId', '==', opts.projectId))
-    constraints.push(orderBy('createdAt', 'desc'))
-    return onSnapshot(
-      query(col, ...constraints),
-      (snap) => cb(snap.docs.map((d) => ({ id: d.id, ...d.data() })) as ProjectTask[]),
-      onErr
-    )
-  }
-
-  let mine: ProjectTask[] = []
-  let claimable: ProjectTask[] = []
-  const emit = () => {
-    const seen = new Map<string, ProjectTask>()
-    for (const t of [...mine, ...claimable]) if (t.id) seen.set(t.id, t)
-    cb(Array.from(seen.values()))
-  }
-
-  // Matches on UID, which is present in the auth token and therefore works for
-  // both uid-keyed and name-keyed employee records.
-  const unsubMine = onSnapshot(
-    query(col, where('assignedToUid', '==', actor.uid)),
+  return onSnapshot(
+    query(col),
     (snap) => {
-      mine = snap.docs.map((d) => ({ id: d.id, ...d.data() })) as ProjectTask[]
-      if (opts.projectId) mine = mine.filter((t) => t.projectId === opts.projectId)
-      emit()
+      let tasks = snap.docs.map((d) => ({ id: d.id, ...d.data() })) as ProjectTask[]
+      if (opts.projectId) tasks = tasks.filter((t) => t.projectId === opts.projectId)
+      cb(tasks)
     },
-    onErr
+    (err) => {
+      console.error('[projectWork] tasks listener error:', err)
+      opts.onError?.(describeFirestoreError(err, 'project tasks'))
+      cb([])
+    }
   )
-
-  const unsubPool = onSnapshot(
-    query(col, where('status', '==', 'AVAILABLE'), where('allowClaiming', '==', true)),
-    (snap) => {
-      claimable = (snap.docs.map((d) => ({ id: d.id, ...d.data() })) as ProjectTask[]).filter((t) =>
-        canClaimTask(t, actor)
-      )
-      if (opts.projectId) claimable = claimable.filter((t) => t.projectId === opts.projectId)
-      emit()
-    },
-    onErr
-  )
-
-  return () => {
-    unsubMine()
-    unsubPool()
-  }
 }
 
 // ============================================================================

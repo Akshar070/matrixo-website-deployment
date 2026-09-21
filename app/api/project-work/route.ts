@@ -296,16 +296,22 @@ const handlers: Record<string, (ctx: Ctx, body: any) => Promise<NextResponse>> =
     if (!found) return bad(404, 'Task not found')
     const { task, ref } = found
 
-    const manager = isManagerRole(me.role)
-    if (!manager && !ownsTask(task, me)) return bad(403, 'This task is not assigned to you')
+    // Work status belongs to whoever is doing the work -- the person it was
+    // assigned to, or the person who took it from the claimable pool (claiming
+    // sets assignedToUid, so the claimer IS the owner from that moment).
+    //
+    // Managers get no bypass here, deliberately. They drive a task through the
+    // other handlers -- assign, confirm, requestChanges, reopen, cancel -- and
+    // nothing is lost, but an Admin can no longer mark someone else's task
+    // started or submit it on their behalf. A manager assigned to a task is its
+    // owner like anyone else and acts through this path normally.
+    if (!ownsTask(task, me)) return bad(403, 'This task is not assigned to you')
 
-    if (!manager) {
-      if (!EMPLOYEE_FROM.includes(task.status)) {
-        return bad(409, `You cannot change a task that is ${task.status}`)
-      }
-      if (!EMPLOYEE_TO.includes(status)) {
-        return bad(403, 'You are not allowed to set that status')
-      }
+    if (!EMPLOYEE_FROM.includes(task.status)) {
+      return bad(409, `You cannot change a task that is ${task.status}`)
+    }
+    if (!EMPLOYEE_TO.includes(status)) {
+      return bad(403, 'You are not allowed to set that status')
     }
 
     const payload: Record<string, unknown> = { status, updatedAt: FieldValue.serverTimestamp() }

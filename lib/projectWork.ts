@@ -284,13 +284,12 @@ export function canClaimTask(task: ProjectTask, actor?: Actor | null): boolean {
   if (!actor) return false
   if (task.status !== 'AVAILABLE' || !task.allowClaiming) return false
   if (task.assignedToUid || task.assignedTo) return false
-  // Role-pooled tasks are only claimable by that team or role.
-  if (task.assignedRole) {
-    const uRole = (actor.role || '').toLowerCase()
-    const uDept = (actor.department || '').toLowerCase()
-    const tRole = task.assignedRole.toLowerCase()
-    return uRole === tRole || uDept === tRole
-  }
+
+  // `assignedRole` is a label, not a lock. It used to restrict claiming to
+  // people whose role or department matched it, which hid the whole pool from
+  // anyone outside that team — an Admin could not take a task tagged "Intern".
+  // Any signed-in employee may now take any unclaimed task; the tag still shows
+  // on the card so people know which team it was meant for.
   return true
 }
 
@@ -374,20 +373,91 @@ export function subscribeProjectTasks(
   opts: { projectId?: string; onError?: (message: string) => void } = {}
 ): Unsubscribe {
   const col = collection(db, PROJECT_TASKS_COLLECTION)
+  let active: Unsubscribe | null = null
+  let cancelled = false
 
-  return onSnapshot(
+  const deliver = (tasks: ProjectTask[]) => {
+    if (cancelled) return
+    cb(opts.projectId ? tasks.filter((t) => t.projectId === opts.projectId) : tasks)
+  }
+
+  const fail = (err: any) => {
+    if (cancelled) return
+    console.error('[projectWork] tasks listener error:', err)
+    opts.onError?.(describeFirestoreError(err, 'project tasks'))
+    cb([])
+  }
+
+  active = onSnapshot(
     query(col),
-    (snap) => {
-      let tasks = snap.docs.map((d) => ({ id: d.id, ...d.data() })) as ProjectTask[]
-      if (opts.projectId) tasks = tasks.filter((t) => t.projectId === opts.projectId)
-      cb(tasks)
-    },
-    (err) => {
-      console.error('[projectWork] tasks listener error:', err)
-      opts.onError?.(describeFirestoreError(err, 'project tasks'))
-      cb([])
+    (snap) => deliver(snap.docs.map((d) => ({ id: d.id, ...d.data() })) as ProjectTask[]),
+    (err: any) => {
+      if (cancelled) return
+      if (err?.code !== 'permission-denied') return fail(err)
+
+      // Rules that predate shared visibility reject a whole-collection read,
+      // and a rejected query returns nothing at all — the board would just be
+      // empty with no way to tell why. Fall back to the two queries those older
+      // rules do allow, so people can still see and take their work before
+      // `firebase deploy --only firestore:rules` has run. Colleagues' tasks
+      // stay hidden until it has.
+      console.warn(
+        '[projectWork] whole-collection read denied — falling back to per-user ' +
+        'queries. Run: firebase deploy --only firestore:rules'
+      )
+      active?.()
+      active = subscribeOwnAndClaimable(actor, deliver, fail)
     }
   )
+
+  return () => {
+    cancelled = true
+    active?.()
+  }
+}
+
+/**
+ * The narrower pair the pre-shared-visibility rules permit: tasks assigned to
+ * this UID, plus the open claimable pool. Both match on values carried in the
+ * auth token, so neither needs an Employees lookup.
+ */
+function subscribeOwnAndClaimable(
+  actor: Actor,
+  deliver: (tasks: ProjectTask[]) => void,
+  fail: (err: any) => void
+): Unsubscribe {
+  const col = collection(db, PROJECT_TASKS_COLLECTION)
+  let mine: ProjectTask[] = []
+  let pool: ProjectTask[] = []
+
+  const emit = () => {
+    const byId = new Map<string, ProjectTask>()
+    for (const t of [...mine, ...pool]) if (t.id) byId.set(t.id, t)
+    deliver(Array.from(byId.values()))
+  }
+
+  const unsubMine = onSnapshot(
+    query(col, where('assignedToUid', '==', actor.uid)),
+    (snap) => {
+      mine = snap.docs.map((d) => ({ id: d.id, ...d.data() })) as ProjectTask[]
+      emit()
+    },
+    fail
+  )
+
+  const unsubPool = onSnapshot(
+    query(col, where('status', '==', 'AVAILABLE'), where('allowClaiming', '==', true)),
+    (snap) => {
+      pool = snap.docs.map((d) => ({ id: d.id, ...d.data() })) as ProjectTask[]
+      emit()
+    },
+    fail
+  )
+
+  return () => {
+    unsubMine()
+    unsubPool()
+  }
 }
 
 // ============================================================================

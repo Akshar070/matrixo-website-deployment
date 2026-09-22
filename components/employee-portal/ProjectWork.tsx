@@ -889,8 +889,13 @@ export function ProjectWork() {
                   My Tasks <span className="text-[#64748B] dark:text-neutral-500 font-normal">({myTasks.length})</span>
                 </h3>
                 {myTasks.length === 0 ? (
-                  <EmptyState icon={<FaCheck />} title="Nothing assigned to you"
-                    description="Project tasks assigned to you will appear here." />
+                  /* A full-height empty state here pushed the claimable pool
+                     below the fold, so someone with nothing assigned saw only
+                     "Nothing assigned to you" and no way to pick work up. One
+                     line instead, with the tasks they can take right under it. */
+                  <p className="text-sm text-[#64748B] dark:text-neutral-400">
+                    Nothing is assigned to you yet — take one of the tasks below to get started.
+                  </p>
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
                     {myTasks.map((t) => (
@@ -900,18 +905,24 @@ export function ProjectWork() {
                 )}
               </section>
 
-              {availableTasks.length > 0 && (
-                <section className="space-y-3">
-                  <h3 className="text-sm font-semibold text-[#0F172A] dark:text-white">
-                    Available to Claim <span className="text-[#64748B] dark:text-neutral-500 font-normal">({availableTasks.length})</span>
-                  </h3>
+              {/* Always rendered. When this was hidden at length === 0 there was
+                  no way to tell "nothing to claim" from "the list failed to
+                  load" — the page just ended. */}
+              <section className="space-y-3">
+                <h3 className="text-sm font-semibold text-[#0F172A] dark:text-white">
+                  Available to Claim <span className="text-[#64748B] dark:text-neutral-500 font-normal">({availableTasks.length})</span>
+                </h3>
+                {availableTasks.length === 0 ? (
+                  <EmptyState icon={<FaCheck />} title="No tasks are free right now"
+                    description="Every task is either taken or already finished. New ones will show up here as soon as they are created." />
+                ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
                     {availableTasks.map((t) => (
                       <TaskCard key={t.id} task={t} actor={actor} onOpen={setOpenTask} onClaim={claim} />
                     ))}
                   </div>
-                </section>
-              )}
+                )}
+              </section>
             </div>
           )}
 

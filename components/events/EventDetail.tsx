@@ -18,6 +18,7 @@ import Confetti from "../Confetti";
 import VibeCodeEventDetail from "./VibeCodeEventDetail";
 import WrangleXEventDetail from "./WrangleXEventDetail";
 import DevAgentsEventDetail from "./DevAgentsEventDetail";
+import DevAgents2EventDetail from "./DevAgents2EventDetail";
 import { useEventVisibility } from "@/lib/eventVisibility";
 import XOLoader from '@/components/XOLoader';
 
@@ -70,6 +71,11 @@ export default function EventDetail({ event }: { event: any }) {
   // Check if this is a DevAgents event - render dedicated component
   if (event.isDevAgentsEvent) {
     return <DevAgentsEventDetail event={event} />;
+  }
+
+  // Check if this is a DevAgents 2.0 event - render dedicated component
+  if (event.isDevAgents2Event) {
+    return <DevAgents2EventDetail event={event} />;
   }
 
   return <DefaultEventDetail event={event} />;

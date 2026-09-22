@@ -1,5 +1,49 @@
 [
   {
+    "id": "devagentic-2-0",
+    "slug": "devagentic-2-0",
+    "title": "DevAgentic 2.0",
+    "tagline": "24 Hours AI Agents Hackathon",
+    "description": "A 24-hour AI Agents hackathon focused on building innovative autonomous AI solutions.",
+    "date": "2027-12-31T10:00:00",
+    "endDate": "2027-12-31T12:00:00",
+    "venue": "Coming Soon",
+    "location": "Coming Soon",
+    "totalCapacity": 100,
+    "ticketsSold": 0,
+    "featured": true,
+    "status": "upcoming",
+    "category": "Hackathon",
+    "isDevAgents2Event": true,
+    "images": {
+      "banner": "",
+      "thumbnail": "",
+      "gallery": []
+    },
+    "tickets": [
+      {
+        "id": "devagents-2-pass",
+        "name": "Registration",
+        "price": 0,
+        "available": 100,
+        "description": "Registration opening soon.",
+        "perks": []
+      }
+    ],
+    "partners": [],
+    "sponsors": [],
+    "speakers": [],
+    "agenda": [],
+    "tags": [
+      "Hackathon",
+      "AI Agents",
+      "Agentic AI",
+      "matriXO"
+    ],
+    "organizer": "matriXO",
+    "contactEmail": "events@matrixo.in"
+  },
+  {
     "id": "vibecoding-irl-kprit-2026",
     "slug": "vibecoding-irl-kprit",
     "title": "VibeCode IRL",
@@ -794,7 +838,7 @@
     "totalCapacity": 120,
     "ticketsSold": 0,
     "featured": true,
-    "status": "upcoming",
+    "status": "completed",
     "category": "Hands-on Agentic AI Workshop",
     "isDevAgentsEvent": true,
     "images": {

@@ -37,6 +37,7 @@ export interface ResolvedEmployee {
   /** The Firestore document ID, which may be a UID *or* a name. */
   employeeDocId: string
   role: string | null
+  department: string | null
   /** How the record was found — surfaced for debugging. */
   resolvedBy: 'uid' | 'email'
 }
@@ -105,6 +106,7 @@ export async function resolveEmployee(request: NextRequest): Promise<IdentityRes
         employeeId: data.employeeId ?? null,
         employeeDocId: byUid.id,
         role: data.role ?? null,
+        department: data.department ?? null,
         resolvedBy: 'uid',
       },
     }
@@ -164,6 +166,7 @@ export async function resolveEmployee(request: NextRequest): Promise<IdentityRes
       employeeId: data.employeeId ?? null,
       employeeDocId: doc.id,
       role: data.role ?? null,
+      department: data.department ?? null,
       resolvedBy: 'email',
     },
   }

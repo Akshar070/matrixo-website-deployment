@@ -284,9 +284,12 @@ export function canClaimTask(task: ProjectTask, actor?: Actor | null): boolean {
   if (!actor) return false
   if (task.status !== 'AVAILABLE' || !task.allowClaiming) return false
   if (task.assignedToUid || task.assignedTo) return false
-  // Role-pooled tasks are only claimable by that team (managers bypass).
-  if (task.assignedRole && !isAdminOrSubAdmin(actor.role)) {
-    return (actor.department || '').toLowerCase() === task.assignedRole.toLowerCase()
+  // Role-pooled tasks are only claimable by that team or role.
+  if (task.assignedRole) {
+    const uRole = (actor.role || '').toLowerCase()
+    const uDept = (actor.department || '').toLowerCase()
+    const tRole = task.assignedRole.toLowerCase()
+    return uRole === tRole || uDept === tRole
   }
   return true
 }
@@ -466,6 +469,7 @@ export interface WhoAmI {
   employeeId: string | null
   employeeDocId: string
   role: string | null
+  department: string | null
   isManager: boolean
   resolvedBy: 'uid' | 'email'
 }

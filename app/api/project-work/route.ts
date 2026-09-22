@@ -130,6 +130,7 @@ const handlers: Record<string, (ctx: Ctx, body: any) => Promise<NextResponse>> =
       employeeId: me.employeeId,
       employeeDocId: me.employeeDocId,
       role: me.role,
+      department: me.department,
       isManager: isManagerRole(me.role),
       resolvedBy: me.resolvedBy,
     })
@@ -264,6 +265,15 @@ const handlers: Record<string, (ctx: Ctx, body: any) => Promise<NextResponse>> =
         if (task.assignedToUid || task.assignedTo) throw new Error('TAKEN')
         if (task.status !== 'AVAILABLE' || !task.allowClaiming) throw new Error('UNAVAILABLE')
 
+        if (task.assignedRole) {
+          const uRole = (me.role || '').toLowerCase()
+          const uDept = (me.department || '').toLowerCase()
+          const tRole = task.assignedRole.toLowerCase()
+          if (uRole !== tRole && uDept !== tRole) {
+            throw new Error('UNAUTHORIZED_ROLE')
+          }
+        }
+
         tx.update(ref, {
           assignedToUid: me.uid,
           assignedTo: me.employeeId,
@@ -281,6 +291,7 @@ const handlers: Record<string, (ctx: Ctx, body: any) => Promise<NextResponse>> =
       if (err?.message === 'NOT_FOUND') return bad(404, 'Task not found')
       if (err?.message === 'TAKEN') return bad(409, 'Someone else already took this task')
       if (err?.message === 'UNAVAILABLE') return bad(409, 'This task is no longer available')
+      if (err?.message === 'UNAUTHORIZED_ROLE') return bad(403, 'You are not eligible to claim this task based on its assigned role')
       throw err
     }
 

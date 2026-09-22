@@ -91,7 +91,7 @@ export default function EventsListing() {
       const tags = event.tags?.map((t: string) => t.toLowerCase()) || []
 
       // Allow specific examples cited by user (DevAgentic is an event despite 'workshop' category)
-      if (event.id === 'devagents-1-0') return true
+      if (event.id === 'devagents-1-0' || event.id === 'devagentic-2-0') return true
 
       // Exclude non-event types explicitly forbidden by user
       const nonEventKeywords = ['workshop', 'hackathon', 'course', 'bootcamp', 'webinar', 'competition']
@@ -417,7 +417,7 @@ export default function EventsListing() {
                                     transition-all duration-200 hover:-translate-y-2 border-2 border-transparent 
                                     hover:border-blue-500/30 h-full flex flex-col">
                         {/* Image */}
-                        <div className="relative h-40 sm:h-44 md:h-48 bg-gradient-to-br from-blue-500/20 to-purple-600/20 overflow-hidden">
+                        <div className={`relative h-40 sm:h-44 md:h-48 overflow-hidden ${event.id === 'devagentic-2-0' ? 'bg-transparent' : 'bg-gradient-to-br from-blue-500/20 to-purple-600/20'}`}>
                           {event.images?.thumbnail ? (
                             <Image
                               src={event.images.thumbnail}
@@ -427,9 +427,11 @@ export default function EventsListing() {
                               className="object-cover object-center"
                             />
                           ) : (
-                            <div className="absolute inset-0 flex items-center justify-center text-6xl font-bold gradient-text">
-                              {event.title.charAt(0)}
-                            </div>
+                            event.id !== 'devagentic-2-0' && (
+                              <div className="absolute inset-0 flex items-center justify-center text-6xl font-bold gradient-text">
+                                {event.title.charAt(0)}
+                              </div>
+                            )
                           )}
                           {event.featured && (
                             <div className="absolute top-4 right-4 bg-gradient-to-r from-pink-500 to-rose-600 text-white px-3 py-1 rounded-full text-xs font-bold">
@@ -444,9 +446,14 @@ export default function EventsListing() {
                           <div className="absolute bottom-4 left-4 bg-black/70 backdrop-blur-sm text-white px-3 py-1 rounded-full text-xs font-semibold">
                             {event.category.toUpperCase()}
                           </div>
-                          {isFuture(new Date(event.date)) && event.status !== 'sold-out' && (
+                          {isFuture(new Date(event.date)) && event.status !== 'sold-out' && event.status !== 'completed' && (
                             <div className="absolute top-4 left-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white px-3 py-1 rounded-full text-xs font-bold">
                               UPCOMING
+                            </div>
+                          )}
+                          {event.status === 'completed' && (
+                            <div className="absolute top-4 left-4 bg-gradient-to-r from-gray-500 to-slate-600 text-white px-3 py-1 rounded-full text-xs font-bold">
+                              EVENT COMPLETED
                             </div>
                           )}
                         </div>

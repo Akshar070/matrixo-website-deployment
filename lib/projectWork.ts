@@ -177,6 +177,9 @@ export interface ProjectTask {
   /** When true and status is AVAILABLE, matching employees may claim it. */
   allowClaiming: boolean
 
+  /** Optional user-facing progress state within the task (e.g. Not Started, In Progress, Fixing Issues, Completed - PR Sent) */
+  progressStatus?: string | null
+
   dueDate?: string | null
   checklist?: ChecklistItem[]
   referenceUrl?: string | null
@@ -596,7 +599,7 @@ export const updateProjectTask = (
   taskId: string,
   updates: Partial<
     Pick<ProjectTask, 'title' | 'description' | 'priority' | 'dueDate' |
-      'assignedRole' | 'allowClaiming' | 'checklist' | 'referenceUrl'>
+      'assignedRole' | 'allowClaiming' | 'checklist' | 'referenceUrl' | 'progressStatus'>
   >
 ) => callApi('updateTask', { taskId, updates }).then(() => undefined)
 

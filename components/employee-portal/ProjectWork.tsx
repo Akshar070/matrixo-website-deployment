@@ -885,8 +885,8 @@ export function ProjectWork() {
           {subTabs.map((t) => (
             <button key={t.id} onClick={() => setSubTab(t.id as SubTab)}
               className={`px-3 sm:px-4 py-2 rounded-md text-sm font-medium whitespace-nowrap transition-all ${subTab === t.id
-                  ? 'bg-white text-[#0F172A] shadow-sm border border-[rgba(15,23,42,0.06)] dark:bg-primary-600 dark:text-white dark:border-transparent'
-                  : 'text-[#64748B] hover:text-[#0F172A] hover:bg-[rgba(15,23,42,0.04)] dark:text-neutral-400 dark:hover:text-white dark:hover:bg-neutral-800'
+                ? 'bg-white text-[#0F172A] shadow-sm border border-[rgba(15,23,42,0.06)] dark:bg-primary-600 dark:text-white dark:border-transparent'
+                : 'text-[#64748B] hover:text-[#0F172A] hover:bg-[rgba(15,23,42,0.04)] dark:text-neutral-400 dark:hover:text-white dark:hover:bg-neutral-800'
                 }`}>
               {t.label}
             </button>

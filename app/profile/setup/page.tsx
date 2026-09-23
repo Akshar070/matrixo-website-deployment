@@ -1,9 +1,9 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef, useLayoutEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
-import { FaUser, FaIdCard, FaPhone, FaEnvelope, FaUniversity, FaGraduationCap, FaCodeBranch, FaArrowRight, FaSpinner, FaAt, FaCheck, FaTimes, FaCamera } from 'react-icons/fa'
+import { FaUser, FaIdCard, FaPhone, FaEnvelope, FaUniversity, FaGraduationCap, FaCodeBranch, FaArrowRight, FaSpinner, FaAt, FaCheck, FaTimes, FaCamera, FaChevronDown } from 'react-icons/fa'
 import { useAuth } from '@/lib/AuthContext'
 import { useProfile, DEFAULT_PRIVACY } from '@/lib/ProfileContext'
 import { LocationSelection, LocationSelectionState } from '@/components/location/LocationSelection'
@@ -48,6 +48,46 @@ export default function ProfileSetupPage() {
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [usernameStatus, setUsernameStatus] = useState<'idle' | 'checking' | 'available' | 'taken'>('idle')
   const [step, setStep] = useState(1)
+  const [yearDropdownOpen, setYearDropdownOpen] = useState(false)
+  const [branchDropdownOpen, setBranchDropdownOpen] = useState(false)
+  const yearDropdownRef = useRef<HTMLDivElement>(null)
+  const branchDropdownRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!yearDropdownOpen) return
+    const handleClickOutside = (e: MouseEvent) => {
+      if (yearDropdownRef.current && !yearDropdownRef.current.contains(e.target as Node)) {
+        setYearDropdownOpen(false)
+      }
+    }
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setYearDropdownOpen(false)
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    document.addEventListener('keydown', handleKeyDown)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+      document.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [yearDropdownOpen])
+
+  useEffect(() => {
+    if (!branchDropdownOpen) return
+    const handleClickOutside = (e: MouseEvent) => {
+      if (branchDropdownRef.current && !branchDropdownRef.current.contains(e.target as Node)) {
+        setBranchDropdownOpen(false)
+      }
+    }
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setBranchDropdownOpen(false)
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    document.addEventListener('keydown', handleKeyDown)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+      document.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [branchDropdownOpen])
 
   useEffect(() => {
     const username = formData.username.trim().toLowerCase()
@@ -405,31 +445,87 @@ export default function ProfileSetupPage() {
 
               {/* Year & Branch */}
               <div className="grid grid-cols-2 gap-4">
-                <div>
+                <div className="relative min-w-0" ref={yearDropdownRef}>
                   <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
                     <FaGraduationCap className="text-blue-400 text-xs" /> Year
                   </label>
-                  <select
-                    name="year" value={formData.year} onChange={handleChange}
-                    className={`${inputClass('year')} appearance-none`}
-                  >
-                    <option value="">Select</option>
-                    {YEAR_OPTIONS.map(y => <option key={y} value={y}>{y}</option>)}
-                  </select>
+                  <div className="relative min-w-0">
+                    <button
+                      type="button"
+                      onClick={() => { setYearDropdownOpen(!yearDropdownOpen); setBranchDropdownOpen(false) }}
+                      className={`${inputClass('year')} appearance-none text-left flex items-center justify-between`}
+                    >
+                      <span className={formData.year ? 'text-gray-900 dark:text-white' : 'text-gray-500'}>
+                        {formData.year || 'Select'}
+                      </span>
+                      <FaChevronDown className={`text-gray-400 text-xs flex-shrink-0 ml-2 transition-transform ${yearDropdownOpen ? 'rotate-180' : ''}`} />
+                    </button>
+                    {yearDropdownOpen && (
+                      <div className="relative w-full mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-xl z-50 overflow-hidden">
+                        <div className="max-h-[260px] overflow-y-auto p-1">
+                          <button
+                            type="button"
+                            onClick={() => { setFormData(prev => ({ ...prev, year: '' })); setYearDropdownOpen(false) }}
+                            className={`w-full text-left px-3 py-2 rounded-md text-sm transition-colors ${!formData.year ? 'bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400 font-medium' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}`}
+                          >
+                            Select
+                          </button>
+                          {YEAR_OPTIONS.map(y => (
+                            <button
+                              key={y}
+                              type="button"
+                              onClick={() => { setFormData(prev => ({ ...prev, year: y })); setYearDropdownOpen(false) }}
+                              className={`w-full text-left px-3 py-2 rounded-md text-sm transition-colors ${formData.year === y ? 'bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400 font-medium' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}`}
+                            >
+                              {y}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
                   {errors.year && <p className="text-red-500 text-xs mt-1">{errors.year}</p>}
                 </div>
 
-                <div>
+                <div className="relative min-w-0" ref={branchDropdownRef}>
                   <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
                     <FaCodeBranch className="text-blue-400 text-xs" /> Branch
                   </label>
-                  <select
-                    name="branch" value={formData.branch} onChange={handleChange}
-                    className={`${inputClass('branch')} appearance-none`}
-                  >
-                    <option value="">Select</option>
-                    {BRANCH_OPTIONS.map(b => <option key={b} value={b}>{b}</option>)}
-                  </select>
+                  <div className="relative min-w-0">
+                    <button
+                      type="button"
+                      onClick={() => { setBranchDropdownOpen(!branchDropdownOpen); setYearDropdownOpen(false) }}
+                      className={`${inputClass('branch')} appearance-none text-left flex items-center justify-between`}
+                    >
+                      <span className={formData.branch ? 'text-gray-900 dark:text-white' : 'text-gray-500'}>
+                        {formData.branch || 'Select'}
+                      </span>
+                      <FaChevronDown className={`text-gray-400 text-xs flex-shrink-0 ml-2 transition-transform ${branchDropdownOpen ? 'rotate-180' : ''}`} />
+                    </button>
+                    {branchDropdownOpen && (
+                      <div className="relative w-full mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-xl z-50 overflow-hidden">
+                        <div className="max-h-[260px] overflow-y-auto p-1">
+                          <button
+                            type="button"
+                            onClick={() => { setFormData(prev => ({ ...prev, branch: '' })); setBranchDropdownOpen(false) }}
+                            className={`w-full text-left px-3 py-2 rounded-md text-sm transition-colors ${!formData.branch ? 'bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400 font-medium' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}`}
+                          >
+                            Select
+                          </button>
+                          {BRANCH_OPTIONS.map(b => (
+                            <button
+                              key={b}
+                              type="button"
+                              onClick={() => { setFormData(prev => ({ ...prev, branch: b })); setBranchDropdownOpen(false) }}
+                              className={`w-full text-left px-3 py-2 rounded-md text-sm transition-colors ${formData.branch === b ? 'bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400 font-medium' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}`}
+                            >
+                              {b}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
                   {errors.branch && <p className="text-red-500 text-xs mt-1">{errors.branch}</p>}
                 </div>
               </div>

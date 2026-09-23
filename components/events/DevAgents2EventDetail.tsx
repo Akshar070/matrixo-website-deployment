@@ -202,12 +202,6 @@ export default function DevAgents2EventDetail({ event }: { event: any }) {
               <p className="text-xl text-gray-400 mb-10">
                 More information and registrations will be announced soon.
               </p>
-              <button
-                onClick={handleRegisterClick}
-                className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-full overflow-hidden transition-all hover:shadow-[0_0_20px_rgba(79,70,229,0.4)] active:scale-95"
-              >
-                Register Now
-              </button>
             </motion.div>
           </div>
         </section>

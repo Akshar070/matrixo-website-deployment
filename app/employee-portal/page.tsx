@@ -456,7 +456,7 @@ function TopNavbar({
                   </button>
                 ))}
 
-                {isAdmin && (
+                {isAdmin && employee?.role !== 'admin' && employee?.role !== 'sub-admin' && (
                   // The count badge lives on a wrapper, not inside the button:
                   // when this tab is active it uses .cta-glass, whose
                   // `overflow: hidden` (there to contain the gradient sweep)
@@ -686,7 +686,10 @@ function TopNavbar({
               style={{ borderTop: darkMode ? '1px solid rgba(255,255,255,0.07)' : '1px solid rgba(0,0,0,0.07)' }}
             >
               <div className="grid grid-cols-2 gap-2">
-                {navigationItems.filter(item => (!item.adminOnly || isAdmin) && !(item.adminHidden && employee?.role === 'admin')).map((item) => (
+                {navigationItems.filter(item => {
+                  const isExcludedCareers = item.id === 'job-postings' && (employee?.role === 'admin' || employee?.role === 'sub-admin');
+                  return (!item.adminOnly || isAdmin) && !(item.adminHidden && employee?.role === 'admin') && !isExcludedCareers;
+                }).map((item) => (
                   <button
                     key={item.id}
                     onClick={() => { setActiveTab(item.id); setMobileMenuOpen(false) }}

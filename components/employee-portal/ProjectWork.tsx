@@ -32,6 +32,7 @@ import {
   canManageProjects, canClaimTask, isTaskOwner, setProjectWorkTokenGetter,
   type Project, type ProjectTask, type ProjectTaskStatus, type ProjectTaskEvent,
   type TaskPriority, type Actor,
+  updateProjectTask,
 } from '@/lib/projectWork'
 import { Button, Input, Textarea, Select, Badge, Card, Modal, Alert, EmptyState, Spinner } from './ui'
 
@@ -257,6 +258,27 @@ function TaskDetailModal({
           </p>
         )}
 
+        {/* TASK PROGRESS */}
+        {(owner || manager) && (
+          <div className="space-y-2 border-t border-[rgba(15,23,42,0.08)] dark:border-neutral-700 pt-4">
+            <p className="text-xs font-medium text-[#64748B] dark:text-neutral-500 uppercase tracking-wider">Progress Status</p>
+            <div className="flex flex-wrap gap-2">
+              <Select
+                label=""
+                value={task.progressStatus || 'Not Started'}
+                options={[
+                  'Not Started',
+                  'In Progress',
+                  'Fixing Issues',
+                  'Completed — PR Sent'
+                ].map(p => ({ value: p, label: p }))}
+                onChange={(val) => run(() => updateProjectTask(task.id!, { progressStatus: val }), 'Progress updated')}
+                disabled={!owner && !manager}
+              />
+            </div>
+          </div>
+        )}
+
         {/* Checklist */}
         {!!task.checklist?.length && (
           <div className="space-y-1.5">
@@ -422,34 +444,34 @@ function TaskDetailModal({
             by a manager or the actor who created the entry. Offering the toggle
             to anyone else would just produce a permission error. */}
         {(manager || owner) && (
-        <div className="border-t border-[rgba(15,23,42,0.08)] dark:border-neutral-700 pt-4">
-          <button
-            onClick={() => setShowHistory((v) => !v)}
-            className="flex items-center gap-2 text-xs font-medium text-[#64748B] dark:text-neutral-400 hover:text-[#0F172A] dark:hover:text-white transition-colors"
-          >
-            <FaHistory className="text-[10px]" />
-            {showHistory ? 'Hide' : 'Show'} history
-          </button>
-          {showHistory && (
-            <div className="mt-3 space-y-2 max-h-56 overflow-y-auto">
-              {events.length === 0 ? (
-                <p className="text-xs text-[#94A3B8] dark:text-neutral-500">No history yet.</p>
-              ) : events.map((ev) => (
-                <div key={ev.id} className="text-xs flex items-start gap-2">
-                  <span className="text-[#94A3B8] dark:text-neutral-500 shrink-0 w-[92px]">
-                    {ev.at?.toDate?.().toLocaleString(undefined, { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) || '—'}
-                  </span>
-                  <span className="text-[#475569] dark:text-neutral-300">
-                    <strong className="text-[#0F172A] dark:text-white">{ev.actorName}</strong>{' '}
-                    {ev.action.replace(/_/g, ' ')}
-                    {ev.toStatus ? ` → ${STATUS_META[ev.toStatus]?.short ?? ev.toStatus}` : ''}
-                    {ev.note ? ` — ${ev.note}` : ''}
-                  </span>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+          <div className="border-t border-[rgba(15,23,42,0.08)] dark:border-neutral-700 pt-4">
+            <button
+              onClick={() => setShowHistory((v) => !v)}
+              className="flex items-center gap-2 text-xs font-medium text-[#64748B] dark:text-neutral-400 hover:text-[#0F172A] dark:hover:text-white transition-colors"
+            >
+              <FaHistory className="text-[10px]" />
+              {showHistory ? 'Hide' : 'Show'} history
+            </button>
+            {showHistory && (
+              <div className="mt-3 space-y-2 max-h-56 overflow-y-auto">
+                {events.length === 0 ? (
+                  <p className="text-xs text-[#94A3B8] dark:text-neutral-500">No history yet.</p>
+                ) : events.map((ev) => (
+                  <div key={ev.id} className="text-xs flex items-start gap-2">
+                    <span className="text-[#94A3B8] dark:text-neutral-500 shrink-0 w-[92px]">
+                      {ev.at?.toDate?.().toLocaleString(undefined, { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) || '—'}
+                    </span>
+                    <span className="text-[#475569] dark:text-neutral-300">
+                      <strong className="text-[#0F172A] dark:text-white">{ev.actorName}</strong>{' '}
+                      {ev.action.replace(/_/g, ' ')}
+                      {ev.toStatus ? ` → ${STATUS_META[ev.toStatus]?.short ?? ev.toStatus}` : ''}
+                      {ev.note ? ` — ${ev.note}` : ''}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         )}
       </div>
     </Modal>
@@ -475,7 +497,7 @@ function CreateTaskModal({
     priority: 'medium' as TaskPriority,
     assignedTo: '', assignedRole: '',
     dueDate: '', referenceUrl: '',
-    allowClaiming: true,
+    taskType: 'open' as 'open' | 'assigned',
   })
 
   const roles = useMemo(() => teamsFrom(employees), [employees])
@@ -489,6 +511,9 @@ function CreateTaskModal({
     const project = projects.find((p) => p.id === form.projectId)
     if (!project) return toast.error('Please choose a project')
     if (!form.title.trim()) return toast.error('Task title is required')
+    if (form.taskType === 'assigned' && !form.assignedTo) {
+      return toast.error('Please select an employee to assign this task to')
+    }
 
     setBusy(true)
     try {
@@ -502,7 +527,7 @@ function CreateTaskModal({
         // Email is the only reliable link to an Auth UID; the server resolves it.
         assignee: emp ? { employeeId: emp.employeeId, name: emp.name, email: emp.email } : null,
         assignedRole: form.assignedRole || null,
-        allowClaiming: !emp && form.allowClaiming,
+        allowClaiming: form.taskType === 'open',
         dueDate: form.dueDate || null,
         referenceUrl: form.referenceUrl || null,
       })
@@ -548,31 +573,39 @@ function CreateTaskModal({
             onChange={(e) => setForm({ ...form, dueDate: e.target.value })} />
         </div>
 
+        <div className="space-y-2">
+          <label className="block text-sm font-medium text-[#475569] dark:text-neutral-300">Task Type</label>
+          <div className="flex gap-4">
+            <label className="flex items-center gap-2 text-sm text-[#475569] dark:text-neutral-300 cursor-pointer">
+              <input type="radio" name="taskType" value="open" checked={form.taskType === 'open'} onChange={() => setForm({ ...form, taskType: 'open', assignedTo: '' })} />
+              Open Task
+            </label>
+            <label className="flex items-center gap-2 text-sm text-[#475569] dark:text-neutral-300 cursor-pointer">
+              <input type="radio" name="taskType" value="assigned" checked={form.taskType === 'assigned'} onChange={() => setForm({ ...form, taskType: 'assigned' })} />
+              Assign to Specific Person
+            </label>
+          </div>
+        </div>
+
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <Select label="Role / team" value={form.assignedRole}
             placeholder="Any team"
             options={[{ value: '', label: 'Any team' }, ...roles.map((r) => ({ value: r, label: r }))]}
             onChange={(v) => setForm({ ...form, assignedRole: v, assignedTo: '' })} />
-          <Select label="Assign to (optional)" value={form.assignedTo}
-            placeholder="Leave open for claiming"
-            options={[
-              { value: '', label: 'Leave open for claiming' },
-              ...selectable.map((e) => ({ value: e.employeeId, label: e.name })),
-            ]}
-            onChange={(v) => setForm({ ...form, assignedTo: v })} />
+          {form.taskType === 'assigned' && (
+            <Select label="Assign to" value={form.assignedTo}
+              placeholder="Select employee"
+              options={[
+                { value: '', label: 'Select employee' },
+                ...selectable.map((e) => ({ value: e.employeeId, label: e.name })),
+              ]}
+              onChange={(v) => setForm({ ...form, assignedTo: v })} />
+          )}
         </div>
 
         <Input label="Reference link (optional)" value={form.referenceUrl}
           onChange={(e) => setForm({ ...form, referenceUrl: e.target.value })}
           placeholder="https://…" />
-
-        {!form.assignedTo && (
-          <label className="flex items-center gap-2 text-sm text-[#475569] dark:text-neutral-300 cursor-pointer">
-            <input type="checkbox" checked={form.allowClaiming}
-              onChange={(e) => setForm({ ...form, allowClaiming: e.target.checked })} />
-            Let matching employees claim this task
-          </label>
-        )}
 
         <div className="flex justify-end gap-2 pt-2">
           <Button variant="ghost" onClick={onClose}>Cancel</Button>
@@ -851,11 +884,10 @@ export function ProjectWork() {
         <div className="flex items-center gap-1 p-1 bg-[#F1F5F9] dark:bg-neutral-900 rounded-lg border border-[rgba(15,23,42,0.06)] dark:border-transparent overflow-x-auto">
           {subTabs.map((t) => (
             <button key={t.id} onClick={() => setSubTab(t.id as SubTab)}
-              className={`px-3 sm:px-4 py-2 rounded-md text-sm font-medium whitespace-nowrap transition-all ${
-                subTab === t.id
+              className={`px-3 sm:px-4 py-2 rounded-md text-sm font-medium whitespace-nowrap transition-all ${subTab === t.id
                   ? 'bg-white text-[#0F172A] shadow-sm border border-[rgba(15,23,42,0.06)] dark:bg-primary-600 dark:text-white dark:border-transparent'
                   : 'text-[#64748B] hover:text-[#0F172A] hover:bg-[rgba(15,23,42,0.04)] dark:text-neutral-400 dark:hover:text-white dark:hover:bg-neutral-800'
-              }`}>
+                }`}>
               {t.label}
             </button>
           ))}

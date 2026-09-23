@@ -214,7 +214,7 @@ const handlers: Record<string, (ctx: Ctx, body: any) => Promise<NextResponse>> =
     if (!found) return bad(404, 'Task not found')
 
     const allowed = ['title', 'description', 'priority', 'dueDate', 'assignedRole',
-                     'allowClaiming', 'checklist', 'referenceUrl']
+                     'allowClaiming', 'checklist', 'referenceUrl', 'progressStatus']
     const payload: Record<string, unknown> = { updatedAt: FieldValue.serverTimestamp() }
     for (const k of allowed) if (updates?.[k] !== undefined) payload[k] = updates[k]
 

@@ -284,12 +284,30 @@ export function canClaimTask(task: ProjectTask, actor?: Actor | null): boolean {
   if (!actor) return false
   if (task.status !== 'AVAILABLE' || !task.allowClaiming) return false
   if (task.assignedToUid || task.assignedTo) return false
+<<<<<<< HEAD
 
   // `assignedRole` is a label, not a lock. It used to restrict claiming to
   // people whose role or department matched it, which hid the whole pool from
   // anyone outside that team — an Admin could not take a task tagged "Intern".
   // Any signed-in employee may now take any unclaimed task; the tag still shows
   // on the card so people know which team it was meant for.
+=======
+  // Role-pooled tasks are only claimable by that team or role.
+  if (task.assignedRole) {
+    const uRole = (actor.role || '').toLowerCase()
+    const uDept = (actor.department || '').toLowerCase()
+    const tRole = task.assignedRole.toLowerCase()
+
+    if (tRole === 'management') {
+      return isAdminOrSubAdmin(actor.role)
+    }
+    if (tRole === 'intern' && isAdminOrSubAdmin(actor.role)) {
+      return false
+    }
+
+    return uRole === tRole || uDept === tRole
+  }
+>>>>>>> 9108e76 (Updated the old events to sold out and removed extra register now button)
   return true
 }
 
@@ -345,11 +363,11 @@ export function describeFirestoreError(err: any, what: string): string {
   const code = err?.code || ''
   if (code === 'failed-precondition' || /requires an index/i.test(err?.message || '')) {
     return `The ${what} list needs a Firestore index that has not been created yet. ` +
-           `Deploy indexes with: firebase deploy --only firestore:indexes`
+      `Deploy indexes with: firebase deploy --only firestore:indexes`
   }
   if (code === 'permission-denied') {
     return `You do not have permission to read ${what}. If you were just given a role, ` +
-           `sign out and back in to refresh your access.`
+      `sign out and back in to refresh your access.`
   }
   return `Could not load ${what}: ${err?.message || 'unknown error'}`
 }

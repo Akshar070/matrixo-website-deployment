@@ -836,9 +836,9 @@
     "venue": "DraperU India",
     "location": "Hyderabad",
     "totalCapacity": 120,
-    "ticketsSold": 0,
+    "ticketsSold": 120,
     "featured": true,
-    "status": "completed",
+    "status": "sold-out",
     "category": "Hands-on Agentic AI Workshop",
     "isDevAgentsEvent": true,
     "images": {

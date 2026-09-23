@@ -738,26 +738,40 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
             animate="visible"
             className="flex flex-col items-center gap-4 justify-center mb-10"
           >
-            <div className="flex flex-col sm:flex-row gap-4 justify-center w-full max-w-lg">
-              <button
-                onClick={() => setShowRegistration(true)}
-                className={`flex-1 px-8 py-4 rounded-2xl font-extrabold text-white text-lg transition-all duration-300 relative overflow-hidden group ${accentButtonClass}`}
-                style={{
-                  boxShadow: "0 8px 26px rgba(124,58,237,.38)",
-                }}
-              >
-                <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-in-out" />
-                <span className="relative z-10 flex items-center justify-center gap-2">
-                  Secure Your Seat - ₹199 <span className="animate-bounce">👉</span>
+            {event?.status === 'sold-out' ? (
+              <div className="flex flex-col items-center justify-center p-6 rounded-2xl w-full max-w-lg bg-gradient-to-r from-red-50 via-orange-50 to-yellow-50 dark:from-red-900/20 dark:via-orange-900/20 dark:to-yellow-900/20 border-2 border-red-500 backdrop-blur-md text-center">
+                <span className="text-4xl mb-2 block">🎉</span>
+                <span className="text-2xl md:text-3xl font-black text-red-600 dark:text-red-400 tracking-tight">
+                  SOLD OUT!
                 </span>
-              </button>
-            </div>
+                <p className="text-gray-700 dark:text-gray-300 font-medium mt-1">
+                  🎊 All tickets have been claimed. 🎊
+                </p>
+              </div>
+            ) : (
+              <>
+                <div className="flex flex-col sm:flex-row gap-4 justify-center w-full max-w-lg">
+                  <button
+                    onClick={() => setShowRegistration(true)}
+                    className={`flex-1 px-8 py-4 rounded-2xl font-extrabold text-white text-lg transition-all duration-300 relative overflow-hidden group ${accentButtonClass}`}
+                    style={{
+                      boxShadow: "0 8px 26px rgba(124,58,237,.38)",
+                    }}
+                  >
+                    <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-in-out" />
+                    <span className="relative z-10 flex items-center justify-center gap-2">
+                      Secure Your Seat - ₹199 <span className="animate-bounce">👉</span>
+                    </span>
+                  </button>
+                </div>
 
-            {/* Scarcity Trigger */}
-            <div className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-orange-500/10 border border-orange-500/20">
-              <span className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
-              <span className="text-xs font-semibold text-orange-600 dark:text-orange-400 tracking-wide uppercase">Selling Fast: Only 14 Seats Left</span>
-            </div>
+                {/* Scarcity Trigger */}
+                <div className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-orange-500/10 border border-orange-500/20">
+                  <span className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
+                  <span className="text-xs font-semibold text-orange-600 dark:text-orange-400 tracking-wide uppercase">Selling Fast: Only 14 Seats Left</span>
+                </div>
+              </>
+            )}
           </motion.div>
 
           {/* Trust Anchors */}
@@ -1656,17 +1670,19 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
               </div>
 
               {/* CTA */}
-              <button
-                onClick={() => setShowRegistration(true)}
-                className="da-cta w-full py-4 rounded-xl font-bold text-white text-lg transition-all duration-200 hover:scale-[1.02] active:scale-[.98]"
-                style={{
-                  background:
-                    "linear-gradient(135deg, #2563EB, #8B5CF6, #EC4899)",
-                  boxShadow: "0 8px 30px rgba(124,58,237,.35)",
-                }}
-              >
-                Register Now — ₹199
-              </button>
+              {event?.status !== 'sold-out' && (
+                <button
+                  onClick={() => setShowRegistration(true)}
+                  className="da-cta w-full py-4 rounded-xl font-bold text-white text-lg transition-all duration-200 hover:scale-[1.02] active:scale-[.98]"
+                  style={{
+                    background:
+                      "linear-gradient(135deg, #2563EB, #8B5CF6, #EC4899)",
+                    boxShadow: "0 8px 30px rgba(124,58,237,.35)",
+                  }}
+                >
+                  Register Now — ₹199
+                </button>
+              )}
 
               {/* Trust badges */}
               <div
@@ -2351,7 +2367,7 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
           STICKY BOTTOM CTA  (appears after scrollY > 600)
       ══════════════════════════════════════════════════════════════════ */}
       <AnimatePresence>
-        {showStickyCTA && (
+        {showStickyCTA && event?.status !== 'sold-out' && (
           <motion.div
             initial={{ y: 100, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}

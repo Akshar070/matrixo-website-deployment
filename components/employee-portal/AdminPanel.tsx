@@ -1698,6 +1698,7 @@ export function AdminPanel() {
     setGlobalWorkMode,
     holidays,
     isHoliday: checkIsHoliday,
+    getMonthlyAttendanceStats,
   } = useEmployeeAuth()
   
   const [activeTab, setActiveTab] = useState('employees')
@@ -1819,49 +1820,20 @@ export function AdminPanel() {
       // Calculate stats for each employee
       const empsWithStats: EmployeeWithStats[] = await Promise.all(
         uniqueEmps.map(async (emp) => {
-          const history = await getEmployeeAttendanceHistory(emp.employeeId, 30)
+          // Get history from the already fetched filteredAttendance for this month
+          const history = filteredAttendance.filter(r => r.employeeId === emp.employeeId)
 
-          // Monthly attendance: filter to current month, use working days as denominator
+          // Use the single source of truth calculation
           const now = new Date()
-          const year = now.getFullYear()
-          const month = now.getMonth()
-          const monthEnd = new Date(year, month + 1, 0)
+          const stats = getMonthlyAttendanceStats(history, now.getMonth(), now.getFullYear())
 
-          // Determine effective start date (joining date or 1st of month)
-          const joiningDate = emp.joiningDate ? new Date(emp.joiningDate) : null
-          let startDate = new Date(year, month, 1)
-          if (joiningDate && joiningDate.getFullYear() === year && joiningDate.getMonth() === month) {
-            startDate = joiningDate
-          }
-
-          // Calculate working days (exclude Sundays + holidays)
-          let totalWorkingDays = 0
-          const cursor = new Date(startDate)
-          cursor.setHours(0, 0, 0, 0)
-          while (cursor <= monthEnd) {
-            const dateStr = formatDate(cursor)
-            const isSunday = cursor.getDay() === 0
-            const isHol = checkIsHoliday(dateStr)
-            if (!isSunday && !isHol) {
-              totalWorkingDays++
-            }
-            cursor.setDate(cursor.getDate() + 1)
-          }
-
-          const startStr = formatDate(startDate)
-          const endStr = formatDate(monthEnd)
-          const monthlyHistory = history.filter(r => r.date >= startStr && r.date <= endStr)
-
-          const presentDays = monthlyHistory.filter(r => r.status === 'P' || r.status === 'W').length
-          const absentDays = monthlyHistory.filter(r => r.status === 'A').length
-          const lateDays = monthlyHistory.filter(r => r.status === 'L').length
-          const onDutyDays = monthlyHistory.filter(r => r.status === 'O').length
-          const unauthLeaveDays = monthlyHistory.filter(r => r.status === 'U').length
-          const totalDays = monthlyHistory.length
-          // HR formula: (present+wfh + onDuty) / totalWorkingDays
-          const attendancePercentage = totalWorkingDays > 0
-            ? parseFloat(((presentDays + onDutyDays) / totalWorkingDays * 100).toFixed(2))
-            : 0
+          const attendancePercentage = stats.attendanceRate
+          const presentDays = stats.presentDays
+          const absentDays = stats.absentDays
+          const onDutyDays = stats.onDutyDays
+          const unauthLeaveDays = stats.unauthorisedLeaveDays
+          const lateDays = history.filter(r => r.status === 'L').length // Keep lateDays if not in stats
+          const totalDays = history.length
 
           return {
             ...emp,

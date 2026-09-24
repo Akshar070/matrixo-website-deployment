@@ -1558,7 +1558,7 @@ export function AttendanceDashboard({ refreshKey }: { refreshKey?: number }) {
             <StatsCard title="Unauth. Leave" value={stats.unauthorisedLeaveDays} icon={FaBan} color="bg-rose-600" />
             <StatsCard
               title="Working Days"
-              value={stats.totalWorkingDays}
+              value={stats.workingDaysSoFar}
               icon={FaCalendarCheck}
               color="bg-indigo-500"
               subtext={`Sundays & holidays excluded`}
@@ -1579,7 +1579,7 @@ export function AttendanceDashboard({ refreshKey }: { refreshKey?: number }) {
               </span>
             </div>
             <p className="text-xs text-[#64748B] dark:text-neutral-500 mb-3">
-              {stats.presentDays} present of {stats.totalWorkingDays} working days
+              {stats.presentDays} present of {stats.workingDaysSoFar} working days
             </p>
             <div className="h-3 bg-[#EEF3F8] dark:bg-neutral-800 rounded-full overflow-hidden relative">
               <div className="absolute left-[80%] top-0 bottom-0 w-0.5 bg-white/30 z-10" />

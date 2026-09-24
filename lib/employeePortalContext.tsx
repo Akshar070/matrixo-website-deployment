@@ -1072,62 +1072,62 @@ export function EmployeeAuthProvider({ children }: { children: ReactNode }) {
     const year = targetYear ?? now.getFullYear()
     const month = targetMonth ?? now.getMonth()
 
-    // Step 1: Generate all dates of that month
+    const isCurrentMonth = year === now.getFullYear() && month === now.getMonth()
+    const todayDate = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+    const isFutureMonth = year > now.getFullYear() || (year === now.getFullYear() && month > now.getMonth())
+
     const monthStart = new Date(year, month, 1)
     const monthEnd = new Date(year, month + 1, 0)
     const totalDaysInMonth = monthEnd.getDate()
 
-    // Step 2 & 3: Iterate every date, skip Sundays only, remaining dates become WORKING DAYS.
-    let totalWorkingDays = 0
-    for (let d = 1; d <= totalDaysInMonth; d++) {
-      const date = new Date(year, month, d)
-      if (date.getDay() !== 0) { // 0 is Sunday
-        totalWorkingDays++
-      }
-    }
-
-    // Filter records strictly to the target month
     const startStr = getLocalDateString(monthStart)
     const endStr = getLocalDateString(monthEnd)
-    const monthlyRecords = records.filter(r => r.date >= startStr && r.date <= endStr)
+    const monthlyRecords = records.filter(r => r.date && r.date >= startStr && r.date <= endStr)
 
-    // Present Days = COUNT of attendance records in the selected month whose status == "Present"
-    // Using a Set to "Count every unique attendance date" as requested
-    const presentRecords = monthlyRecords.filter(r => r.status === 'P' || r.status === 'O' || r.status === 'W')
-    const presentDays = new Set(presentRecords.map(r => r.date)).size
+    const presentDates = new Set(monthlyRecords.filter(r => r.status === 'P' || r.status === 'O' || r.status === 'W').map(r => r.date))
+    const leaveDates = new Set(monthlyRecords.filter(r => r.status === 'L').map(r => r.date))
+    const onDutyDates = new Set(monthlyRecords.filter(r => r.status === 'O').map(r => r.date))
+    const unauthorisedDates = new Set(monthlyRecords.filter(r => r.status === 'U').map(r => r.date))
 
-    const leaveRecords = monthlyRecords.filter(r => r.status === 'L')
-    const leaveDays = new Set(leaveRecords.map(r => r.date)).size
+    let totalWorkingDays = 0
+    let workingDaysSoFar = 0
+    let presentDays = 0
+    let absentDays = 0
+    let leaveDays = 0
+    let onDutyDays = 0
+    let unauthorisedLeaveDays = 0
 
-    const onDutyRecords = monthlyRecords.filter(r => r.status === 'O')
-    const onDutyDays = new Set(onDutyRecords.map(r => r.date)).size
-
-    const unauthorisedRecords = monthlyRecords.filter(r => r.status === 'U')
-    const unauthorisedLeaveDays = new Set(unauthorisedRecords.map(r => r.date)).size
-
-    // Absent Days = Working Days - Present Days
-    const absentDays = Math.max(0, totalWorkingDays - presentDays)
-
-    // Attendance Rate = (Present Days / Working Days) * 100
-    const attendanceRate = totalWorkingDays > 0
-      ? parseFloat(((presentDays / totalWorkingDays) * 100).toFixed(2))
-      : 0
-
-    // Determine if we're showing the current month to show working days so far
-    const isCurrentMonth = year === now.getFullYear() && month === now.getMonth()
-    const today = now.getDate()
-    const isMonthComplete = !isCurrentMonth || today === totalDaysInMonth
-
-    let workingDaysSoFar = totalWorkingDays
-    if (isCurrentMonth) {
-      workingDaysSoFar = 0
-      for (let d = 1; d <= today; d++) {
-        const date = new Date(year, month, d)
-        if (date.getDay() !== 0) {
+    for (let d = 1; d <= totalDaysInMonth; d++) {
+      const date = new Date(year, month, d)
+      const dateString = getLocalDateString(date)
+      
+      if (isWorkingDay(dateString)) {
+        totalWorkingDays++
+        
+        const isPastOrToday = !isFutureMonth && (isCurrentMonth ? date <= todayDate : true)
+        
+        if (isPastOrToday) {
           workingDaysSoFar++
+          
+          if (presentDates.has(dateString)) {
+            presentDays++
+          } else {
+            absentDays++
+          }
+
+          if (leaveDates.has(dateString)) leaveDays++
+          if (onDutyDates.has(dateString)) onDutyDays++
+          if (unauthorisedDates.has(dateString)) unauthorisedLeaveDays++
         }
       }
     }
+
+    const attendanceRate = workingDaysSoFar > 0
+      ? parseFloat(((presentDays / workingDaysSoFar) * 100).toFixed(2))
+      : 0
+
+    const today = now.getDate()
+    const isMonthComplete = isFutureMonth ? false : (!isCurrentMonth || today >= totalDaysInMonth)
 
     return {
       presentDays,

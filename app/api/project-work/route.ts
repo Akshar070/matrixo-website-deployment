@@ -29,7 +29,7 @@ const EVENTS = 'projectTaskEvents'
 
 const MANAGER_ACTIONS = new Set([
   'createProject', 'updateProject', 'archiveProject',
-  'createTask', 'updateTask', 'assignTask',
+  'createTask', 'assignTask',
   'confirmTask', 'requestChanges', 'reopenTask', 'cancelTask',
   'deleteTask', 'deleteProject',
 ])
@@ -213,10 +213,30 @@ const handlers: Record<string, (ctx: Ctx, body: any) => Promise<NextResponse>> =
     const found = await loadTask(db, taskId)
     if (!found) return bad(404, 'Task not found')
 
-    const allowed = ['title', 'description', 'priority', 'dueDate', 'assignedRole',
-                     'allowClaiming', 'checklist', 'referenceUrl', 'progressStatus']
+    const isManager = isManagerRole(me.role)
+    const isOwner = ownsTask(found.task, me)
+
+    if (!isManager && !isOwner) {
+      return bad(403, 'Only the task owner, Admin, or Co-Admin can update progress.')
+    }
+
+    const allowed = isManager
+      ? ['title', 'description', 'priority', 'dueDate', 'assignedRole',
+         'allowClaiming', 'checklist', 'referenceUrl', 'progressStatus']
+      : ['progressStatus']
+
     const payload: Record<string, unknown> = { updatedAt: FieldValue.serverTimestamp() }
-    for (const k of allowed) if (updates?.[k] !== undefined) payload[k] = updates[k]
+    let hasAllowedUpdates = false
+    for (const k of allowed) {
+      if (updates?.[k] !== undefined) {
+        payload[k] = updates[k]
+        hasAllowedUpdates = true
+      }
+    }
+
+    if (!hasAllowedUpdates && !isManager) {
+      return bad(403, 'Only an Admin or Co-Admin can do that.')
+    }
 
     await found.ref.update(payload)
     await logEvent(db, taskId, found.task.projectId, 'updated', me)

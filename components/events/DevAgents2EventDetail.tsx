@@ -204,6 +204,27 @@ export default function DevAgents2EventDetail({ event }: { event: any }) {
                 <FaChevronRight className="relative z-10 text-xs transition-transform group-hover:translate-x-1" />
                 <div className="absolute inset-0 bg-gradient-to-r from-indigo-600 to-slate-900 dark:from-indigo-100 dark:to-white opacity-0 group-hover:opacity-100 transition-opacity" />
               </button>
+
+              {/* Devfolio Integration Point */}
+              {event.devfolioUrl ? (
+                <a
+                  href={event.devfolioUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group relative inline-flex items-center justify-center gap-2 px-8 py-4 bg-[#3770FF] hover:bg-[#205AFF] text-white font-semibold rounded-full overflow-hidden transition-all hover:scale-105 active:scale-95 w-full sm:w-auto shadow-md"
+                >
+                  <span className="relative z-10">Apply with Devfolio</span>
+                  <FaExternalLinkAlt className="relative z-10 text-xs" />
+                </a>
+              ) : (
+                <button
+                  disabled
+                  className="group relative inline-flex items-center justify-center gap-2 px-8 py-4 bg-gray-200 dark:bg-gray-800 text-gray-500 dark:text-gray-400 font-semibold rounded-full overflow-hidden w-full sm:w-auto cursor-not-allowed opacity-70"
+                  title="Devfolio application link will be available soon"
+                >
+                  <span className="relative z-10">Apply with Devfolio (Soon)</span>
+                </button>
+              )}
             </motion.div>
           </div>
         </section>

@@ -291,7 +291,7 @@ function DefaultEventDetail({ event }: { event: any }) {
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="flex justify-center md:hidden"
+                className="flex flex-col justify-center items-center gap-4 md:hidden"
               >
                 {event.status === "sold-out" ? (
                   <div className="w-full bg-red-100 dark:bg-red-900/20 border-2 border-red-500 rounded-xl p-6 text-center">
@@ -310,7 +310,7 @@ function DefaultEventDetail({ event }: { event: any }) {
                         handleRegisterNow(primaryTicket);
                       }
                     }}
-                    className={`px-8 py-4 ${
+                    className={`w-full px-8 py-4 ${
                       isTEDxEvent
                         ? "bg-red-600 hover:bg-red-700 shadow-red-600/50 text-white shadow-xl hover:shadow-2xl hover:scale-105"
                         : "cta-glass"
@@ -318,7 +318,7 @@ function DefaultEventDetail({ event }: { event: any }) {
                              text-lg font-bold rounded-3xl
                              hover:-translate-y-1
                              active:scale-95 transition-transform duration-300 transform
-                             flex items-center gap-3 group`}
+                             flex items-center justify-center gap-3 group`}
                   >
                     <span>🎟️ Register Now</span>
                     <svg
@@ -334,6 +334,26 @@ function DefaultEventDetail({ event }: { event: any }) {
                         d="M19 9l-7 7-7-7"
                       />
                     </svg>
+                  </button>
+                )}
+
+                {/* Devfolio Integration Point */}
+                {event.devfolioUrl ? (
+                  <a
+                    href={event.devfolioUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full py-4 px-8 text-lg font-bold rounded-3xl flex items-center justify-center gap-3 bg-[#3770FF] hover:bg-[#205AFF] text-white shadow-lg transition-transform duration-300 transform hover:-translate-y-1 active:scale-95"
+                  >
+                    <span>Apply with Devfolio</span>
+                  </a>
+                ) : (
+                  <button
+                    disabled
+                    className="w-full py-4 px-8 text-lg font-bold rounded-3xl flex items-center justify-center gap-3 bg-gray-200 dark:bg-gray-800 text-gray-500 dark:text-gray-400 cursor-not-allowed opacity-70"
+                    title="Devfolio application link will be available soon"
+                  >
+                    <span>Apply with Devfolio (Soon)</span>
                   </button>
                 )}
               </motion.div>
@@ -910,6 +930,28 @@ function DefaultEventDetail({ event }: { event: any }) {
                         </button>
                       </div>
                     ))}
+                  </div>
+
+                  {/* Devfolio Integration Point (Global Event Level) */}
+                  <div className="pt-4 mt-4 border-t border-gray-200/30 dark:border-white/[0.06]">
+                    {event.devfolioUrl ? (
+                      <a
+                        href={event.devfolioUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-full py-4 px-6 text-base font-bold rounded-3xl flex items-center justify-center gap-2 bg-[#3770FF] hover:bg-[#205AFF] text-white shadow-lg transition-all duration-300 transform hover:-translate-y-1 active:scale-95"
+                      >
+                        🚀 Apply with Devfolio
+                      </a>
+                    ) : (
+                      <button
+                        disabled
+                        className="w-full py-4 px-6 text-base font-bold rounded-3xl flex items-center justify-center gap-2 bg-gray-200 dark:bg-gray-800 text-gray-500 dark:text-gray-400 cursor-not-allowed opacity-70 transition-all duration-300"
+                        title="Devfolio application link will be available soon"
+                      >
+                        🚀 Apply with Devfolio (Soon)
+                      </button>
+                    )}
                   </div>
 
                   {/* Tags */}

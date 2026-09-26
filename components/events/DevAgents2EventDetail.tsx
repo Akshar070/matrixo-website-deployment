@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { FaCalendar, FaMapMarkerAlt, FaUsers, FaTrophy, FaChevronRight, FaTimes, FaSpinner, FaCheckCircle } from "react-icons/fa";
+import { FaCalendar, FaMapMarkerAlt, FaUsers, FaTrophy, FaChevronRight, FaTimes, FaSpinner, FaCheckCircle, FaExternalLinkAlt } from "react-icons/fa";
 import { HiSparkles } from "react-icons/hi";
 
 const fadeInUp = {

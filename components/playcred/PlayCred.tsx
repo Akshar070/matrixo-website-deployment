@@ -107,7 +107,7 @@ export default function PlayCred() {
     return (
       <div className="min-h-screen flex items-center justify-center px-6 py-20">
         <div className="glass-card max-w-md w-full p-10 text-center">
-          <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-yellow-500 to-orange-500 text-white text-3xl">
+          <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-[#2563EB] to-[#7C3AED] text-white text-3xl">
             <FaTrophy />
           </div>
           <h1 className="font-display text-2xl font-bold text-gray-900 dark:text-white mb-2">Your credential wallet</h1>
@@ -122,7 +122,7 @@ export default function PlayCred() {
 
   return (
     <BetaShell
-      accent="from-yellow-500 to-orange-500"
+      accent="from-[#2563EB] to-[#7C3AED]"
       backgroundClassName="bg-gradient-to-br from-yellow-50 via-orange-50 to-pink-50 dark:from-gray-950 dark:via-yellow-950/10 dark:to-orange-950/10"
       badgeIcon={<FaTrophy className="animate-bounce" />}
       badgeLabel="PlayCred™ Verified Credentials"
@@ -153,11 +153,11 @@ export default function PlayCred() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             onClick={() => setShowUpgrade(true)}
-            className="group mb-12 w-full overflow-hidden rounded-3xl border border-amber-300/40 bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-pink-500/10 p-6 text-left transition-all hover:shadow-xl"
+            className="group mb-12 w-full overflow-hidden rounded-3xl border border-[#2563EB]/40 bg-gradient-to-r from-[#2563EB]/10 to-[#7C3AED]/10 p-6 text-left transition-all hover:shadow-xl"
           >
             <div className="flex items-center justify-between gap-4">
               <div className="flex items-center gap-4">
-                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 text-white text-2xl"><FaCrown /></div>
+                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-[#2563EB] to-[#7C3AED] text-white text-2xl"><FaCrown /></div>
                 <div>
                   <h3 className="font-display text-lg font-bold text-gray-900 dark:text-white">Unlock PlayCred Pro</h3>
                   <p className="text-sm text-gray-600 dark:text-gray-400">Downloadable certificates, custom branding, and a public credential passport.</p>
@@ -177,7 +177,7 @@ export default function PlayCred() {
           </div>
         ) : creds.length === 0 ? (
           <div className="glass-card text-center py-16 px-6">
-            <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-yellow-400 to-orange-500 text-white text-4xl opacity-90">
+            <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-[#2563EB] to-[#7C3AED] text-white text-4xl opacity-90">
               <FaCertificate />
             </div>
             <h3 className="font-display text-2xl font-bold text-gray-900 dark:text-white mb-2">No credentials yet</h3>
@@ -284,7 +284,7 @@ export default function PlayCred() {
                 <div className="flex flex-wrap gap-3">
                   <button
                     onClick={() => handleDownload(selected)}
-                    className="flex-1 min-w-[140px] bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-6 py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:shadow-lg transition-shadow"
+                    className="flex-1 min-w-[140px] bg-gradient-to-r from-[#2563EB] to-[#7C3AED] text-white px-6 py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:shadow-lg transition-shadow"
                   >
                     {entitled ? <FaDownload /> : <FaLock />} {entitled ? 'Download' : 'Download (Pro)'}
                   </button>

@@ -22,7 +22,7 @@ interface BetaShellProps {
   backgroundClassName?: string
   badgeIcon: React.ReactNode
   badgeLabel: string
-  title: string
+  title: React.ReactNode
   subtitle: string
   premium?: boolean
   premiumLabel?: string
@@ -58,7 +58,7 @@ export function BetaShell({
             )}
           </div>
           <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold mb-3 sm:mb-4">
-            <HeadingHighlight text={title} />
+            {typeof title === 'string' ? <HeadingHighlight text={title} /> : title}
           </h1>
           <p className="text-gray-600 dark:text-gray-400 text-base sm:text-lg max-w-2xl mx-auto px-2">
             {subtitle}

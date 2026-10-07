@@ -1,6 +1,9 @@
 export const DEVAGENTS_SPEAKER_IMAGE_URL =
   process.env.NEXT_PUBLIC_DEVAGENTS_SPEAKER_IMAGE_URL || "";
 
+export const SHOW_DEVAGENTS_LEAD_SPEAKER =
+  process.env.NEXT_PUBLIC_SHOW_DEVAGENTS_LEAD_SPEAKER === "true";
+
 export const MATRIXO_LOGO_LIGHT_URL =
   process.env.NEXT_PUBLIC_MATRIXO_LOGO_LIGHT_URL || "/logos/logo-light.png";
 

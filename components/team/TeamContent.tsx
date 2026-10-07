@@ -67,6 +67,32 @@ function getLinkedin(name: string, firestoreLinkedin?: string): string {
   return ''
 }
 
+// Public-page visibility controls, keyed by normalized name (lowercase letters only).
+// These only change what the public /team page shows; Firestore records and the
+// employee portal are untouched. Remove an entry to restore the default display.
+const hiddenFromPublicTeam: string[] = ['shivaganesh']
+
+const publicDesignationOverrides: Record<string, string> = {
+  'kishan': 'Co-Founder',
+}
+
+function normalizeName(name: string): string {
+  return name.toLowerCase().replace(/[^a-z]/g, '')
+}
+
+function isHiddenFromPublicTeam(name: string): boolean {
+  const key = normalizeName(name)
+  return hiddenFromPublicTeam.some((hidden) => key.includes(hidden))
+}
+
+function getPublicDesignation(name: string, designation: string): string {
+  const key = normalizeName(name)
+  for (const [match, override] of Object.entries(publicDesignationOverrides)) {
+    if (key.includes(match)) return override
+  }
+  return designation
+}
+
 // Local profile image mapping (fallback when Firestore profileImage is empty)
 const localProfileImages: Record<string, string> = {
   'M-A001': '/intern-images/M-A001.webp',
@@ -104,12 +130,13 @@ export default function TeamContent() {
           // Skip generic employees/interns without a specific designation (prevents "Team Member" cards on public page)
           if ((data.role === 'employee' || data.role === 'Intern') && !data.designation) return
           const name = data.name || ''
+          if (isHiddenFromPublicTeam(name)) return
           members.push({
             employeeId: data.employeeId || doc.id,
             name: name,
             email: data.email || '',
             department: data.department || '',
-            designation: data.designation || '',
+            designation: getPublicDesignation(name, data.designation || ''),
             joiningDate: data.joiningDate || '',
             profileImage: getProfileImage(data.employeeId || doc.id, data.profileImage || ''),
             role: data.role || 'employee',

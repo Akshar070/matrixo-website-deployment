@@ -83,6 +83,11 @@ export default function EventPage({ params }: Props) {
     ? event.images.banner 
     : `https://matrixo.in${event.images.banner}`
 
+  // Speakers flagged `hidden` stay in events.json but are not sent to the page
+  const visibleSpeakers = event.speakers?.filter(
+    speaker => !('hidden' in speaker && speaker.hidden)
+  )
+
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Event",
@@ -102,7 +107,7 @@ export default function EventPage({ params }: Props) {
         "addressCountry": "IN"
       }
     },
-    "performer": event.speakers ? event.speakers.map(speaker => ({
+    "performer": visibleSpeakers ? visibleSpeakers.map(speaker => ({
       "@type": "Person",
       "name": speaker.name
     })) : undefined,
@@ -127,7 +132,7 @@ export default function EventPage({ params }: Props) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <EventDetail event={event} />
+      <EventDetail event={{ ...event, speakers: visibleSpeakers }} />
     </>
   )
 }

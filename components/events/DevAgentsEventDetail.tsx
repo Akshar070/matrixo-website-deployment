@@ -29,6 +29,7 @@ import { Zap, Lock, CheckCircle2 } from "lucide-react";
 import DevAgentsRegistrationForm from "./DevAgentsRegistrationForm";
 import {
   DEVAGENTS_SPEAKER_IMAGE_URL,
+  SHOW_DEVAGENTS_LEAD_SPEAKER,
   MATRIXO_LOGO_DARK_URL,
   MATRIXO_LOGO_LIGHT_URL,
   THE_STUDENT_SPOT_LOGO_DARK_URL,
@@ -1721,8 +1722,15 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
             </h2>
           </motion.div>
 
-          <div className="grid md:grid-cols-3 gap-6">
+          <div
+            className={`grid gap-6 ${
+              SHOW_DEVAGENTS_LEAD_SPEAKER
+                ? "md:grid-cols-3"
+                : "md:grid-cols-2 max-w-2xl mx-auto"
+            }`}
+          >
             {/* Main speaker */}
+            {SHOW_DEVAGENTS_LEAD_SPEAKER && (
             <motion.div
               variants={fadeInUp}
               initial="hidden"
@@ -1779,6 +1787,7 @@ export default function DevAgentsEventDetail({ event }: { event: any }) {
                 <FaLinkedin /> LinkedIn Profile
               </a>
             </motion.div>
+            )}
 
             {/* Speaker 2 */}
             <motion.div

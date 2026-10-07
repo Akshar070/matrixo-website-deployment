@@ -880,7 +880,8 @@
         "socialLinks": {
           "linkedin": "https://www.linkedin.com/in/shiva-ganesh-talikota/",
           "instagram": "https://www.instagram.com/matrixo.in/"
-        }
+        },
+        "hidden": true
       }
     ],
     "agenda": [

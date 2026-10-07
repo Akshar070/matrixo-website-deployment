@@ -126,7 +126,9 @@ export default function PlayCred() {
       backgroundClassName="bg-gradient-to-br from-yellow-50 via-orange-50 to-pink-50 dark:from-gray-950 dark:via-yellow-950/10 dark:to-orange-950/10"
       badgeIcon={<FaTrophy className="animate-bounce" />}
       badgeLabel="PlayCred™ Verified Credentials"
-      title="Your Verified Achievements"
+      title={
+        <span className="text-slate-900 dark:text-indigo-100">Your Verified Achievements</span>
+      }
       subtitle="Tamper-evident, matriXO-issued credentials you earn by completing real learning paths — shareable and publicly verifiable."
       premium={entitled}
       premiumLabel="Pro"

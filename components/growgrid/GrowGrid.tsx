@@ -35,9 +35,9 @@ import { BetaShell } from '@/components/beta/BetaShell'
 
 const ICONS = { code: FaCode, palette: FaPalette, chart: FaChartLine, mic: FaMicrophone, rocket: FaRocket }
 const difficultyColors = {
-  beginner: 'bg-green-500',
-  intermediate: 'bg-yellow-500',
-  advanced: 'bg-red-500',
+  beginner: 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300',
+  intermediate: 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300',
+  advanced: 'bg-rose-100 text-rose-800 dark:bg-rose-900/40 dark:text-rose-300',
 }
 
 export default function GrowGrid() {
@@ -152,7 +152,7 @@ export default function GrowGrid() {
     return (
       <div className="min-h-screen flex items-center justify-center px-6 py-20">
         <div className="glass-card max-w-md w-full p-10 text-center">
-          <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-[#2563EB] text-white text-3xl">
+          <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-900 dark:bg-indigo-900 text-white text-3xl">
             <FaRocket />
           </div>
           <h1 className="font-display text-2xl font-bold text-gray-900 dark:text-white mb-2">
@@ -161,7 +161,7 @@ export default function GrowGrid() {
           <p className="text-gray-600 dark:text-gray-400 mb-6">
             Sign in to track progress, earn XP, and unlock adaptive learning paths.
           </p>
-          <Link href="/auth" className="btn-primary inline-block !bg-[#2563EB] hover:!bg-[#1D4ED8] !text-[#FFFFFF] !bg-none !border-none !shadow-none">
+          <Link href="/auth" className="btn-primary inline-block !bg-gradient-to-r !from-slate-900 !to-indigo-900 !border-0 !text-white !shadow-none">
             Sign in to start
           </Link>
         </div>
@@ -170,13 +170,13 @@ export default function GrowGrid() {
   }
 
   return (
-    <div className="[&_.gradient-text]:!bg-none [&_.gradient-text]:!text-[#1D4ED8] dark:[&_.gradient-text]:!text-[#3B82F6]">
+    <div className="[&_.gradient-text]:!bg-none [&_.gradient-text]:!text-indigo-900 dark:[&_.gradient-text]:!text-indigo-300">
     <BetaShell
-      accent="from-[#2563EB] to-[#2563EB]"
+      accent="from-slate-900 to-slate-900 dark:from-indigo-900 dark:to-indigo-900"
       backgroundClassName="bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 dark:from-gray-950 dark:via-purple-950/20 dark:to-blue-950/20"
       badgeIcon={<FaRocket className="animate-bounce" />}
       badgeLabel="GrowGrid™ Learning Paths"
-      title="Your Adaptive Learning Journey"
+      title={<span className="text-slate-900 dark:text-indigo-100">Your Adaptive Learning Journey</span>}
       subtitle="Personalized micro-modules that adapt to your pace and style"
       premium={entitled}
     >
@@ -188,9 +188,9 @@ export default function GrowGrid() {
             </div>
             <p className="text-xs text-gray-500 mt-1">{stats.intoLevel}/{XP_PER_LEVEL} XP to next level</p>
           </StatCard>
-          <StatCard delay={0.2} icon={<FaStar className="text-3xl text-purple-500" />} value={loading ? '—' : String(stats.totalXP)} label="Total XP Earned" />
+          <StatCard delay={0.2} icon={<FaStar className="text-3xl text-yellow-500" />} value={loading ? '—' : String(stats.totalXP)} label="Total XP Earned" />
           <StatCard delay={0.3} icon={<FaCheckCircle className="text-3xl text-green-500" />} value={loading ? '—' : `${stats.completed}/${totalModuleCount()}`} label="Modules Completed" />
-          <StatCard delay={0.4} icon={<FaClock className="text-3xl text-blue-500" />} value={loading ? '—' : `${stats.hours}h`} label="Learning Time" />
+          <StatCard delay={0.4} icon={<FaClock className="text-3xl text-indigo-900 dark:text-indigo-400" />} value={loading ? '—' : `${stats.hours}h`} label="Learning Time" />
         </div>
 
         {/* Premium banner (only if not entitled) */}
@@ -203,7 +203,7 @@ export default function GrowGrid() {
           >
             <div className="flex items-center justify-between gap-4">
               <div className="flex items-center gap-4">
-                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#E2E8F0] dark:bg-[#334155] text-[#334155] dark:text-[#FFFFFF] text-2xl">
+                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-900 dark:bg-indigo-900 text-white text-2xl">
                   <FaCrown />
                 </div>
                 <div>
@@ -211,15 +211,15 @@ export default function GrowGrid() {
                   <p className="text-sm text-gray-600 dark:text-gray-400">Every path, every advanced module, and completion certificates.</p>
                 </div>
               </div>
-              <span className="btn-primary shrink-0 hidden sm:inline-flex !bg-[#2563EB] hover:!bg-[#1D4ED8] !text-[#FFFFFF] !bg-none !border-none !shadow-none">Upgrade ₹499</span>
+              <span className="btn-primary shrink-0 hidden sm:inline-flex !bg-gradient-to-r !from-slate-900 !to-indigo-900 !text-white !border-0 !shadow-none">Upgrade ₹499</span>
             </div>
           </motion.button>
         )}
 
         {/* Learning Paths Selection */}
         <div className="mb-12">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
-            <HeadingHighlight text="Choose Your Path" />
+          <h2 className="text-2xl font-bold text-slate-900 dark:text-indigo-100 mb-6">
+            Choose Your Path
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {GROWGRID_PATHS.map((path, index) => {
@@ -239,11 +239,11 @@ export default function GrowGrid() {
                       : 'bg-white/50 dark:bg-gray-800/40 shadow-lg hover:shadow-xl hover:scale-[1.01]'
                   }`}
                 >
-                  <div className="w-14 h-14 rounded-xl bg-[#2563EB] flex items-center justify-center text-white text-2xl mb-4">
+                  <div className="w-14 h-14 rounded-xl bg-slate-900 dark:bg-indigo-900 flex items-center justify-center text-white text-2xl mb-4">
                     <Icon />
                   </div>
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-                    <HeadingHighlight text={path.name} />
+                  <h3 className="text-xl font-bold text-slate-900 dark:text-indigo-100 mb-2">
+                    {path.name}
                   </h3>
                   <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">{path.description}</p>
                   <div className="space-y-2">
@@ -301,7 +301,7 @@ export default function GrowGrid() {
                     className="flex w-full items-start gap-4 p-6 text-left"
                   >
                     <div className={`w-16 h-16 rounded-xl flex items-center justify-center text-2xl shrink-0 ${
-                      st.locked ? 'bg-[#E2E8F0] dark:bg-[#334155] text-[#334155] dark:text-[#FFFFFF]' : 'bg-[#2563EB] text-[#FFFFFF]'
+                      st.locked ? 'bg-slate-200 dark:bg-slate-800 text-slate-500 dark:text-slate-400' : 'bg-slate-900 dark:bg-indigo-900 text-white'
                     }`}>
                       {st.locked ? <FaLock /> : st.completed ? <FaCheckCircle /> : <Icon />}
                     </div>
@@ -311,11 +311,11 @@ export default function GrowGrid() {
                         <h3 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
                           {module.title}
                           {module.tier === 'premium' && (
-                            <FaCrown className="text-[#475569] dark:text-[#CBD5E1] text-sm" title="Premium" />
+                            <FaCrown className="text-indigo-900 dark:text-indigo-400 text-sm" title="Premium" />
                           )}
                         </h3>
                         {!st.locked && !st.completed && (
-                          <span className="bg-[#2563EB] text-white p-3 rounded-full shrink-0">
+                          <span className="bg-slate-900 dark:bg-indigo-900 text-white p-3 rounded-full shrink-0">
                             <FaPlay />
                           </span>
                         )}
@@ -323,7 +323,7 @@ export default function GrowGrid() {
                       <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">{module.description}</p>
                       <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
                         <span className="flex items-center gap-1"><FaClock /> {module.duration}</span>
-                        <span className={`px-2 py-1 rounded-full text-white text-xs font-bold ${difficultyColors[module.difficulty]}`}>
+                        <span className={`px-2 py-1 rounded-full text-xs font-bold ${difficultyColors[module.difficulty]}`}>
                           {module.difficulty}
                         </span>
                         <span className="flex items-center gap-1"><FaStar className="text-yellow-500" /> {module.xp} XP</span>

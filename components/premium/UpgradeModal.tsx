@@ -163,7 +163,7 @@ export default function UpgradeModal({ product, open, onClose }: UpgradeModalPro
             className="relative w-full max-w-lg max-h-[92vh] overflow-y-auto rounded-3xl border border-white/10 bg-white/80 dark:bg-gray-900/80 backdrop-blur-2xl shadow-2xl"
           >
             {/* Gradient top rail */}
-            <div className="h-1.5 w-full rounded-t-3xl bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600" />
+            <div className="h-1.5 w-full rounded-t-3xl bg-gradient-to-r from-slate-900 to-indigo-900" />
 
             <button
               onClick={handleClose}
@@ -185,14 +185,14 @@ export default function UpgradeModal({ product, open, onClose }: UpgradeModalPro
                   <p className="mt-2 text-gray-600 dark:text-gray-400">
                     Your {plan.planLabel} is active. Enjoy every premium module.
                   </p>
-                  <button onClick={handleClose} className="btn-primary mt-6">
+                  <button onClick={handleClose} className="btn-primary mt-6 !bg-gradient-to-r !from-slate-900 !to-indigo-900 !border-0 !text-white">
                     Start learning
                   </button>
                 </div>
               ) : (
                 <>
                   <div className="flex items-center gap-3">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 text-white text-xl">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-900 dark:bg-indigo-900 text-white text-xl">
                       <FaCrown />
                     </div>
                     <div>
@@ -216,7 +216,7 @@ export default function UpgradeModal({ product, open, onClose }: UpgradeModalPro
                   </ul>
 
                   <div className="my-5 flex items-baseline gap-2">
-                    <span className="font-display text-4xl font-bold gradient-text">₹{plan.amount}</span>
+                    <span className="font-display text-4xl font-bold text-indigo-900 dark:text-indigo-300">₹{plan.amount}</span>
                     <span className="text-sm text-gray-500 dark:text-gray-400">one-time</span>
                   </div>
 
@@ -271,12 +271,12 @@ export default function UpgradeModal({ product, open, onClose }: UpgradeModalPro
                           onChange={(e) => setUpiRef(e.target.value)}
                           placeholder="e.g. 4198XXXXXXX"
                           inputMode="numeric"
-                          className="w-full rounded-xl border border-gray-300 dark:border-white/10 bg-white dark:bg-gray-800 px-4 py-3 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500"
+                          className="w-full rounded-xl border border-gray-300 dark:border-white/10 bg-white dark:bg-gray-800 px-4 py-3 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-indigo-900 dark:focus:ring-indigo-300"
                         />
                         <button
                           onClick={handleSubmit}
                           disabled={submitting}
-                          className="btn-primary mt-3 w-full disabled:opacity-60"
+                          className="btn-primary mt-3 w-full disabled:opacity-60 !bg-gradient-to-r !from-slate-900 !to-indigo-900 !border-0 !text-white"
                         >
                           {submitting ? 'Submitting…' : 'I’ve paid — submit for verification'}
                         </button>

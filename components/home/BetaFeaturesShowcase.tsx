@@ -37,7 +37,7 @@ const features = [
       href: '/growgrid',
       gradient: 'from-blue-500 to-cyan-500',
       icon: HiOutlinePuzzlePiece,
-      iconClassName: 'text-[#2563EB] dark:text-slate-200',
+      iconClassName: 'text-slate-900 dark:text-indigo-100',
     },
   },
   {
@@ -122,7 +122,11 @@ const FeatureNavButton = memo(function FeatureNavButton({
     >
       <div className={`font-bold ${isActive ? '' : 'text-gray-500 dark:text-gray-400'}`}>
         {isActive ? (
-          <HeadingHighlight text={feature.title} solidClassName="text-gray-900 dark:text-white" />
+          feature.id === 'playcred' || feature.id === 'growgrid' ? (
+            <span className="text-slate-900 dark:text-indigo-100">{feature.title}</span>
+          ) : (
+            <HeadingHighlight text={feature.title} solidClassName="text-gray-900 dark:text-white" />
+          )
         ) : (
           feature.title
         )}
@@ -217,7 +221,11 @@ export default function BetaFeaturesShowcase() {
                   <ActiveIcon className={`h-7 w-7 ${activeFeature.content.iconClassName}`} />
                 </div>
                 <h3 className="mb-4 text-3xl font-display font-bold lg:text-4xl">
-                  <HeadingHighlight text={activeFeature.title} />
+                  {activeFeature.id === 'playcred' || activeFeature.id === 'growgrid' ? (
+                    <span className="text-slate-900 dark:text-indigo-100">{activeFeature.title}</span>
+                  ) : (
+                    <HeadingHighlight text={activeFeature.title} />
+                  )}
                 </h3>
                 <p className="mb-4 text-xl font-medium text-gray-700 dark:text-gray-300">
                   {activeFeature.description}
@@ -225,7 +233,7 @@ export default function BetaFeaturesShowcase() {
                 <p className="mb-8 text-lg leading-relaxed text-gray-600 dark:text-gray-400">
                   {activeFeature.content.details}
                 </p>
-                <Link href={activeFeature.content.href} className="btn-primary inline-flex items-center">
+                <Link href={activeFeature.content.href} className={`btn-primary inline-flex items-center ${activeFeature.id === 'playcred' || activeFeature.id === 'growgrid' ? '!bg-gradient-to-r !from-slate-900 !to-indigo-900 !border-0 !text-white' : ''}`}>
                   Try it now →
                 </Link>
               </motion.div>
@@ -261,7 +269,11 @@ export default function BetaFeaturesShowcase() {
                 <ActiveIcon className={`h-7 w-7 ${activeFeature.content.iconClassName}`} />
               </div>
               <h3 className="mb-4 text-3xl font-display font-bold lg:text-4xl">
-                <HeadingHighlight text={activeFeature.title} />
+                {activeFeature.id === 'playcred' || activeFeature.id === 'growgrid' ? (
+                  <span className="text-slate-900 dark:text-indigo-100">{activeFeature.title}</span>
+                ) : (
+                  <HeadingHighlight text={activeFeature.title} />
+                )}
               </h3>
               <p className="mb-4 text-xl font-medium text-gray-700 dark:text-gray-300">
                 {activeFeature.description}
@@ -269,7 +281,7 @@ export default function BetaFeaturesShowcase() {
               <p className="mb-8 text-lg leading-relaxed text-gray-600 dark:text-gray-400">
                 {activeFeature.content.details}
               </p>
-              <Link href={activeFeature.content.href} className="btn-primary inline-flex items-center">
+              <Link href={activeFeature.content.href} className={`btn-primary inline-flex items-center ${activeFeature.id === 'playcred' || activeFeature.id === 'growgrid' ? '!bg-gradient-to-r !from-slate-900 !to-indigo-900 !border-0 !text-white' : ''}`}>
                 Try it now →
               </Link>
             </motion.div>

@@ -122,11 +122,13 @@ export default function PlayCred() {
 
   return (
     <BetaShell
-      accent="from-[#2563EB] to-[#7C3AED]"
+      accent="from-slate-900 to-indigo-900"
       backgroundClassName="bg-gradient-to-br from-yellow-50 via-orange-50 to-pink-50 dark:from-gray-950 dark:via-yellow-950/10 dark:to-orange-950/10"
       badgeIcon={<FaTrophy className="animate-bounce" />}
       badgeLabel="PlayCred™ Verified Credentials"
-      title="Your Verified Achievements"
+      title={
+        <span className="text-slate-900 dark:text-indigo-100">Your Verified Achievements</span>
+      }
       subtitle="Tamper-evident, matriXO-issued credentials you earn by completing real learning paths — shareable and publicly verifiable."
       premium={entitled}
       premiumLabel="Pro"
@@ -157,13 +159,13 @@ export default function PlayCred() {
           >
             <div className="flex items-center justify-between gap-4">
               <div className="flex items-center gap-4">
-                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-[#2563EB] to-[#7C3AED] text-white text-2xl"><FaCrown /></div>
+                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-slate-900 to-indigo-900 text-white text-2xl"><FaCrown /></div>
                 <div>
                   <h3 className="font-display text-lg font-bold text-gray-900 dark:text-white">Unlock PlayCred Pro</h3>
                   <p className="text-sm text-gray-600 dark:text-gray-400">Downloadable certificates, custom branding, and a public credential passport.</p>
                 </div>
               </div>
-              <span className="btn-primary shrink-0 hidden sm:inline-flex">Upgrade ₹299</span>
+              <span className="btn-primary shrink-0 hidden sm:inline-flex !bg-gradient-to-r !from-slate-900 !to-indigo-900 !border-0 text-white">Upgrade ₹299</span>
             </div>
           </motion.button>
         )}
@@ -177,14 +179,14 @@ export default function PlayCred() {
           </div>
         ) : creds.length === 0 ? (
           <div className="glass-card text-center py-16 px-6">
-            <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-[#2563EB] to-[#7C3AED] text-white text-4xl opacity-90">
+            <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-slate-900 to-indigo-900 text-white text-4xl opacity-90">
               <FaCertificate />
             </div>
             <h3 className="font-display text-2xl font-bold text-gray-900 dark:text-white mb-2">No credentials yet</h3>
             <p className="text-gray-600 dark:text-gray-400 max-w-md mx-auto mb-6">
               Complete a full learning path in GrowGrid to earn your first verifiable credential. It’ll appear here automatically.
             </p>
-            <Link href="/growgrid" className="btn-primary inline-block">Start a learning path</Link>
+            <Link href="/growgrid" className="btn-primary inline-block !bg-gradient-to-r !from-slate-900 !to-indigo-900 !border-0 text-white">Start a learning path</Link>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
